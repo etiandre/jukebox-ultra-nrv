@@ -5,5 +5,5 @@ app = Flask(__name__)
 
 # exemple
 @app.route("/")
-def index():
+def message_sympa():
     return "coucou"
