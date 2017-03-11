@@ -6,4 +6,4 @@ app = Flask(__name__)
 # exemple
 @app.route("/")
 def message_sympa():
-    return "coucou"
+    return "coucou ntm"
