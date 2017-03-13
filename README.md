@@ -1,7 +1,7 @@
 # Projet info qu'il est chouette
 
 ## Prérequis
-    installez flask (depuis yaourt c simpa)
+    installez python et flask
 
 ## Lancement
     $ ./run.sh
