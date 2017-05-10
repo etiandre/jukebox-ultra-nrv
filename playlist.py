@@ -35,17 +35,19 @@ class ListPlaylist:
         self.nbPlaylists += 1
         print("La playlist {} vient d'être ajoutée. Son id est {}.".format(playlist.name, idPlaylist))
 
-    def remove_playlist(self, idPlaylist): #idPlaylist is an integer
-        if self.listPlaylists[idPlaylist] == False or idPlaylist > self.nbPlaylists:
+    def remove_playlist(self, idplaylist): #idPlaylist is an integer
+        if self.listPlaylists[idplaylist] == False or idplaylist > self.nbPlaylists:
             print("Cet id de playlist n'est pas attribué.")
         else:
-            self.listPlaylists[idPlaylist] = False
+            self.listPlaylists[idplaylist] = False
             self.nbPlaylists -= 1
-            print("La playlist {} a été supprimée.".format(idPlaylist))
+            print("La playlist {} a été supprimée.".format(idplaylist))
 
     def to_string(self):
+        print("Playlists disponibles :")
         for pl in self.listPlaylists:
-            print(pl.name)
+            if pl != False:
+                print("{} : {}".format(pl.id, pl.name))
 
 PlaylistList = ListPlaylist()
 
@@ -54,7 +56,7 @@ class Playlist:
     def __init__(self, name, idplaylist):
         self.nbTracks = 0
         self.listTracks = []
-        self.name = name        #Don't use the constructor to build a playlist
+        self.name = name             #Don't use the constructor to build a playlist
         self.id = idplaylist         #Use new_playlist('name') instead
 
     def add_track(self, track):
@@ -69,39 +71,90 @@ class Playlist:
 
 
     def to_string(self):
-        for tr in self.listTracks:
-            print(tr.name)          #Assuming Track is an object with a 'name' variable
+        print("Tracks dans la playlist :")
+        for pos in range(self.nbTracks):
+            print("{} : {}".format(pos, self.listTracks[pos].name))          #Assuming Track is an object with a 'name' variable
 
 
 def new_playlist(name):
     idplaylist = PlaylistList.first_void()
     P = Playlist(name, idplaylist)
     PlaylistList.add_playlist(P)
+    print("La playlist {} a bien été crée. Son id est {}.".format(P.name, P.id))
     return P
 
 
 #Flask things
 @app.route("/playlist/list")
 def list():
-    """Returns available playlist"""
+    """Returns available playlists"""
     PlaylistList.to_string()
 
 @app.route("/playlist/<id>")
 def show_playlist(id):
-    """renvoie le contenu de la playlist correspondant à id"""
-    pass
+    """Returns the id playlist content"""
+    if id < PlaylistList.nbPlaylists and PlaylistList.listPlaylists[id] != False:
+        PlaylistList.listPlaylists[id].to_string()
+    else:
+        print("Cette playlist n'existe pas, voulez-vous en créer une ?")
+
+@app.route("/playlist/add", methods=["POST"])
+def add_playlist():
+    """Creates a playlist and adds it to the playlist list"""
+    name = raw_input("Le nom de la playlist :")
+    P = new_playlist(name)
+
+@app.route("/playlist/<id>/remove")
+def remove_playlist(id):
+    """Deletes the id playlist"""
+    if id < PlaylistList.nbPlaylists and PlaylistList.listPlaylists[id] != False:
+        PlaylistList.remove_playlist(id)
+    else:
+        print("Cette playlist n'existe pas, ou a déjà été supprimée.")
 
 @app.route("/playlist/<id>/add", methods=["POST"])
 def add_track_to_playlist(id):
-    """ajoute la track dans la playlist"""
-    pass
+    """Adds track to playlist"""
+    if id < PlaylistList.nbPlaylists and PlaylistList.listPlaylists[id] != False:
+        p = PlaylistList.listPlaylists[id]
+        track_name = raw_input("Quelle track à ajouter à la playlist {} ?".format(p.name))
+        p.add_track(track_name)
+    else:
+        print("Cette playlist n'existe pas, voulez-vous en créer une ?")
 
 @app.route("/playlist/<id>/remove", methods=["POST"])
 def remove_track_from_playlist(id):
-    """supprime la track depuis la playlist"""
-    pass
+    """Removes the nth track queued from playlist"""
+    if id < PlaylistList.nbPlaylists and PlaylistList.listPlaylists[id] != False:
+        p = PlaylistList.listPlaylists[id]
+        try:
+            track_pos = int(raw_input("Quel nème track à retirer à la playlist {} ?".format(p.name)))
+            if 0 < track_pos <= p.nbTracks:
+                p.remove_track(track_pos)
+            else:
+                print("Position de track invalide.")
+        except ValueError:
+            print('Nombre invalide.')
+    else:
+        print("Cette playlist n'existe pas, voulez-vous en créer une ?")
+
+
 
 @app.route("/playlist/<id>/move", methods=["POST"])
 def move_track(id):
-    """échange deux tracks dans une playlists (change l'ordre)"""
-    pass
+    """Move a track in the queue """
+    if id < PlaylistList.nbPlaylists and PlaylistList.listPlaylists[id] != False:
+        p = PlaylistList.listPlaylists[id]
+        try:
+            track_pos = int(raw_input("Quel nème track à déplacer dans la playlist {} ?".format(p.name)))
+            new_pos = int(raw_input("A quelle position la mettre dans la playlist {} ?".format(p.name)))
+            if 0 < track_pos <= p.nbTracks and 0 < track_pos <= p.nbTracks:
+                track = p.listTracks[track_pos-1]
+                p.remove_track(track_pos)
+                p.listTracks.insert(new_pos-1, track)
+            else:
+                print("Position de track invalide.")
+        except ValueError:
+            print('Nombre invalide.')
+    else:
+        print("Cette playlist n'existe pas, voulez-vous en créer une ?")
