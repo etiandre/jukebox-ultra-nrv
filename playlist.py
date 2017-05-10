@@ -33,7 +33,7 @@ class ListPlaylist:
         else:
             self.listPlaylists[idplaylist] = playlist
         self.nbPlaylists += 1
-        print("La playlist {} vient d'être ajoutée. Son id est {}.".format(playlist.name, idPlaylist))
+        print("La playlist {} vient d'être ajoutée. Son id est {}.".format(playlist.name, idplaylist))
 
     def remove_playlist(self, idplaylist): #idPlaylist is an integer
         if self.listPlaylists[idplaylist] == False or idplaylist > self.nbPlaylists:
@@ -101,7 +101,7 @@ def show_playlist(id):
 @app.route("/playlist/add", methods=["POST"])
 def add_playlist():
     """Creates a playlist and adds it to the playlist list"""
-    name = raw_input("Le nom de la playlist :")
+    name = input("Le nom de la playlist :")
     P = new_playlist(name)
 
 @app.route("/playlist/<id>/remove")
@@ -117,7 +117,7 @@ def add_track_to_playlist(id):
     """Adds track to playlist"""
     if id < PlaylistList.nbPlaylists and PlaylistList.listPlaylists[id] != False:
         p = PlaylistList.listPlaylists[id]
-        track_name = raw_input("Quelle track à ajouter à la playlist {} ?".format(p.name))
+        track_name = input("Quelle track à ajouter à la playlist {} ?".format(p.name))
         p.add_track(track_name)
     else:
         print("Cette playlist n'existe pas, voulez-vous en créer une ?")
@@ -128,7 +128,7 @@ def remove_track_from_playlist(id):
     if id < PlaylistList.nbPlaylists and PlaylistList.listPlaylists[id] != False:
         p = PlaylistList.listPlaylists[id]
         try:
-            track_pos = int(raw_input("Quel nème track à retirer à la playlist {} ?".format(p.name)))
+            track_pos = int(input("Quel nème track à retirer à la playlist {} ?".format(p.name)))
             if 0 < track_pos <= p.nbTracks:
                 p.remove_track(track_pos)
             else:
@@ -146,8 +146,8 @@ def move_track(id):
     if id < PlaylistList.nbPlaylists and PlaylistList.listPlaylists[id] != False:
         p = PlaylistList.listPlaylists[id]
         try:
-            track_pos = int(raw_input("Quel nème track à déplacer dans la playlist {} ?".format(p.name)))
-            new_pos = int(raw_input("A quelle position la mettre dans la playlist {} ?".format(p.name)))
+            track_pos = int(input("Quel nème track à déplacer dans la playlist {} ?".format(p.name)))
+            new_pos = int(input("A quelle position la mettre dans la playlist {} ?".format(p.name)))
             if 0 < track_pos <= p.nbTracks and 0 < track_pos <= p.nbTracks:
                 track = p.listTracks[track_pos-1]
                 p.remove_track(track_pos)
