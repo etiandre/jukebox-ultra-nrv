@@ -67,7 +67,7 @@ class Playlist:
     def remove_track(self, pos_track): #pos_track is the position of a song in a queue
         del self.listTracks[pos_track-1]
         self.nbTracks -= 1
-        print("La track en position {} a bien été retirée de la playlist {}.".format(pos_track, self.name) #To update if I have access to the deleted track's name
+        print("La track en position {} a bien été retirée de la playlist {}.".format(pos_track, self.name)) #To update if I have access to the deleted track's name
 
 
     def to_string(self):
