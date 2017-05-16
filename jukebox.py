@@ -3,8 +3,8 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 
 app = Flask(__name__)
 
-import playpause
+#import playpause
 import search
-import admin
-import vote
+#import admin
+#import vote
 import playlist
