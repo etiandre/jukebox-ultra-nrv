@@ -1,7 +1,7 @@
 """Ce module s'occupe de faire la correspondance entre un nom de track et une track"""
 
 from jukebox import app
-from config import CONFIG
+#from config import CONFIG
 import http.client
 import json
 from urllib.parse import quote_plus
