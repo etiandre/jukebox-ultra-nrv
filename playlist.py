@@ -27,6 +27,11 @@ class ListPlaylist:
         return counter
 
     def add_playlist(self, playlist):
+        """
+        Ajoute une playlist a notre liste
+        :param playlist: objet playlist
+        :return:
+        """
         idplaylist = self.first_void()
         if idplaylist >= self.nbPlaylists :
             self.listPlaylists.append(playlist)
@@ -36,6 +41,10 @@ class ListPlaylist:
         print("La playlist {} vient d'être ajoutée. Son id est {}.".format(playlist.name, idplaylist))
 
     def remove_playlist(self, idplaylist): #idPlaylist is an integer
+        """
+        :param idplaylist: L'index de la playlist dans notre objet de gestion de playlists
+        :return: rien à priori
+        """
         if self.listPlaylists[idplaylist] == False or idplaylist > self.nbPlaylists:
             print("Cet id de playlist n'est pas attribué.")
         else:
@@ -44,6 +53,10 @@ class ListPlaylist:
             print("La playlist {} a été supprimée.".format(idplaylist))
 
     def to_string(self):
+        """
+        Affiche les playlists connues
+        :return:
+        """
         print("Playlists disponibles :")
         for pl in self.listPlaylists:
             if pl != False:
