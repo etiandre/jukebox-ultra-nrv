@@ -12,15 +12,20 @@ def search(query):
 
     results = []
 
+    #   demande à Spotify la musique que l'on cherche
+    #   WARNING: le serveur répond sous forme de JSON
     conn = http.client.HTTPSConnection("api.spotify.com")
     conn.request("GET", "/v1/search?q="+quote_plus(query)+"&type=track&market=FR&limit=10")
     r = conn.getresponse()
+
+    #   Si le serveur nous dit qu'il n'y a pas d'erreur
     if r.status != 200:
         raise Exception(r.status, r.reason)
+
     data = json.load(r)
-    if len(data["tracks"]["items"]) == 0:
+    if len(data["tracks"]["items"]) == 0:   #   Si le servuer n'a rien trouvé
         raise Exception("nothing found on spotify")
-    for i in data["tracks"]["items"]:
+    for i in data["tracks"]["items"]:   #   Sinon on lit les résultats
         results.append({
             "track": i["name"],
             "artist": i["artists"][0]["name"], # TODO: il peut y avoir plusieurs artistes
