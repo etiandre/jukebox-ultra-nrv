@@ -8,7 +8,11 @@ from urllib.parse import quote_plus
 
 @app.route("/search/<query>", methods=['GET'])
 def search(query):
-    """renvoie une liste de tracks correspondant à la requête depuis divers services"""
+    """
+    renvoie une liste de tracks correspondant à la requête depuis divers services
+    :param query: notre texte de recherche
+    :return: un tableau contenant les infos que l'on a trouvé
+    """
 
     results = []
 
@@ -26,11 +30,21 @@ def search(query):
     if len(data["tracks"]["items"]) == 0:   #   Si le servuer n'a rien trouvé
         raise Exception("nothing found on spotify")
     for i in data["tracks"]["items"]:   #   Sinon on lit les résultats
+
+        #   Cette partie sert a déterminer la plus grande image
+        taillemax = 0
+        indextaillemax = 0
+        for index in range(i["album"]["images"]):   #   On regarde le nombre de pixel
+            if i["album"]["images"][index]["height"] * i["album"]["images"][index]["width"] > taillemax:
+                taillemax = i["album"]["images"][index]["height"] * i["album"]["images"][index]["width"]
+                indextaillemax = index
+
         results.append({
             "track": i["name"],
             "artist": i["artists"][0]["name"], # TODO: il peut y avoir plusieurs artistes
             "duration": int(i["duration_ms"])/1000,
             "url": i["uri"],
-            "albumart_url": i["album"]["images"][0]["url"] # TODO: prendre l'image la plus grande
+            "albumart_url": i["album"]["images"][indextaillemax]["url"] # TODO: prendre l'image la plus grande
+                                                                        #  Normalement c'est bon
         })
     return str(results) # TODO: faire la template
