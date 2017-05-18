@@ -4,21 +4,52 @@
     <meta charset="UTF-8">
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styleGlobal.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='jquery-3.2.1.min.js') }}"></script>
+    <link rel= "stylesheet" type= "text/css" href= "../static/styles/styleGlobal.css    ">
+
+
     <title>Page Accueil</title>
 </head>
 <body>
+<form method="get" action="">
+    <div class="formulaire">
+        <input class="champRecherche" type="search" name="pseudo" placeholder="Recherchez une musique"/>
+        <input type="submit" value="Rechercher" />
+    </div>
+</form>
 
-<div id="Zone_recherche">
+<div class="listMusique">
+    <div id="Lecture_en_cours" class="ItemMusique">
+        <img class="imageAlbum" src="https://upload.wikimedia.org/wikipedia/en/4/4b/Therion_fleurs_2.jpg"/>
+        <div class="infosMusique">
+            <h1>Titre Musique</h1>
+            <h2>Artiste/Album</h2>
+
+            <div class="ProgressBarCV">
+                <div class="ContainerStandard ContenuProgressBarCV" style="width:45%"></div>
+            </div>
+            <p>1:34 / 4:35</p>
+        </div>
+    </div>
+
+
+    <div class="ItemMusique">
+        <img class="imageAlbum" src="https://upload.wikimedia.org/wikipedia/en/4/4b/Therion_fleurs_2.jpg"/>
+        <div class="infosMusique">
+            <h1>Titre Musique</h1>
+            <h2>Artiste/Album</h2>
+        </div>
+    </div>
+
+
+    <div class="ItemMusique">
+        <img class="imageAlbum" src="https://upload.wikimedia.org/wikipedia/en/4/4b/Therion_fleurs_2.jpg"/>
+        <div class="infosMusique">
+            <h1>Titre Musique</h1>
+            <h2>Artiste/Album</h2>
+        </div>
+    </div>
 
 </div>
-
-<div id="Lecture_en_cours">
-
-</div>
-
-<li id="Liste_lecture_attente">
-
-</li>
 
 </body>
 </html>

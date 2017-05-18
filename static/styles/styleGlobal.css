@@ -17,10 +17,91 @@ hr {
     height:0;
     overflow: visible;
     border:0;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #DDDDDD;
     margin:20px 0;
 }
 
+form{
+    margin: 0;
+    width: 100%;
+    background-color:#A00000;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.formulaire{
+    margin: auto;
+    width: 700px;
+    display:table;
+    clear:both;
+}
+
+.champRecherche{
+    margin: 0 5px;
+    width: 75%;
+    float:left;
+}
+
+.buttonEnvoi{
+    width: 20%;
+    float:left;
+}
+
+
+.listMusique{
+    margin:auto;
+    width: 900px;
+}
+
+#lecture_en_cours{
+    height: auto!important;
+}
+
+.ItemMusique{
+    background-color:#fff!important;
+    color:#757575!important;
+    box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    margin-bottom:16px!important;
+    border-radius:6px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    display:table;
+    clear:both;
+    width: 100%;
+    height: 50px;
+}
+
+
+.imageAlbum{
+    float:left;
+    margin:0 8px;
+    width:25%;
+}
+
+.infosMusique{
+    float:left;
+    margin:0 8px;
+    width:71%;
+}
+
+.ProgressBarCV{
+    background-color:#f1f1f1!important;
+    height: 4px;
+    padding: 0;
+}
+
+.ContenuProgressBarCV{
+    display:inline-block;
+    width:auto;
+    height: 4px;
+    background-color:#A00000!important;
+}
+
+.ContainerStandard:after,.ContainerStandard:before{
+    content:"";
+    display:table;
+    clear:both
+}
 
 @media (min-width:719px){
 
