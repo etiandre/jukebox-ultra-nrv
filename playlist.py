@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Ce module s'occupe de gérer les playlists et l'édition de celles-ci
 """
@@ -69,24 +71,30 @@ class Playlist:
     def __init__(self, name, idplaylist):
         self.nbTracks = 0
         self.listTracks = []
-        self.name = name             #Don't use the constructor to build a playlist
-        self.id = idplaylist         #Use new_playlist('name') instead
+        self.name = name             # Don't use the constructor to build a playlist
+        self.id = idplaylist         # Use new_playlist('name') instead
 
     def add_track(self, track):
-        self.listTracks.append(url(track))        #Using the url returned by the search function
+        self.listTracks.append(track)        # Assuming Track is an object(name, url, length)
         self.nbTracks += 1
-        print("La track {} a bien été ajoutée dans la playlist {} à la position {}.".format(track, self.name, self.nbTracks))
+        print("La track {} a bien été ajoutée dans la playlist {} à la position {}.".format(track.name, self.name, self.nbTracks))
 
     def remove_track(self, pos_track): #pos_track is the position of a song in a queue
         del self.listTracks[pos_track-1]
         self.nbTracks -= 1
         print("La track en position {} a bien été retirée de la playlist {}.".format(pos_track, self.name)) #To update if I have access to the deleted track's name
 
-
     def to_string(self):
         print("Tracks dans la playlist :")
         for pos in range(self.nbTracks):
             print("{} : {}".format(pos, self.listTracks[pos].name))          #Assuming Track is an object with a 'name' variable
+
+    def next_song(self):
+        if self.id == 0:
+            self.remove_track(0)
+        else:
+            self.add_track(self.listTracks[0])
+            self.remove_track(0)
 
 
 def new_playlist(name):
@@ -95,6 +103,8 @@ def new_playlist(name):
     PlaylistList.add_playlist(P)
     print("La playlist {} a bien été crée. Son id est {}.".format(P.name, P.id))
     return P
+
+request = new_playlist('request')
 
 
 #Flask things
@@ -120,8 +130,10 @@ def add_playlist():
 @app.route("/playlist/<id>/remove")
 def remove_playlist(id):
     """Deletes the id playlist"""
-    if id < PlaylistList.nbPlaylists and PlaylistList.listPlaylists[id] != False:
+    if 0 < id < PlaylistList.nbPlaylists and PlaylistList.listPlaylists[id] != False:
         PlaylistList.remove_playlist(id)
+    elif id == 0:
+        print("Supprime pas cette playlist stp :(.")
     else:
         print("Cette playlist n'existe pas, ou a déjà été supprimée.")
 
