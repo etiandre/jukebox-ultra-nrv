@@ -39,6 +39,21 @@ body {
     padding: 5px;
 }
 
+.list_result{
+    width: 400px;
+    margin-top: 9px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    right:auto;
+    left:0;
+    position: absolute;
+    top:100%;
+    float: left;
+    background: #eee;
+    background-clip: padding-box;
+    z-index: 90;
+}
+
 hr {
     box-sizing: content-box;
     height:0;
