@@ -5,14 +5,17 @@ from jukebox import app
 import http.client
 import json
 from urllib.parse import quote_plus
+from flask import request
 
-@app.route("/search/<query>", methods=['GET'])
+@app.route("/search", methods=['GET'])
 def search(query):
     """
     renvoie une liste de tracks correspondant à la requête depuis divers services
-    :param query: notre texte de recherche
     :return: un tableau contenant les infos que l'on a trouvé
     """
+
+    query = request.form["q"];
+
 
     results = []
 
