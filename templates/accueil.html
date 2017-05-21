@@ -52,17 +52,11 @@
 </div>
 
 <header>
-    <form class="formRecherche" action="/search" method="get">
+    <form>
         <input name="q" id="imputRecherche" type="text" placeholder="Recherchez un morceau"
                 spellcheck="false" dir="ltr" style="text-align: left; direction: ltr;"
                 aria-expanded="false"/>
-        <span class="iconeRecherche">
-            <button tabindex="-1" class="boutonChercher" type="submit">
-                🔍
-            </button>
-        </span>
         <div class="list_result" id="listresultat">
-            <div style="height: 14px"/>
         </div>
     </form>
 </header>
@@ -125,7 +119,17 @@
         });
     }
 
-
+    Document.getElementById("imputRecherche").addEventListener("keydown", function(){
+        var xhttp_ask = new XMLHttpRequest();
+        xhttp_ask.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200)
+            {
+                afficher_resultat(JSON.parse(xhttp_ask.responseText));
+            }
+        };
+        xhttp_ask.open("GET", "search/" + Document.getElementById("imputRecherche").getAttribute("value"), true);
+        xhttp_ask.send();
+    });
 
 
 
