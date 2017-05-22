@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styleGlobal.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/jquery-3.2.1.min.js') }}"></script>
+    <link rel= "stylesheet" type= "text/css" href= "../static/styles/styleGlobal.css    ">
+
+
+    <title>Page Accueil</title>
+</head>
+<body>
+
+<div class="listMusique">
+{% for i in r %}
+    <div class="ItemMusique">
+        <div class="imageAlbum">
+            <img src="{{ i.albumart_url }}"/>
+        </div>
+        <div class="infosMusique">
+            <h1>{{ i.track }}</h1>
+            <h2>{{ i.artist }} - {{ i.album }}</h2>
+        </div>
+        <div class="boutonAjout">
+            <a href="/request/{{ i.url }}">Ajouter</a>
+        </div>
+    </div>
+{% endfor %}
+
+<header>
+    <form>
+        <input name="q" id="imputRecherche" type="text" placeholder="Recherchez un morceau"
+                spellcheck="false" dir="ltr" style="text-align: left; direction: ltr;"
+                aria-expanded="false"/>
+        <div class="list_result" id="listresultat">
+        </div>
+    </form>
+</header>
+
+</body>
+</html>
