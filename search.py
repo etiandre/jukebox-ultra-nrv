@@ -50,4 +50,4 @@ def search(query):
             "albumart_url": i["album"]["images"][indextaillemax]["url"] # TODO: prendre l'image la plus grande
                                                                         #  Normalement c'est bon
         })
-    return str(results) # TODO: faire la template
+    return json.dumps(results)
