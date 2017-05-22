@@ -47,4 +47,4 @@ def search(query):
             "albumart_url": i["album"]["images"][0]["url"], # TODO: prendre l'image la plus grande
             "album": i["album"]["name"]
         })
-    return render_template("search.html", r=results)
+    return json.dumps(results)

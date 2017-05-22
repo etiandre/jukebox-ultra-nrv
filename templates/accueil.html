@@ -95,8 +95,7 @@
         listResultatsAffiches.forEach(function(element){
            element.removeEventListener('click', ajouterALaPlaylist);
         });
-        listResultatsAffiches.clear();
-
+        listResultatsAffiches = [];
         //  On ajoute les nouvelles
         document.getElementById("listresultat").innerHTML = '';
         json.forEach(function(morceau){
@@ -127,7 +126,7 @@
                 afficher_resultat(JSON.parse(xhttp_ask.responseText));
             }
         };
-        xhttp_ask.open("GET", "search/" + document.getElementById("imputRecherche").getAttribute("value"), true);
+        xhttp_ask.open("GET", "search/" + document.getElementById("imputRecherche").value, true);
         xhttp_ask.send();
     });
 
