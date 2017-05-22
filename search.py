@@ -1,10 +1,18 @@
+# -*- coding: utf-8 -*-
 """Ce module s'occupe de faire la correspondance entre un nom de track et une track"""
 
 from jukebox import app, render_template
 #from config import CONFIG
-import http.client
+import sys
+if sys.version_info[0] == 3:
+    import http.client as httplib
+    from urllib.parse import quote_plus
+else:
+    import httplib
+    from urllib import quote_plus
+
 import json
-from urllib.parse import quote_plus
+
 from flask import request
 
 @app.route("/search/<query>", methods=['GET'])
@@ -18,7 +26,7 @@ def search(query):
 
     #   demande à Spotify la musique que l'on cherche
     #   WARNING: le serveur répond sous forme de JSON
-    conn = http.client.HTTPSConnection("api.spotify.com")
+    conn = httplib.HTTPSConnection("api.spotify.com")
     conn.request("GET", "/v1/search?q="+quote_plus(query)+"&type=track&market=FR&limit=10")
     r = conn.getresponse()
 
