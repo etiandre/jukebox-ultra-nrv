@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<div class="listMusique">
+<div class="listMusique" id="playlistEnCours">
     <div id="Lecture_en_cours" class="ItemMusique">
         <div class="imageAlbum">
             <img src="https://upload.wikimedia.org/wikipedia/en/4/4b/Therion_fleurs_2.jpg"/>
@@ -63,11 +63,52 @@
 
 <script>
     /// partie synchronisation
+
     var xhttp_sync = new XMLHttpRequest();
     xhttp_sync.onreadystatechange = function(){
         if(this.readyState == 4 && this.status == 200)
         {
-            // Lecture du Json
+            json = JSON.parse(xhttp_sync.responseText);
+            var ItemsPlaylist = [].slice.call(document.getElementById("playlistEnCours").getElementsByClassName("ItemMusique"));
+            ItemsPlaylist.forEach(function(div){
+                if(div.getAttribute("url") === json.playlist[0]){
+                    json.playlist.splice(0,1);
+                }else{
+                    div.remove();
+                }
+            });
+            json.playlist.forEach(function(morceau){
+                if([].slice.call(document.getElementById("playlistEnCours").getElementsByClassName("ItemMusique")).length === 0){
+                    document.getElementById("playlistEnCours").innerHTML +=
+                        '<div class="ItemMusique" url="'+ morceau.url + '" id="playlistEnCours">' +
+                        '<div class="imageAlbum">' +
+                        '<img src="' + morceau.albumart_url + '"/>' +
+                        '</div>' +
+                        '<div class="infosMusique">' +
+                        '<h1>' + morceau.track + '</h1>' +
+                        '<h2>' + morceau.artist + morceau.album + '</h2>' +
+                        '<div class="ProgressBarCV">' +
+                        '<div class="ContainerStandard ContenuProgressBarCV" id="contenuProgressBar" style="width:45%"></div>' +
+                        '</div>' +
+                        '<p id="dureeMorceau"> / ' + morceau.duration / 60 + ':' + morceau.duration % 60 + '</p>' +
+                        '</div>' +
+                        '</div>';
+                }else {
+                    document.getElementById("playlistEnCours").innerHTML +=
+                        '<div class="ItemMusique" url="'+ morceau.url + '">' +
+                        '<div class="imageAlbum">' +
+                        '<img src="' + morceau.albumart_url + '"/>' +
+                        '</div>' +
+                        '<div class="infosMusique">' +
+                        '<h1>' + morceau.track + '</h1>' +
+                        '<h2>' + morceau.artist + morceau.album + '</h2>' +
+                        '</div>' +
+                        '</div>';
+                }
+            });
+
+            document.getElementById("dureeMorceau").innerHTML = json.time / 60 + ':' + json.time % 60 + document.getElementById("dureeMorceau").innerHTML;
+            document.getElementById("contenuProgressBar").setAttribute("url", (json.time / json.playlist[0].duration * 100).toString() + "%");
         }
     };
     xhttp_sync.open("GET", "sync", true);
