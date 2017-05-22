@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styleGlobal.css') }}">
-    <script type="text/javascript" src="{{ url_for('static', filename='jquery-3.2.1.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/jquery-3.2.1.min.js') }}"></script>
     <link rel= "stylesheet" type= "text/css" href= "../static/styles/styleGlobal.css    ">
 
 
@@ -119,7 +119,7 @@
         });
     }
 
-    Document.getElementById("imputRecherche").addEventListener("keydown", function(){
+    document.getElementById("imputRecherche").addEventListener("keydown", function(){
         var xhttp_ask = new XMLHttpRequest();
         xhttp_ask.onreadystatechange = function(){
             if(this.readyState == 4 && this.status == 200)
