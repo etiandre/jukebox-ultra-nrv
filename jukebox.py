@@ -23,6 +23,22 @@ def accueil():
 
 @app.route("/sync")
 def sync():
+    """
+    Renvoie quelque choise du type:
+    {
+   "time":0,
+   "playlist":[
+      {
+         "album":"Fusa",
+         "artist":"Macromism",
+         "url":"spotify:track:2L4GpAeRotv9jKIMas6lXv",
+         "albumart_url":"https://i.scdn.co/image/eef87e5ce12499aa221578056a57e1a82b025609",
+         "track":"Untoldyou",
+         "duration":"430"
+      }
+   ]
+}
+    """
     client = MPDClient()
     client.connect("localhost", 6600)
     status = client.status()
@@ -35,7 +51,7 @@ def sync():
         if "nextsong" in status:
             nextsong = int(status["nextsong"])
         else:
-            nextsong = 1
+            nextsong = 0
         if i < nextsong:
             continue # on ignore les pistes déjà lues
         # récupération de l'album art
@@ -60,11 +76,22 @@ def sync():
     else:
         elapsed = 0
     res = {
-        "next": play,
+        "playlist": play,
         "time": elapsed # temps actuel
     }
 
     return json.dumps(res)
 
+@app.route("/add/<url>")
+def add(url):
+    """
+    Adds an url to the playlist
+    """
+    client = MPDClient()
+    client.connect("localhost", 6600)
+    client.add(url)
+    client.close()
+    client.disconnect()
+    return "ok"
 if __name__ == "__main__":
     search.app.run(host='0.0.0.0', port=8080)
