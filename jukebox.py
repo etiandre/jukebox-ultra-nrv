@@ -36,7 +36,7 @@ def sync():
             nextsong = int(status["nextsong"])
         else:
             nextsong = 1
-        if i <= nextsong:
+        if i < nextsong:
             continue # on ignore les pistes déjà lues
         # récupération de l'album art
         conn = httplib.HTTPSConnection("api.spotify.com")
