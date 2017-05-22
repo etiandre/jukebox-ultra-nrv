@@ -127,7 +127,7 @@
                 afficher_resultat(JSON.parse(xhttp_ask.responseText));
             }
         };
-        xhttp_ask.open("GET", "search/" + Document.getElementById("imputRecherche").getAttribute("value"), true);
+        xhttp_ask.open("GET", "search/" + document.getElementById("imputRecherche").getAttribute("value"), true);
         xhttp_ask.send();
     });
 
