@@ -80,7 +80,7 @@
             json.playlist.forEach(function(morceau){
                 if([].slice.call(document.getElementById("playlistEnCours").getElementsByClassName("ItemMusique")).length === 0){
                     document.getElementById("playlistEnCours").innerHTML +=
-                        '<div class="ItemMusique" url="'+ morceau.url + '" id="playlistEnCours">' +
+                        '<div class="ItemMusique" url="'+ morceau.url + '" id="Lecture_en_cours">' +
                         '<div class="imageAlbum">' +
                         '<img src="' + morceau.albumart_url + '"/>' +
                         '</div>' +
