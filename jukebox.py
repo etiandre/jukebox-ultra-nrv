@@ -90,7 +90,7 @@ def add(url):
     client = MPDClient()
     client.connect("localhost", 6600)
     client.add(url)
-    if len(client.playlist()) == 1:
+    if len(client.playlistinfo()) == 1:
         client.play()
     client.close()
     client.disconnect()
