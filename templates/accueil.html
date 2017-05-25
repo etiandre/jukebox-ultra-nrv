@@ -125,11 +125,12 @@
             });
 
 
-            //  On ajoute le listener d'évènement pour ajouter le morceau clické à la playliste
+            //  On ajoute le listener d'évènement pour ajouter le morceau cliqué à la playlist
             listResultatsAffiches = [].slice.call(document.getElementsByClassName("itemDeRecherche"));
             console.log(listResultatsAffiches);
             listResultatsAffiches.forEach(function (element) {
                 element.addEventListener('click', ajouterALaPlaylist);
+                afficher_resultat({});
             });
         }else{
             document.getElementById("listresultat").innerHTML = '';
