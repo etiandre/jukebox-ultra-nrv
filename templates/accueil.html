@@ -59,7 +59,7 @@
                         '<div class="ProgressBarCV">' +
                         '<div class="ContainerStandard ContenuProgressBarCV" id="contenuProgressBar" style="width:45%"></div>' +
                         '</div>' +
-                        '<p id="dureeMorceau"> </p>' + '<p> / ' +  Math.trunc( morceau.duration / 60 ) + ':' + morceau.duration % 60 + '</p>' +
+                        '<span id="dureeMorceau"> </span>' + '<p> / ' +  Math.trunc( morceau.duration / 60 ) + ':' + morceau.duration % 60 + '</p>' +
                         '</div>' +
                         '</div>';
                 }else {
@@ -85,7 +85,7 @@
     xhttp_sync.send();
     }
     function majTemps() {
-        document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60 + document.getElementById("dureeMorceau").innerHTML;
+        document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60;
         // document.getElementById("contenuProgressBar").setAttribute("url", (temps / json.playlist[0].duration * 100).toString() + "%");
         temps = temps + 1;
     }
