@@ -48,12 +48,6 @@ def sync():
 
     play = []
     for i in range(len(playlist)):
-        if "nextsong" in status:
-            nextsong = int(status["nextsong"])
-        else:
-            nextsong = 0
-        if i < nextsong:
-            continue # on ignore les pistes déjà lues
         # récupération de l'album art
         conn = httplib.HTTPSConnection("api.spotify.com")
         conn.request("GET", "/v1/albums/" + playlist[i]["x-albumuri"].split(":")[2])
@@ -98,7 +92,7 @@ def add(url):
 if __name__ == "__main__":
     client = MPDClient()
     client.connect("localhost", 6600)
-    client.clear() # on vide la liste de requêtes lors du lancement
+    # client.clear() # on vide la liste de requêtes lors du lancement
     client.random(0) # lecture séquentielle
     client.consume(1) # activation de l'option qui mange les pistes au fur et à mesure de la lecture
     client.close()
