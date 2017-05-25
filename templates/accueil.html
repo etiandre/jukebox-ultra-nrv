@@ -90,7 +90,7 @@
                         '<div class="ProgressBarCV">' +
                         '<div class="ContainerStandard ContenuProgressBarCV" id="contenuProgressBar" style="width:45%"></div>' +
                         '</div>' +
-                        '<p id="dureeMorceau"> / ' + Math.trunc(morceau.duration / 60) + ':' + morceau.duration % 60 + '</p>' +
+                        '<p id="dureeMorceau"> / ' + Math.trunc( morceau.duration / 60 ) + ':' + morceau.duration % 60 + '</p>' +
                         '</div>' +
                         '</div>';
                 }else {
@@ -107,7 +107,7 @@
                 }
             });
 
-            document.getElementById("dureeMorceau").innerHTML = json.time / 60 + ':' + json.time % 60 + document.getElementById("dureeMorceau").innerHTML;
+            document.getElementById("dureeMorceau").innerHTML = Math.trunc(json.time / 60) + ':' + json.time % 60 + document.getElementById("dureeMorceau").innerHTML;
             document.getElementById("contenuProgressBar").setAttribute("url", (json.time / json.playlist[0].duration * 100).toString() + "%");
         }
     };
