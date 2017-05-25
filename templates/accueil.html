@@ -29,6 +29,10 @@
 <script>
     /// partie synchronisation
 
+    var intervalID;
+
+    intervalID = setInterval(function(), 1000){
+
     var xhttp_sync = new XMLHttpRequest();
     xhttp_sync.onreadystatechange = function(){
         if(this.readyState == 4 && this.status == 200)
@@ -78,6 +82,7 @@
     };
     xhttp_sync.open("GET", "sync", true);
     xhttp_sync.send();
+    }
 
 
 
