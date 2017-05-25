@@ -90,7 +90,7 @@
                         '<div class="ProgressBarCV">' +
                         '<div class="ContainerStandard ContenuProgressBarCV" id="contenuProgressBar" style="width:45%"></div>' +
                         '</div>' +
-                        '<p id="dureeMorceau"> / ' + morceau.duration / 60 + ':' + morceau.duration % 60 + '</p>' +
+                        '<p id="dureeMorceau"> / ' + Math.trunc(morceau.duration / 60) + ':' + morceau.duration % 60 + '</p>' +
                         '</div>' +
                         '</div>';
                 }else {
