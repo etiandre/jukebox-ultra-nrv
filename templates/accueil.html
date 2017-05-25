@@ -30,6 +30,7 @@
     /// partie synchronisation
 
     var IntervalID;
+    var temps;
 
     function donneeChanson() {
     var xhttp_sync = new XMLHttpRequest();
@@ -75,15 +76,20 @@
                 }
             });
 
-            document.getElementById("dureeMorceau").innerHTML = Math.trunc(json.time / 60) + ':' + json.time % 60 + document.getElementById("dureeMorceau").innerHTML;
-            document.getElementById("contenuProgressBar").setAttribute("url", (json.time / json.playlist[0].duration * 100).toString() + "%");
+            temps = json.time
+
         }
     };
     xhttp_sync.open("GET", "sync", true);
     xhttp_sync.send();
     }
-
-    intervalID = setInterval(donneeChanson,1000);
+    function majTemps() {
+        document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60 + document.getElementById("dureeMorceau").innerHTML;
+        // document.getElementById("contenuProgressBar").setAttribute("url", (temps / json.playlist[0].duration * 100).toString() + "%");
+        temps = temps + 1;
+    }
+    setInterval(donneeChanson,5000);
+    setInterval(majTemps, 1000);
 
     ///  afficher résultat barre de recherche
 
