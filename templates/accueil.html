@@ -76,7 +76,7 @@
                 }
             });
             temps = json.time
-            document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60 + document.getElementById("dureeMorceau").innerHTML;
+            document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60;
             // document.getElementById("contenuProgressBar").setAttribute("url", (temps / json.playlist[0].duration * 100).toString() + "%");
 
         }
