@@ -96,6 +96,7 @@
         var xhttp_add = new XMLHttpRequest();
         xhttp_add.open("GET", "add/" + this.getAttribute("id"), true);
         xhttp_add.send();
+        afficher_resultat({});
     }
 
     //  fonction a executer à chaque fois que le serveur nous envoie de nouvelles informations sur la recherche
@@ -130,7 +131,6 @@
             console.log(listResultatsAffiches);
             listResultatsAffiches.forEach(function (element) {
                 element.addEventListener('click', ajouterALaPlaylist);
-                afficher_resultat({});
             });
         }else{
             document.getElementById("listresultat").innerHTML = '';
