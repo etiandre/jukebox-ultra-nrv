@@ -85,13 +85,22 @@ def sync():
 @app.route("/add/<url>")
 def add(url):
     """
-    Adds an url to the playlist
+    Adds an url to the request playlist
     """
     client = MPDClient()
     client.connect("localhost", 6600)
     client.add(url)
+    if len(client.playlist()) == 1:
+        client.play()
     client.close()
     client.disconnect()
     return "ok"
 if __name__ == "__main__":
+    client = MPDClient()
+    client.connect("localhost", 6600)
+    client.clear() # on vide la liste de requêtes lors du lancement
+    client.random(0) # lecture séquentielle
+    client.consume(1) # activation de l'option qui mange les pistes au fur et à mesure de la lecture
+    client.close()
+    client.disconnect()
     search.app.run(host='0.0.0.0', port=8080)
