@@ -31,7 +31,7 @@
 
     var IntervalID;
     var temps;
-
+    donneeChanson();
     function donneeChanson() {
     var xhttp_sync = new XMLHttpRequest();
     xhttp_sync.onreadystatechange = function(){
@@ -104,6 +104,7 @@
         xhttp_add.open("GET", "add/" + this.getAttribute("id"), true);
         xhttp_add.send();
         afficher_resultat({});
+        document.getElementById("imputRecherche").value = '';
     }
 
     //  fonction a executer à chaque fois que le serveur nous envoie de nouvelles informations sur la recherche
