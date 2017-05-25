@@ -29,10 +29,9 @@
 <script>
     /// partie synchronisation
 
-    var intervalID;
+    var IntervalID;
 
-    intervalID = setInterval(function(), 1000){
-
+    function donneeChanson() {
     var xhttp_sync = new XMLHttpRequest();
     xhttp_sync.onreadystatechange = function(){
         if(this.readyState == 4 && this.status == 200)
@@ -84,7 +83,7 @@
     xhttp_sync.send();
     }
 
-
+    intervalID = setInterval(donneeChanson,1000);
 
     ///  afficher résultat barre de recherche
 
