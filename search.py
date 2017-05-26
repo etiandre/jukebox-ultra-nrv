@@ -52,7 +52,7 @@ def search(query):
             "artist": i["artists"][0]["name"], # TODO: il peut y avoir plusieurs artistes
             "duration": int(i["duration_ms"])/1000,
             "url": i["uri"],
-            "albumart_url": i["album"]["images"][0]["url"], # TODO: prendre l'image la plus grande
+            "albumart_url": i["album"]["images"][2]["url"], # TODO: prendre l'image la plus grande
             "album": i["album"]["name"]
         })
     return json.dumps(results)
