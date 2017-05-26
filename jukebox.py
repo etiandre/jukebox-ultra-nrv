@@ -83,7 +83,7 @@ def add(url):
     if r.status != 200:
         raise Exception(r.status, r.reason)
     data = json.load(r)
-    os.system("wget "+data["album"]["images"][0]["url"]+" -O albumart/" + url.split(":")[2])
+    os.system("wget "+data["album"]["images"][0]["url"]+" -O static/albumart/" + url.split(":")[2])
 
     client = MPDClient()
     client.connect("localhost", 6600)
