@@ -49,19 +49,14 @@ def sync():
     play = []
     for i in range(len(playlist)):
         # récupération de l'album art
-        conn = httplib.HTTPSConnection("api.spotify.com")
-        conn.request("GET", "/v1/albums/" + playlist[i]["x-albumuri"].split(":")[2])
-        r = conn.getresponse()
-        if r.status != 200:
-            raise Exception(r.status, r.reason)
-        data = json.load(r)
+
         play.append({
             "url": playlist[i]["file"],
             "duration": playlist[i]["time"],
             "artist": playlist[i]["artist"],
             "album": playlist[i]["album"],
             "track": playlist[i]["title"],
-            "albumart_url": data["images"][0]["url"]
+            "albumart_url": "static/albumart/" + playlist[i]["file"].split(":")[2]
         })
 
     # récupération du temps écoulé
@@ -81,6 +76,15 @@ def add(url):
     """
     Adds an url to the request playlist
     """
+    # récupération de l'album art
+    conn = httplib.HTTPSConnection("api.spotify.com")
+    conn.request("GET", "/v1/tracks/"+url.split(":")[2])
+    r = conn.getresponse()
+    if r.status != 200:
+        raise Exception(r.status, r.reason)
+    data = json.load(r)
+    os.system("wget "+data["album"]["images"][0]["url"]+" -O albumart/" + url.split(":")[2])
+
     client = MPDClient()
     client.connect("localhost", 6600)
     client.add(url)
