@@ -177,7 +177,7 @@
 
     /// Fonction qui écoute le focus sur la barre de recherche
     document.getElementById("formRecherche").addEventListener("focus", function(){
-        console.log('la');
+        console.log('Gain du focus de la barre de recherche');
         if(document.getElementById("imputRecherche").value === ''){
             afficher_resultat({});
         }else{
