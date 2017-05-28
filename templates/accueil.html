@@ -77,7 +77,7 @@
                 }
             });
             temps = json.time;
-            if(temp % 60 < 10) {
+            if(temps % 60 < 10) {
                 document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':0' + temps % 60;
             }else{
                 document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60;
