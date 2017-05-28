@@ -113,7 +113,7 @@
     function ajouterALaPlaylist()
     {
         var xhttp_add = new XMLHttpRequest();
-        xhttp_add.open("GET", "search/" + this.getAttribute("id"), true);
+        xhttp_add.open("GET", "add/" + this.getAttribute("id"), true);
         xhttp_add.send();
         afficher_resultat({});
         document.getElementById("imputRecherche").value = '';
