@@ -63,7 +63,7 @@ def sync():
     if "elapsed" in status:
         elapsed = int(status["elapsed"].split(".")[0])
     else:
-        elapsed = 0
+        elapsed = -1
     res = {
         "playlist": play,
         "time": elapsed # temps actuel

@@ -77,10 +77,12 @@
                 }
             });
             temps = json.time;
-            if(temps % 60 < 10) {
-                document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':0' + temps % 60;
-            }else{
-                document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60;
+            if(temps > -1) {
+                if (temps % 60 < 10) {
+                    document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':0' + temps % 60;
+                } else {
+                    document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60;
+                }
             }
             // document.getElementById("contenuProgressBar").setAttribute("url", (temps / json.playlist[0].duration * 100).toString() + "%");
             if(ItemsPlaylist.length > 0){musicNowPlaying = true;}
@@ -93,6 +95,7 @@
 
     function majTemps() {
         if(musicNowPlaying){
+            console.log("mettre a jour temps");
             document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60;
             // document.getElementById("contenuProgressBar").setAttribute("url", (temps / json.playlist[0].duration * 100).toString() + "%");
             temps = temps + 1;
