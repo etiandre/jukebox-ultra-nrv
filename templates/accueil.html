@@ -116,13 +116,8 @@
         var xhttp_add = new XMLHttpRequest();
         xhttp_add.open("GET", "add/" + this.getAttribute("id"), true);
         xhttp_add.send();
-            //  On supprime les anciennes recherches
-            listResultatsAffiches.forEach(function (element) {
-                element.removeEventListener('click', ajouterALaPlaylist);
-            });
-            listResultatsAffiches = [];
-            document.getElementById("listresultat").innerHTML = '';
-            document.getElementById("imputRecherche").value = '';
+        afficher_resultat({});  //  La fonction est désormais bien faite
+        document.getElementById("imputRecherche").value = '';
         donneeChanson();
     }
 
@@ -131,14 +126,15 @@
     {
         console.log(json);
 
+        //  On supprime les anciennes recherches
+        listResultatsAffiches.forEach(function (element) {
+            element.removeEventListener('click', ajouterALaPlaylist);
+        });
+        listResultatsAffiches = [];
+        document.getElementById("listresultat").innerHTML = '';
+
         if(Array.isArray(json) && document.getElementById("imputRecherche").value !== ''){
-            //  On supprime les anciennes recherches
-            listResultatsAffiches.forEach(function (element) {
-                element.removeEventListener('click', ajouterALaPlaylist);
-            });
-            listResultatsAffiches = [];
             //  On ajoute les nouvelles
-            document.getElementById("listresultat").innerHTML = '';
             json.forEach(function (morceau) {
                 document.getElementById("listresultat").innerHTML +=
                     '<div class="ItemMusique itemDeRecherche" id="' + morceau.url + '" >' +
@@ -159,8 +155,6 @@
             listResultatsAffiches.forEach(function (element) {
                 element.addEventListener('click', ajouterALaPlaylist);
             });
-        }else{
-            document.getElementById("listresultat").innerHTML = '';
         }
     }
 
@@ -181,6 +175,7 @@
         }
     });
 
+    /// Fonction qui écoute le focus sur la barre de recherche
     document.getElementById("formRecherche").addEventListener("focus", function(){
         console.log('la');
         if(document.getElementById("imputRecherche").value === ''){
@@ -199,15 +194,10 @@
         }
     }, true);
 
+    ///  Fonction de perte de focus sur la zone de recherche
     document.getElementById("formRecherche").addEventListener("blur", function(){
-        console.log('ici');
-
-            //  On supprime les anciennes recherches
-            listResultatsAffiches.forEach(function (element) {
-                element.removeEventListener('click', ajouterALaPlaylist);
-            });
-            listResultatsAffiches = [];
-            document.getElementById("listresultat").innerHTML = '';
+        console.log('Perte du focus de la barre de recherche');
+        afficher_resultat({});  //  La fonction est désormais bien faite
     }, true);
 
 
