@@ -192,7 +192,13 @@
 
     document.getElementById("formRecherche").addEventListener("blur", function(){
         console.log('ici');
-        afficher_resultat([]);
+
+            //  On supprime les anciennes recherches
+            listResultatsAffiches.forEach(function (element) {
+                element.removeEventListener('click', ajouterALaPlaylist);
+            });
+            listResultatsAffiches = [];
+            document.getElementById("listresultat").innerHTML = '';
     }, true);
 
 
