@@ -115,8 +115,12 @@
         var xhttp_add = new XMLHttpRequest();
         xhttp_add.open("GET", "add/" + this.getAttribute("id"), true);
         xhttp_add.send();
-        afficher_resultat({});
-        document.getElementById("imputRecherche").value = '';
+            //  On supprime les anciennes recherches
+            listResultatsAffiches.forEach(function (element) {
+                element.removeEventListener('click', ajouterALaPlaylist);
+            });
+            listResultatsAffiches = [];
+            document.getElementById("listresultat").innerHTML = '';
         donneeChanson();
     }
 
