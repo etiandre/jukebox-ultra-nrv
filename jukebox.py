@@ -75,7 +75,8 @@ def add(url):
     Adds an url to the request playlist
     """
     # récupération de l'album art
-    r = requests.get("https://api.spotify.com/v1/tracks/"+url.split(":")[2])
+    r = requests.get("https://api.spotify.com/v1/tracks/"+url.split(":")[2],
+                     headers={"Authorization": "Bearer " + libspotify.get_token()})
     if r.status_code != 200:
         raise Exception(r.status_code, r.reason)
     data = r.json()
