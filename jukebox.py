@@ -10,12 +10,20 @@ import search
 #import playlist
 from mpd import MPDClient
 import json
+from base64 import b64encode
+import requests
 if sys.version_info[0] == 3:
     import http.client as httplib
     from urllib.parse import quote_plus
 else:
     import httplib
     from urllib import quote_plus
+
+try:
+    from config import CONFIG
+except:
+    print("Error importing config.py")
+    exit(1)
 
 @app.route("/")
 def accueil():
