@@ -3,21 +3,11 @@ import os,sys
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 app = Flask(__name__)
 
-#import playpause
 import search
-#import admin
-#import vote
-#import playlist
 from mpd import MPDClient
 import json
-from base64 import b64encode
+import libspotify
 import requests
-if sys.version_info[0] == 3:
-    import http.client as httplib
-    from urllib.parse import quote_plus
-else:
-    import httplib
-    from urllib import quote_plus
 
 try:
     from config import CONFIG
@@ -85,12 +75,10 @@ def add(url):
     Adds an url to the request playlist
     """
     # récupération de l'album art
-    conn = httplib.HTTPSConnection("api.spotify.com")
-    conn.request("GET", "/v1/tracks/"+url.split(":")[2])
-    r = conn.getresponse()
-    if r.status != 200:
+    r = requests.get("https://api.spotify.com/v1/tracks/"+url.split(":")[2])
+    if r.status_code != 200:
         raise Exception(r.status, r.reason)
-    data = json.load(r)
+    data = r.json()
     os.system("wget "+data["album"]["images"][0]["url"]+" -O static/albumart/" + url.split(":")[2])
 
     client = MPDClient()
