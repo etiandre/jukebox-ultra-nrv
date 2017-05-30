@@ -77,7 +77,7 @@ def add(url):
     # récupération de l'album art
     r = requests.get("https://api.spotify.com/v1/tracks/"+url.split(":")[2])
     if r.status_code != 200:
-        raise Exception(r.status, r.reason)
+        raise Exception(r.status_code, r.reason)
     data = r.json()
     os.system("wget "+data["album"]["images"][0]["url"]+" -O static/albumart/" + url.split(":")[2])
 
