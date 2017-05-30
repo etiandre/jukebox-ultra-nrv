@@ -158,12 +158,13 @@
         }
     }
 
-    document.getElementById("imputRecherche").addEventListener("keyup", function(){
-        if(document.getElementById("imputRecherche").value === ''){
-            afficher_resultat({});
-        }else{
+    /// Variable qui contient le timer sur la fonction envoyant les recherches au serveur
+    var timerEffectuerRecherche;
 
-            var xhttp_ask = new XMLHttpRequest();
+    /// Fonction effetuant la recherche d'un morceau sur le serveur
+    function effectuerRecherche() {
+        console.log('une recheche a été envoyé au serveur');
+        var xhttp_ask = new XMLHttpRequest();
             xhttp_ask.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     console.log(xhttp_ask.responseText);
@@ -172,13 +173,22 @@
             };
             xhttp_ask.open("GET", "search/" + document.getElementById("imputRecherche").value, true);
             xhttp_ask.send();
+    }
+
+    /// Détection de l'appui sur une touche
+    document.getElementById("imputRecherche").addEventListener("keyup", function(){
+        if(document.getElementById("imputRecherche").value.length < 4){
+            afficher_resultat({});
+        }else{
+            clearTimeout(timerEffectuerRecherche);
+            timerEffectuerRecherche = setTimeout(effectuerRecherche, 1000);
         }
     });
 
     /// Fonction qui écoute le focus sur la barre de recherche
     document.getElementById("formRecherche").addEventListener("focus", function(){
         console.log('Gain du focus de la barre de recherche');
-        if(document.getElementById("imputRecherche").value === ''){
+        if(document.getElementById("imputRecherche").value.length < 4){
             afficher_resultat({});
         }else{
 
