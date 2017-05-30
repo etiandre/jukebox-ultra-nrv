@@ -4,15 +4,9 @@
 from jukebox import app, render_template
 #from config import CONFIG
 import sys
-if sys.version_info[0] == 3:
-    import http.client as httplib
-    from urllib.parse import quote_plus
-else:
-    import httplib
-    from urllib import quote_plus
-
+import requests
 import json
-
+import libspotify
 from flask import request
 
 @app.route("/search/<query>", methods=['GET'])
@@ -26,15 +20,18 @@ def search(query):
 
     #   demande à Spotify la musique que l'on cherche
     #   WARNING: le serveur répond sous forme de JSON
-    conn = httplib.HTTPSConnection("api.spotify.com")
-    conn.request("GET", "/v1/search?q="+quote_plus(query)+"&type=track&market=FR&limit=10")
-    r = conn.getresponse()
+    r = requests.get("http://api.spotify.com/v1/search", params={
+        "q": query,
+        "type": "track",
+        "market": "FR",
+        "limit": 4
+    }, headers={"Authorization": "Bearer "+libspotify.get_token()})
 
     #   Si le serveur nous dit qu'il n'y a pas d'erreur
-    if r.status != 200:
+    if r.status_code != 200:
         raise Exception(r.status, r.reason)
 
-    data = json.load(r)
+    data = r.json()
     if len(data["tracks"]["items"]) == 0:   #   Si le servuer n'a rien trouvé
         raise Exception("nothing found on spotify")
     for i in data["tracks"]["items"]:   #   Sinon on lit les résultats
@@ -52,7 +49,7 @@ def search(query):
             "artist": i["artists"][0]["name"], # TODO: il peut y avoir plusieurs artistes
             "duration": int(i["duration_ms"])/1000,
             "url": i["uri"],
-            "albumart_url": i["album"]["images"][2]["url"], # TODO: prendre l'image la plus grande
+            "albumart_url": i["album"]["images"][2]["url"],
             "album": i["album"]["name"]
         })
     return json.dumps(results)
