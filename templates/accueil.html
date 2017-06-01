@@ -12,9 +12,6 @@
 <body>
 
 <div class="listMusique" id="playlistEnCours">
-    <div id="chargement">
-        <img src="{{ url_for('static', filename='images/loading.gif') }}">
-    </div>
 </div>
 
 <header>
@@ -49,6 +46,7 @@
                     div.remove();
                 }
             });
+
             json.playlist.forEach(function(morceau){
                 if([].slice.call(document.getElementById("playlistEnCours").getElementsByClassName("ItemMusique")).length === 0){
                     document.getElementById("playlistEnCours").innerHTML +=
