@@ -36,14 +36,6 @@ def search(query):
         raise Exception("nothing found on spotify")
     for i in data["tracks"]["items"]:   #   Sinon on lit les résultats
 
-        #   Cette partie sert a déterminer la plus grande image, (ne fonctionne pas :( )
-        #taillemax = 0
-        #indextaillemax = 0
-        #for index in range(i["album"]["images"]):   #   On regarde le nombre de pixel
-        #    if i["album"]["images"][index]["height"] * i["album"]["images"][index]["width"] > taillemax:
-        #        taillemax = i["album"]["images"][index]["height"] * i["album"]["images"][index]["width"]
-        #        indextaillemax = index
-
         results.append({
             "track": i["name"],
             "artist": i["artists"][0]["name"], # TODO: il peut y avoir plusieurs artistes

@@ -1,22 +1,20 @@
 # -*- coding: utf-8 -*-
-import os,sys
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
-app = Flask(__name__)
-
-import search
+import os
 from mpd import MPDClient
 import json
 import libspotify
 import requests
 
-try:
-    from config import CONFIG
-except:
-    print("Error importing config.py")
-    exit(1)
+from flask import Flask, render_template
+app = Flask(__name__)
+
+# chargement du module de recherche
+import search
+
 
 @app.route("/")
 def accueil():
+    """Renvoie la page d'accueil"""
     return render_template("accueil.html")
 
 @app.route("/sync")
@@ -37,6 +35,7 @@ def sync():
    ]
 }
     """
+    # récupération de la playlist et de l'état de mopidy
     client = MPDClient()
     client.connect("localhost", 6600)
     status = client.status()
@@ -47,7 +46,6 @@ def sync():
     play = []
     for i in range(len(playlist)):
         # récupération de l'album art
-
         play.append({
             "url": playlist[i]["file"],
             "duration": playlist[i]["time"],
@@ -72,7 +70,7 @@ def sync():
 @app.route("/add/<url>")
 def add(url):
     """
-    Adds an url to the request playlist
+    Ajoute l'url à la playlist
     """
     # récupération de l'album art
     r = requests.get("https://api.spotify.com/v1/tracks/"+url.split(":")[2],
@@ -80,6 +78,8 @@ def add(url):
     if r.status_code != 200:
         raise Exception(r.status_code, r.reason)
     data = r.json()
+
+    # téléchargement (caching) de l'album art
     os.system("wget "+data["album"]["images"][0]["url"]+" -O static/albumart/" + url.split(":")[2])
 
     client = MPDClient()
