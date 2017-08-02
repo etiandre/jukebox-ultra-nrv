@@ -8,3 +8,13 @@ CREATE TABLE "macs" (
     "mac" TEXT NOT NULL PRIMARY KEY
 );
 ;
+CREATE TABLE sqlite_sequence(name,seq);
+CREATE TABLE log (
+    "id" INTEGER NOT NULL,
+    "url" TEXT NOT NULL,
+    "album" TEXT,
+    "artist" TEXT,
+    "albumart_url" TEXT,
+    "track" TEXT,
+    "duration" INT
+);

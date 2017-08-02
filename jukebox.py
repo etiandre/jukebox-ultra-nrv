@@ -194,6 +194,15 @@ def add(url):
         client.play()
     client.close()
     client.disconnect()
+    c = conn.cursor()
+    c.execute("INSERT INTO log (url, album, artist, albumart_url, track, duration) VALUES (?,?,?,?,?,?)",(
+        url,
+        data["album"]["name"],
+        data["artists"][0]["name"],
+        data["album"]["images"][0]["url"],
+        data["name"],
+        int(data["duration_ms"] / 1000)
+    ))
     return "ok"
 
 if __name__ == "__main__":
