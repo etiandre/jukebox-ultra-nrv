@@ -28,7 +28,6 @@
     </div>
     <div class="login">
         {% if user == None %}
-        tu as la mac {{ mac }}
         <form action="/auth" method="post" class="login">
             <input type="text" name="user" placeholder="nom d'utilisateur">
             <input type="password" name="pass" placeholder="mot de passe">
