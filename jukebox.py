@@ -203,6 +203,7 @@ def add(url):
         data["name"],
         int(data["duration_ms"] / 1000)
     ))
+    c.commit()
     return "ok"
 
 if __name__ == "__main__":
