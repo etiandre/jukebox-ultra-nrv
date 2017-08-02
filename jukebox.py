@@ -73,7 +73,7 @@ def sync():
             new_maclist.append((mac,now))
         maclist=new_maclist
     client = MPDClient()
-    client.connect("localhost", 6600)
+    client.connect(CONFIG["mpc_host"], CONFIG["mpc_port"])
     status = client.status()
     playlist = client.playlistinfo()
     client.close()
@@ -189,20 +189,23 @@ def add(url):
     os.system("wget "+data["album"]["images"][0]["url"]+" -O static/albumart/" + url.split(":")[2])
 
     client = MPDClient()
-    client.connect("localhost", 6600)
+    client.connect(CONFIG["mpc_host"], CONFIG["mpc_port"])
     client.add(url)
     if len(client.playlistinfo()) == 1:
         client.play()
     client.close()
     client.disconnect()
     c = conn.cursor()
-    c.execute("INSERT INTO log (url, album, artist, albumart_url, track, duration, mac, time) VALUES (?,?,?,?,?,?,?,?)",(
+    c.execute("REPLACE INTO track_info (url, album, artist, albumart_url, track, duration) VALUES (?,?,?,?,?,?)",(
         url,
         data["album"]["name"],
         data["artists"][0]["name"],
-        data["album"]["images"][0]["url"],
+        "static/albumart/" + url.split(":")[2],
         data["name"],
-        int(data["duration_ms"] / 1000),
+        int(data["duration_ms"]) / 1000
+    ))
+    c.execute("INSERT INTO log (url, time, mac) VALUES (?,?,?)", (
+        url,
         session["mac"],
         int(time.time())
     ))
@@ -211,10 +214,10 @@ def add(url):
 
 if __name__ == "__main__":
     client = MPDClient()
-    client.connect("localhost", 6600)
+    client.connect(CONFIG["mpc_host"], CONFIG["mpc_port"])
     # client.clear() # on vide la liste de requêtes lors du lancement
     client.random(0) # lecture séquentielle
     client.consume(1) # activation de l'option qui mange les pistes au fur et à mesure de la lecture
     client.close()
     client.disconnect()
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host=CONFIG["listen_addr"], port=CONFIG["listen_port"])

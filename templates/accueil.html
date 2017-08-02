@@ -66,7 +66,10 @@
                         '<img src="' + morceau.albumart_url + '"/>' +
                         '</div>' +
                         '<div class="infosMusique">' +
-                        '<h1>' + morceau.track + '</h1>' +
+                        '<h1>' + morceau.track +
+                        ' <a href="/like/'+ morceau.url + '">Like</a>' +
+                        ' <a href="/dislike/'+ morceau.url + '">Dislike</a>' +
+                        '</h1>' +
                         '<h2>' + morceau.artist + " - " + morceau.album + '</h2>' +
                         '<div class="ProgressBarCV">' +
                         '<div class="ContainerStandard ContenuProgressBarCV" id="contenuProgressBar" style="width:0%"></div>' +
@@ -81,7 +84,10 @@
                         '<img src="' + morceau.albumart_url + '"/>' +
                         '</div>' +
                         '<div class="infosMusique">' +
-                        '<h1>' + morceau.track + '</h1>' +
+                        '<h1>' + morceau.track +
+                        ' <a href="/like/'+ morceau.url + '">Like</a>' +
+                        ' <a href="/dislike/'+ morceau.url + '">Dislike</a>' +
+                        '</h1>' +
                         '<h2>' + morceau.artist + " - " + morceau.album + '</h2>' +
                         '</div>' +
                         '</div>';

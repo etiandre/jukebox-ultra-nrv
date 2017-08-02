@@ -7,13 +7,21 @@ CREATE TABLE "macs" (
     "user" TEXT NOT NULL,
     "mac" TEXT NOT NULL PRIMARY KEY
 );
+;
+CREATE TABLE "track_info" (
+    "url" TEXT NOT NULL,
+    "track" TEXT,
+    "artist" TEXT,
+    "album" TEXT,
+    "duration" TEXT,
+    "albumart_url" TEXT
+);
 CREATE TABLE log (
     "id" INTEGER,
-    "url" TEXT NOT NULL,
-    "album" TEXT,
-    "artist" TEXT,
-    "albumart_url" TEXT,
-    "track" TEXT,
-    "duration" INT,
-    "mac" TEXT
+    "url" TEXT NOT NULL
+, "time" INTEGER, "mac" TEXT);
+CREATE TABLE "likes" (
+    "url" TEXT,
+    "mac" TEXT,
+    "value" TEXT
 );
