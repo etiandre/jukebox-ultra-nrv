@@ -196,13 +196,14 @@ def add(url):
     client.close()
     client.disconnect()
     c = conn.cursor()
-    c.execute("INSERT INTO log (url, album, artist, albumart_url, track, duration) VALUES (?,?,?,?,?,?)",(
+    c.execute("INSERT INTO log (url, album, artist, albumart_url, track, duration, mac) VALUES (?,?,?,?,?,?,?)",(
         url,
         data["album"]["name"],
         data["artists"][0]["name"],
         data["album"]["images"][0]["url"],
         data["name"],
-        int(data["duration_ms"] / 1000)
+        int(data["duration_ms"] / 1000),
+        session["mac"]
     ))
     conn.commit()
     return "ok"

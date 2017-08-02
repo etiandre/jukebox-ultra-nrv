@@ -14,5 +14,6 @@ CREATE TABLE log (
     "artist" TEXT,
     "albumart_url" TEXT,
     "track" TEXT,
-    "duration" INT
+    "duration" INT,
+    "mac" TEXT
 );
