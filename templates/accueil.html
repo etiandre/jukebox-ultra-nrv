@@ -28,12 +28,7 @@
     </div>
     <div class="login">
         {% if user == None %}
-        <form action="/auth" method="post" class="login">
-            <input type="text" name="user" placeholder="nom d'utilisateur">
-            <input type="password" name="pass" placeholder="mot de passe">
-            <input type="submit" name="action" value="Connexion">
-            <input type="submit" name="action" value="S'enregistrer">
-        </form>
+        Coucou {{ mac }} <a href="/auth">j'aimerais bien savoir ton p'tit nom :o</a>
         {% else %}
         Coucou {{ user }} :) tu as la mac {{ mac }}
         {% endif %}

@@ -23,10 +23,10 @@ def accueil():
     """Renvoie la page d'accueil"""
     user = None
     c=conn.cursor()
+    mac = mac_auth.get_mac(request.remote_addr)
+    session["mac"] = mac
     if "user" not in session:
         session["user"] = None
-    if "mac" not in session:
-        session["mac"] = None
 
     if session["mac"] is not None and session["user"] is None:
         c.execute("SELECT user FROM macs WHERE mac=?", (session["mac"],))
@@ -57,8 +57,7 @@ def sync():
     """
 
     global maclist, maclist_lock
-    mac = mac_auth.get_mac(request.remote_addr)
-    session["mac"] = mac
+    mac = session["mac"]
     now = time.time()
     timeout=120
     new_maclist = []
@@ -105,8 +104,10 @@ def sync():
 
     return json.dumps(res)
 
-@app.route("/auth", methods=['POST'])
+@app.route("/auth", methods=['GET','POST'])
 def login():
+    if request.method == 'GET':
+        return render_template("auth.html")
     success=False
     c = conn.cursor()
     if request.form["action"] == "S'enregistrer":
@@ -203,7 +204,7 @@ def add(url):
         data["name"],
         int(data["duration_ms"] / 1000)
     ))
-    c.commit()
+    conn.commit()
     return "ok"
 
 if __name__ == "__main__":
