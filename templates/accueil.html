@@ -11,17 +11,34 @@
 </head>
 <body>
 
+
+
 <div class="listMusique" id="playlistEnCours">
 </div>
 
 <header>
-    <form class="formRecherche" id="formRecherche">
+    <div class="formRecherche">
+    <form id="formRecherche">
         <input name="q" id="imputRecherche" type="text" placeholder="Recherchez un morceau"
                 spellcheck="false" dir="ltr" style="text-align: left; direction: ltr;" autocomplete="off"
                 aria-expanded="false"/>
         <div class="list_result" id="listresultat">
         </div>
     </form>
+    </div>
+    <div class="login">
+        {% if user == None %}
+        tu as la mac {{ mac }}
+        <form action="/auth" method="post" class="login">
+            <input type="text" name="user" placeholder="nom d'utilisateur">
+            <input type="password" name="pass" placeholder="mot de passe">
+            <input type="submit" name="action" value="Connexion">
+            <input type="submit" name="action" value="S'enregistrer">
+        </form>
+        {% else %}
+        Coucou {{ user }} :) tu as la mac {{ mac }} <a href="/logout">logout</a>
+        {% endif %}
+    </div>
 </header>
 
 <script>

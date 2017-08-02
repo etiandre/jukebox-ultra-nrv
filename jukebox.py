@@ -6,17 +6,37 @@ import libspotify
 import requests
 import mac_auth
 import time
+import sqlite3
+import hashlib
 from threading import Lock
-from flask import Flask, render_template, session, request
+from flask import Flask, render_template, session, request, redirect
+from config import CONFIG
+
+maclist_lock = Lock()
+maclist = []
 app = Flask(__name__)
+app.secret_key = CONFIG["secret_key"]
+conn = sqlite3.connect("jukebox.sqlite3")
 
 @app.route("/")
 def accueil():
     """Renvoie la page d'accueil"""
-    return render_template("accueil.html")
+    user = None
+    c=conn.cursor()
+    if "user" not in session:
+        session["user"] = None
+    if "mac" not in session:
+        session["mac"] = None
 
-maclist_lock = Lock()
-maclist = []
+    if session["mac"] is not None and session["user"] is None:
+        c.execute("SELECT user FROM macs WHERE mac=?", (session["mac"],))
+        r = c.fetchone()
+        if r is not None:
+            session["user"] = r[0]
+
+    return render_template("accueil.html", user=session["user"], mac=session["mac"])
+
+
 @app.route("/sync")
 def sync():
     """
@@ -38,6 +58,7 @@ def sync():
 
     global maclist, maclist_lock
     mac = mac_auth.get_mac(request.remote_addr)
+    session["mac"] = mac
     now = time.time()
     timeout=120
     new_maclist = []
@@ -52,7 +73,6 @@ def sync():
         if found==False:
             new_maclist.append((mac,now))
         maclist=new_maclist
-
     client = MPDClient()
     client.connect("localhost", 6600)
     status = client.status()
@@ -80,11 +100,38 @@ def sync():
     res = {
         "playlist": play,
         "time": elapsed, # temps actuel
-        "maclist": maclist
+        "maclist": maclist,
     }
 
     return json.dumps(res)
 
+@app.route("/auth", methods=['POST'])
+def login():
+    success=False
+    c = conn.cursor()
+    if request.form["action"] == "S'enregistrer":
+        c.execute('INSERT INTO users VALUES (?,?)',(
+            request.form["user"],
+            hashlib.sha512(request.form["pass"].encode()).hexdigest()
+        ))
+        conn.commit()
+        success=True
+    else:
+        c = conn.cursor()
+        c.execute("SELECT user FROM users WHERE user=? AND pass=?",(
+            request.form["user"],
+            hashlib.sha512(request.form["pass"].encode()).hexdigest()
+        ))
+        if c.fetchone() != None:
+            success=True
+    if success == True:
+        session['user'] = request.form['user']
+        c.execute("REPLACE INTO macs (user, mac) VALUES (?,?)",(
+            request.form["user"],
+            session["mac"]
+        ))
+        conn.commit()
+    return redirect("/")
 @app.route("/search/<query>", methods=['GET'])
 def search(query):
     """
@@ -121,7 +168,10 @@ def search(query):
             "album": i["album"]["name"]
         })
     return json.dumps(results)
-
+@app.route("/logout")
+def logout():
+    session['user'] = None
+    return redirect("/")
 @app.route("/add/<url>")
 def add(url):
     """

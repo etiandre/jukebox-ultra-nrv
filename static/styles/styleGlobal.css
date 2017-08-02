@@ -71,31 +71,22 @@ header{
 }
 
 .formRecherche{
-    height: 33px;
-    margin: 0;
-    font-size: 12px;
-    width: 100%;
-    text-align: right;
+    display: inline-block;
+    width: 59%;
+}
+.login {
+    display: inline-block;
+    width: 39%;
 }
 
-#imputRecherche{
-    color: #14171a;
-    text-shadow: none;
-    opacity:1;
-    background-color: white;
-    width: 100%;
+input[type=text], input[type=password] {
     height: 32px;
-    padding: 5px 27px 6px 12px;
-    font-size: 12px;
+    padding: 5px 27px;
     line-height: 16px;
-    margin: 0;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
     border:1px solid #e6ecf0;
     border-radius: 21px;
-    display: block;
-    transition: all.2s ease-in-out;
-    outline: 0;
+    margin: 4px 9px;
+    width: 100%;
 }
 
 .list_result{
@@ -210,96 +201,3 @@ header{
     display:table;
     clear:both
 }
-
-
-
-@media (min-width:719px){
-    .formRecherche{
-        position: relative;
-        left:50%;
-        transform: translateX(-50%);
-        height: 33px;
-        margin: 0;
-        font-size: 12px;
-        width: 400px;
-        text-align: right;
-    }
-
-    #imputRecherche{
-        color: #14171a;
-        text-shadow: none;
-        opacity:1;
-        background-color: white;
-        width: 100%;
-        height: 32px;
-        padding: 5px 27px 6px 12px;
-        font-size: 12px;
-        line-height: 16px;
-        margin: 0;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        border:1px solid #e6ecf0;
-        border-radius: 21px;
-
-        display: block;
-        transition: all.2s ease-in-out;
-        outline: 0;
-    }
-
-    .list_result{
-        width: 400px;
-        margin-top: 9px;
-        border-radius: 4px;
-        box-sizing: border-box;
-        right:auto;
-        left:0;
-        position: absolute;
-        top:100%;
-        float: left;
-        background: #eee;
-        background-clip: padding-box;
-        z-index: 90;
-        max-height: 400px;
-        overflow: auto;
-        padding: 0 4px;
-    }
-
-    .iconeRecherche{
-        position: absolute;
-        top:3px;
-        right: 3px;
-        display: block;
-        width: 26px;
-        height: 26px;
-        cursor: pointer;
-        font-size: 12px;
-        line-height: 18px;
-    }
-
-    .listMusique{
-        position: absolute;
-        top: 50px;
-        left: 50%;
-        transform: translateX(-50%);
-        margin:auto;
-        width: 900px;
-    }
-
-    #lecture_en_cours{
-        height: auto!important;
-    }
-
-    .ItemMusique{
-        background-color:#fff!important;
-        color:#757575!important;
-        box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
-        margin-bottom:8px;
-        margin-top: 8px;
-        border-radius:6px;
-        display:table;
-        clear:both;
-        width: 100%;
-    }
-
-}
-
