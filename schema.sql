@@ -7,10 +7,8 @@ CREATE TABLE "macs" (
     "user" TEXT NOT NULL,
     "mac" TEXT NOT NULL PRIMARY KEY
 );
-;
-CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE log (
-    "id" INTEGER NOT NULL,
+    "id" INTEGER,
     "url" TEXT NOT NULL,
     "album" TEXT,
     "artist" TEXT,
