@@ -142,42 +142,62 @@ def search(query):
 
     results = []
 
-    #   demande à Spotify la musique que l'on cherche
-    #   WARNING: le serveur répond sous forme de JSON
-    r = requests.get("http://api.spotify.com/v1/search", params={
-        "q": query,
-        "type": "track",
-        "market": "FR",
-        "limit": 4
-    }, headers={"Authorization": "Bearer "+libspotify.get_token()})
-
-    #   Si le serveur nous dit qu'il n'y a pas d'erreur
-    if r.status_code != 200:
-        raise Exception(r.status, r.reason)
-
-    data = r.json()
-    if len(data["tracks"]["items"]) == 0:   #   Si le servuer n'a rien trouvé
-        raise Exception("nothing found on spotify")
-    for i in data["tracks"]["items"]:   #   Sinon on lit les résultats
-
-        results.append({
-            "track": i["name"],
-            "artist": i["artists"][0]["name"], # TODO: il peut y avoir plusieurs artistes
-            "duration": int(i["duration_ms"])/1000,
-            "url": i["uri"],
-            "albumart_url": i["album"]["images"][2]["url"],
-            "album": i["album"]["name"]
+    # SPOTIFY
+    if "spotify" in CONFIG["search_providers"]:
+        r = requests.get("http://api.spotify.com/v1/search", params={
+            "q": query,
+            "type": "track",
+            "market": "FR",
+            "limit": 4
+        }, headers={"Authorization": "Bearer "+libspotify.get_token()})
+        if r.status_code != 200:
+            raise Exception(r.status, r.reason)
+        data = r.json()
+        if len(data["tracks"]["items"]) == 0:   #   Si le servuer n'a rien trouvé
+            raise Exception("nothing found on spotify")
+        for i in data["tracks"]["items"]:   #   Sinon on lit les résultats
+            results.append({
+                "source": "spotify",
+                "track": i["name"],
+                "artist": i["artists"][0]["name"], # TODO: il peut y avoir plusieurs artistes
+                "duration": int(i["duration_ms"])/1000,
+                "url": i["uri"],
+                "albumart_url": i["album"]["images"][2]["url"],
+                "album": i["album"]["name"]
+            })
+	
+	# YOUTUBE
+    if "youtube" in CONFIG["search_providers"]:
+        r = requests.get("https://www.googleapis.com/youtube/v3/search", params={
+            "part":"snippet",
+            "q":query,
+            "key": CONFIG["youtube_key"]
         })
+        if r.status_code != 200:
+            raise Exception(r.status, r.reason)
+        data = r.json()
+        if len(data["items"]) == 0:   #   Si le servuer n'a rien trouvé
+            raise Exception("nothing found on youtube")
+        for i in data["items"]:
+            results.append({
+                "source": "youtube",
+                "track": i["snippet"]["title"],
+                "artist": i["snippet"]["channelTitle"],
+                "url": "yt:http://www.youtube.com/watch?v="+i["id"]["videoId"],
+                "albumart_url":  i["snippet"]["thumbnails"]["default"]["url"]
+            })
     return json.dumps(results)
 @app.route("/logout")
 def logout():
     session['user'] = None
     return redirect("/")
-@app.route("/add/<url>")
-def add(url):
+@app.route("/add", methods=['POST', 'GET'])
+def add():
     """
     Ajoute l'url à la playlist
     """
+    url = request.form["url"]
+    
     # récupération de l'album art
     r = requests.get("https://api.spotify.com/v1/tracks/"+url.split(":")[2],
                      headers={"Authorization": "Bearer " + libspotify.get_token()})
@@ -186,16 +206,9 @@ def add(url):
     data = r.json()
 
     # téléchargement (caching) de l'album art
-    os.system("wget "+data["album"]["images"][0]["url"]+" -O static/albumart/" + url.split(":")[2])
+#    os.system("wget "+data["album"]["images"][0]["url"]+" -O static/albumart/" + url.split(":")[2])
 
-    client = MPDClient()
-    client.connect(CONFIG["mpc_host"], CONFIG["mpc_port"])
-    client.add(url)
-    if len(client.playlistinfo()) == 1:
-        client.play()
-    client.close()
-    client.disconnect()
-    c = conn.cursor()
+
     c.execute("REPLACE INTO track_info (url, album, artist, albumart_url, track, duration) VALUES (?,?,?,?,?,?)",(
         url,
         data["album"]["name"],

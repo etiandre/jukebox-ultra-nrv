@@ -19,10 +19,10 @@
 <header>
     <div class="formRecherche">
     <form id="formRecherche">
-        <input name="q" id="imputRecherche" type="text" placeholder="Recherchez un morceau"
+        <input name="q" id="inputRecherche" type="text" placeholder="Recherchez un morceau"
                 spellcheck="false" dir="ltr" style="text-align: left; direction: ltr;" autocomplete="off"
                 aria-expanded="false"/>
-        <div class="list_result" id="listresultat">
+        <div class="list_result" id="search_results">
         </div>
     </form>
     </div>
@@ -121,111 +121,28 @@
     setInterval(donneeChanson,5000);
     setInterval(majTemps, 1000);
 
-    ///  afficher résultat barre de recherche
-
-    //  Liste des résultats de la recherche
-    var listResultatsAffiches = [];
-
-    //  fonction qui envoie au serveur l'URL du morceau a ajouter à la playlist
-    function ajouterALaPlaylist()
-    {
-        var xhttp_add = new XMLHttpRequest();
-        xhttp_add.open("GET", "add/" + this.getAttribute("id"), true);
-        xhttp_add.send();
-        afficher_resultat({});  //  La fonction est désormais bien faite
-        document.getElementById("imputRecherche").value = '';
-        donneeChanson();
-    }
-
-    //  fonction a executer à chaque fois que le serveur nous envoie de nouvelles informations sur la recherche
-    function afficher_resultat(json)
-    {
-        console.log(json);
-
-        //  On supprime les anciennes recherches
-        listResultatsAffiches.forEach(function (element) {
-            element.removeEventListener('click', ajouterALaPlaylist);
-        });
-        listResultatsAffiches = [];
-        document.getElementById("listresultat").innerHTML = '';
-
-        if(Array.isArray(json) && document.getElementById("imputRecherche").value !== ''){
-            //  On ajoute les nouvelles
-            json.forEach(function (morceau) {
-                document.getElementById("listresultat").innerHTML +=
-                    '<div class="ItemMusique itemDeRecherche" id="' + morceau.url + '" >' +
+	$('#inputRecherche').keyup(function() {
+		$.get("/search/"+$(this).val(), function(data) {
+			$("#search_results").html("")
+			console.log(data);
+			for (i in data) {
+				$("#search_results").append(
+                    '<div class="ItemMusique" data-url="'+data[i].url+'" data-source="'+data[i].source+'">' +
                     '<div class="imageAlbum">' +
-                    '<img src="' + morceau.albumart_url + '"/>' +
+                    '<img src="' + data[i].albumart_url + '"/>' +
                     '</div>' +
                     '<div class="infosMusique">' +
-                    '<h3>' + morceau.track + '</h3>' +
-                    '<h4>' + morceau.artist + '</h4>' +
+                    '<h3>' + data[i].track + '</h3>' +
+                    '<h4>' + data[i].artist + '</h4>' +
                     '</div>' +
-                    '</div>';
-            });
-
-
-            //  On ajoute le listener d'évènement pour ajouter le morceau cliqué à la playlist
-            listResultatsAffiches = [].slice.call(document.getElementsByClassName("itemDeRecherche"));
-            console.log(listResultatsAffiches);
-            listResultatsAffiches.forEach(function (element) {
-                element.addEventListener('click', ajouterALaPlaylist);
-            });
-        }
-    }
-
-    /// Variable qui contient le timer sur la fonction envoyant les recherches au serveur
-    var timerEffectuerRecherche;
-
-    /// Fonction effetuant la recherche d'un morceau sur le serveur
-    function effectuerRecherche() {
-        console.log('une recheche a été envoyé au serveur');
-        var xhttp_ask = new XMLHttpRequest();
-            xhttp_ask.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    console.log(xhttp_ask.responseText);
-                    afficher_resultat(JSON.parse(xhttp_ask.responseText));
-                }
-            };
-            xhttp_ask.open("GET", "search/" + document.getElementById("imputRecherche").value, true);
-            xhttp_ask.send();
-    }
-
-    /// Détection de l'appui sur une touche
-    document.getElementById("imputRecherche").addEventListener("keyup", function(){
-        if(document.getElementById("imputRecherche").value.length < 4){
-            afficher_resultat({});
-        }else{
-            clearTimeout(timerEffectuerRecherche);
-            timerEffectuerRecherche = setTimeout(effectuerRecherche, 300);
-        }
-    });
-
-    /// Fonction qui écoute le focus sur la barre de recherche
-    document.getElementById("formRecherche").addEventListener("focus", function(){
-        console.log('Gain du focus de la barre de recherche');
-        if(document.getElementById("imputRecherche").value.length < 4){
-            afficher_resultat({});
-        }else{
-
-            var xhttp_ask = new XMLHttpRequest();
-            xhttp_ask.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    console.log(xhttp_ask.responseText);
-                    afficher_resultat(JSON.parse(xhttp_ask.responseText));
-                }
-            };
-            xhttp_ask.open("GET", "search/" + document.getElementById("imputRecherche").value, true);
-            xhttp_ask.send();
-        }
-    }, true);
-
-    ///  Fonction de perte de focus sur la zone de recherche
-    document.getElementById("playlistEnCours").addEventListener("focus", function(){
-        console.log('Perte du focus de la barre de recherche');
-        afficher_resultat({});  //  La fonction est désormais bien faite
-    }, true);
-
+                    '</div>'
+				);
+				$('#search_results > div:last').click(function() {
+					$.post("/add", {"url": $(this).data("url")});
+				});
+            }
+		}, dataType="json");
+	});
 
 </script>
 
