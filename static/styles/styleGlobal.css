@@ -148,12 +148,12 @@ input[type=text], input[type=password] {
     padding: 15px;
 }
 
-#Lecture_en_cours .imageAlbum{
+.now_playing .imageAlbum{
     float:left;
     width:35%;
 }
 
-#Lecture_en_cours .infosMusique{
+.now_playing .infosMusique{
     float:left;
     width:65%;
 }

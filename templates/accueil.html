@@ -36,90 +36,36 @@
 </header>
 
 <script>
-    /// partie synchronisation
-
-    var IntervalID;
-    var temps;
-    var musicNowPlaying = false;
-    donneeChanson();
-    function donneeChanson() {
-    var xhttp_sync = new XMLHttpRequest();
-    xhttp_sync.onreadystatechange = function(){
-        if(this.readyState == 4 && this.status == 200)
-        {
-            console.log(xhttp_sync.responseText);
-            json = JSON.parse(xhttp_sync.responseText);
-            var ItemsPlaylist = [].slice.call(document.getElementById("playlistEnCours").getElementsByClassName("ItemMusique"));
-            ItemsPlaylist.forEach(function(div){
-                if(div.getAttribute("url") === json.playlist[0]){
-                    json.playlist.splice(0,1);
-                }else{
-                    div.remove();
-                }
-            });
-
-            json.playlist.forEach(function(morceau){
-                if([].slice.call(document.getElementById("playlistEnCours").getElementsByClassName("ItemMusique")).length === 0){
-                    document.getElementById("playlistEnCours").innerHTML +=
-                        '<div class="ItemMusique" url="'+ morceau.url + '" id="Lecture_en_cours">' +
-                        '<div class="imageAlbum">' +
-                        '<img src="' + morceau.albumart_url + '"/>' +
-                        '</div>' +
-                        '<div class="infosMusique">' +
-                        '<h1>' + morceau.track +
-                        ' <a href="/like/'+ morceau.url + '">Like</a>' +
-                        ' <a href="/dislike/'+ morceau.url + '">Dislike</a>' +
-                        '</h1>' +
-                        '<h2>' + morceau.artist + " - " + morceau.album + '</h2>' +
-                        '<div class="ProgressBarCV">' +
-                        '<div class="ContainerStandard ContenuProgressBarCV" id="contenuProgressBar" style="width:0%"></div>' +
-                        '</div>' +
-                        '<span id="dureeMorceau"> </span>' + '<span> / ' +  Math.trunc( morceau.duration / 60 ) + ':' + morceau.duration % 60 + '</span>' +
-                        '</div>' +
-                        '</div>';
-                }else {
-                    document.getElementById("playlistEnCours").innerHTML +=
-                        '<div class="ItemMusique" url="'+ morceau.url + '">' +
-                        '<div class="imageAlbum">' +
-                        '<img src="' + morceau.albumart_url + '"/>' +
-                        '</div>' +
-                        '<div class="infosMusique">' +
-                        '<h1>' + morceau.track +
-                        ' <a href="/like/'+ morceau.url + '">Like</a>' +
-                        ' <a href="/dislike/'+ morceau.url + '">Dislike</a>' +
-                        '</h1>' +
-                        '<h2>' + morceau.artist + " - " + morceau.album + '</h2>' +
-                        '</div>' +
-                        '</div>';
-                }
-            });
-            temps = json.time;
-            if(temps > -1) {
-                if (temps % 60 < 10) {
-                    document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':0' + temps % 60;
-                } else {
-                    document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60;
-                }
-            }
-            // document.getElementById("contenuProgressBar").setAttribute("url", (temps / json.playlist[0].duration * 100).toString() + "%");
-            if(ItemsPlaylist.length > 0){musicNowPlaying = true;}
-            else {musicNowPlaying = false;}
-        }
-    };
-    xhttp_sync.open("GET", "sync", true);
-    xhttp_sync.send();
-    }
-
-    function majTemps() {
-        if(musicNowPlaying){
-            console.log("mettre a jour temps");
-            document.getElementById("dureeMorceau").innerHTML = Math.trunc(temps / 60) + ':' + temps % 60;
-            // document.getElementById("contenuProgressBar").setAttribute("url", (temps / json.playlist[0].duration * 100).toString() + "%");
-            temps = temps + 1;
-        }
-    }
-    setInterval(donneeChanson,5000);
-    setInterval(majTemps, 1000);
+	update_search = function() {
+		$.get("/sync", function (data) {
+			console.log(data);
+			$('#playlistEnCours').html("");
+			for (i in data.playlist) {
+				if (i == 0) {$('#playlistEnCours').append(
+					'<div class="ItemMusique now_playing">' +
+					'<div class="imageAlbum">' +
+					'<img src="' + data.playlist[i].albumart_url + '"/>' +
+					'</div>' +
+					'<div class="infosMusique">' +
+					'<h1>' + data.playlist[i].title + '</h1>' +
+					'<h2>' + data.playlist[i].artist + " - " + data.playlist[i].album + '</h2>' +
+					'</div>' +
+					'</div>'
+				);}
+				else { $('#playlistEnCours').append(
+					'<div class="ItemMusique">' +
+					'<div class="imageAlbum">' +
+					'<img src="' + data.playlist[i].albumart_url + '"/>' +
+					'</div>' +
+					'<div class="infosMusique">' +
+					'<h2>' + data.playlist[i].artist + " - " + data.playlist[i].album + '</h2>' +
+					'</div>' +
+					'</div>'
+				);}
+			}
+		});
+		window.setTimeout(arguments.callee, 5000);
+	}();
 
 	$('#inputRecherche').keyup(function() {
 		$.get("/search/"+$(this).val(), function(data) {
@@ -127,23 +73,29 @@
 			console.log(data);
 			for (i in data) {
 				$("#search_results").append(
-                    '<div class="ItemMusique" data-url="'+data[i].url+'" data-source="'+data[i].source+'">' +
+                    "<div class='ItemMusique' data-track='"+JSON.stringify(data[i])+"'>" +
                     '<div class="imageAlbum">' +
                     '<img src="' + data[i].albumart_url + '"/>' +
                     '</div>' +
                     '<div class="infosMusique">' +
-                    '<h3>' + data[i].track + '</h3>' +
+                    '<h3>' + data[i].title + '</h3>' +
                     '<h4>' + data[i].artist + '</h4>' +
                     '</div>' +
                     '</div>'
 				);
 				$('#search_results > div:last').click(function() {
-					$.post("/add", {"url": $(this).data("url")});
+					$.post("/add", $(this).data("track"));
+					$('#search_results').hide();
 				});
             }
 		}, dataType="json");
 	});
-
+	$('#inputRecherche').focus(function () {
+		$('#search_results').show();
+	});
+	$('#playlistEnCours').click(function () {
+		$('#search_results').hide();
+	});
 </script>
 
 </body>

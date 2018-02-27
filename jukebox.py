@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
 import os
-from mpd import MPDClient
 import json
-import libspotify
 import requests
 import mac_auth
 import time
 import sqlite3
 import hashlib
-from threading import Lock
-from flask import Flask, render_template, session, request, redirect
+import threading
+import subprocess
+import time
+from flask import Flask, render_template, session, request, redirect, jsonify
 from config import CONFIG
 
-maclist_lock = Lock()
+maclist_lock = threading.Lock()
 maclist = []
 app = Flask(__name__)
 app.secret_key = CONFIG["secret_key"]
 conn = sqlite3.connect("jukebox.sqlite3")
+playlist_lock = threading.Lock()
+playlist = []
 
 @app.route("/")
 def accueil():
@@ -36,24 +38,20 @@ def accueil():
 
     return render_template("accueil.html", user=session["user"], mac=session["mac"])
 
-
+def player_worker():
+    global playlist, playlist_lock
+    print("starting player")
+    while len(playlist) > 0:
+        print("playing {}".format(playlist[0]))
+        if playlist[0]["source"] == "youtube":
+            subprocess.run(["mpv", "--no-video", "--quiet", playlist[0]["url"]], stdin=subprocess.DEVNULL)
+        with playlist_lock:
+            del(playlist[0])
+    print("stopping player")
 @app.route("/sync")
 def sync():
     """
-    Renvoie quelque choise du type:
-    {
-   "time":0,
-   "playlist":[
-      {
-         "album":"Fusa",
-         "artist":"Macromism",
-         "url":"spotify:track:2L4GpAeRotv9jKIMas6lXv",
-         "albumart_url":"https://i.scdn.co/image/eef87e5ce12499aa221578056a57e1a82b025609",
-         "track":"Untoldyou",
-         "duration":"430"
-      }
-   ]
-}
+    Renvoie quelque choise du type vnr
     """
 
     global maclist, maclist_lock
@@ -72,37 +70,16 @@ def sync():
         if found==False:
             new_maclist.append((mac,now))
         maclist=new_maclist
-    client = MPDClient()
-    client.connect(CONFIG["mpc_host"], CONFIG["mpc_port"])
-    status = client.status()
-    playlist = client.playlistinfo()
-    client.close()
-    client.disconnect()
-
-    play = []
-    for i in range(len(playlist)):
-        # récupération de l'album art
-        play.append({
-            "url": playlist[i]["file"],
-            "duration": playlist[i]["time"],
-            "artist": playlist[i]["artist"],
-            "album": playlist[i]["album"],
-            "track": playlist[i]["title"],
-            "albumart_url": "static/albumart/" + playlist[i]["file"].split(":")[2]
-        })
 
     # récupération du temps écoulé
-    if "elapsed" in status:
-        elapsed = int(status["elapsed"].split(".")[0])
-    else:
-        elapsed = -1
+    elapsed = 0
     res = {
-        "playlist": play,
+        "playlist": playlist,
         "time": elapsed, # temps actuel
         "maclist": maclist,
     }
 
-    return json.dumps(res)
+    return jsonify(res)
 
 @app.route("/auth", methods=['GET','POST'])
 def login():
@@ -158,7 +135,7 @@ def search(query):
         for i in data["tracks"]["items"]:   #   Sinon on lit les résultats
             results.append({
                 "source": "spotify",
-                "track": i["name"],
+                "title": i["name"],
                 "artist": i["artists"][0]["name"], # TODO: il peut y avoir plusieurs artistes
                 "duration": int(i["duration_ms"])/1000,
                 "url": i["uri"],
@@ -171,7 +148,8 @@ def search(query):
         r = requests.get("https://www.googleapis.com/youtube/v3/search", params={
             "part":"snippet",
             "q":query,
-            "key": CONFIG["youtube_key"]
+            "key": CONFIG["youtube_key"],
+            "type": "video"
         })
         if r.status_code != 200:
             raise Exception(r.status, r.reason)
@@ -181,12 +159,12 @@ def search(query):
         for i in data["items"]:
             results.append({
                 "source": "youtube",
-                "track": i["snippet"]["title"],
+                "title": i["snippet"]["title"],
                 "artist": i["snippet"]["channelTitle"],
-                "url": "yt:http://www.youtube.com/watch?v="+i["id"]["videoId"],
+                "url": "http://www.youtube.com/watch?v="+i["id"]["videoId"],
                 "albumart_url":  i["snippet"]["thumbnails"]["default"]["url"]
             })
-    return json.dumps(results)
+    return jsonify(results)
 @app.route("/logout")
 def logout():
     session['user'] = None
@@ -196,41 +174,13 @@ def add():
     """
     Ajoute l'url à la playlist
     """
-    url = request.form["url"]
+    track = request.form
     
-    # récupération de l'album art
-    r = requests.get("https://api.spotify.com/v1/tracks/"+url.split(":")[2],
-                     headers={"Authorization": "Bearer " + libspotify.get_token()})
-    if r.status_code != 200:
-        raise Exception(r.status_code, r.reason)
-    data = r.json()
-
-    # téléchargement (caching) de l'album art
-#    os.system("wget "+data["album"]["images"][0]["url"]+" -O static/albumart/" + url.split(":")[2])
-
-
-    c.execute("REPLACE INTO track_info (url, album, artist, albumart_url, track, duration) VALUES (?,?,?,?,?,?)",(
-        url,
-        data["album"]["name"],
-        data["artists"][0]["name"],
-        "static/albumart/" + url.split(":")[2],
-        data["name"],
-        int(data["duration_ms"]) / 1000
-    ))
-    c.execute("INSERT INTO log (url, time, mac) VALUES (?,?,?)", (
-        url,
-        session["mac"],
-        int(time.time())
-    ))
-    conn.commit()
+    with playlist_lock:
+        playlist.append(track)
+        if len(playlist) == 1:
+            threading.Thread(target=player_worker).start()
     return "ok"
 
 if __name__ == "__main__":
-    client = MPDClient()
-    client.connect(CONFIG["mpc_host"], CONFIG["mpc_port"])
-    # client.clear() # on vide la liste de requêtes lors du lancement
-    client.random(0) # lecture séquentielle
-    client.consume(1) # activation de l'option qui mange les pistes au fur et à mesure de la lecture
-    client.close()
-    client.disconnect()
     app.run(host=CONFIG["listen_addr"], port=CONFIG["listen_port"])
