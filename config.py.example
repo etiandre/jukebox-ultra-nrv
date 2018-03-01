@@ -1,0 +1,14 @@
+CONFIG = {
+    "secret_key": "",
+    "mpc_host": "localhost",
+    "mpc_port": "6600",
+    "youtube_key": "",
+    "spotify-clientid": "",
+    "spotify-secret": "",
+    "listen_addr": "0.0.0.0",
+    "listen_port": 8080,
+    "search_providers": [
+#        "spotify",
+        "youtube"
+    ]
+}

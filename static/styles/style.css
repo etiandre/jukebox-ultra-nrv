@@ -1,0 +1,33 @@
+.icon {
+    height: 20px;
+    display: block;
+}
+
+#search_results .btn-skip {
+    display: none;
+}
+#search_results li {
+	cursor: pointer;
+}
+
+.albumart {
+	width: 100%
+}
+
+.track-title {
+	display: block;
+    font-size: x-large;
+}
+.track-artist {
+	display: block;
+}
+
+.btn-remove {
+	cursor:pointer
+}
+.centered {
+	margin: auto
+}
+.track-duration {
+	color: #aaa;
+}

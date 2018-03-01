@@ -1,102 +1,43 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styleGlobal.css') }}">
-    <script type="text/javascript" src="{{ url_for('static', filename='scripts/jquery-3.2.1.min.js') }}"></script>
-    <link rel= "stylesheet" type= "text/css" href= "../static/styles/styleGlobal.css    ">
-
-
-    <title>Page Accueil</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Jukebox Ultra NRV mkII</title>
 </head>
+
 <body>
+<script type="text/html" id="track_template">
 
-
-
-<div class="listMusique" id="playlistEnCours">
-</div>
-
-<header>
-    <div class="formRecherche">
-    <form id="formRecherche">
-        <input name="q" id="inputRecherche" type="text" placeholder="Recherchez un morceau"
+</script>
+<div class="container">
+	<div class="jumbotron my-4 py-4">
+	<h1 class="display-3">Jukebox Ultra NRV mkII</h1>
+    <div class="form-group">
+        <input class="form-control form-control-lg" name="query" id="query" type="text" placeholder="Recherchez un morceau"
                 spellcheck="false" dir="ltr" style="text-align: left; direction: ltr;" autocomplete="off"
                 aria-expanded="false"/>
-        <div class="list_result" id="search_results">
-        </div>
-    </form>
     </div>
-    <div class="login">
+
+    <!--
+	<div>
         {% if user == None %}
         Coucou {{ mac }} <a href="/auth">j'aimerais bien savoir ton p'tit nom :o</a>
         {% else %}
         Coucou {{ user }} :) tu as la mac {{ mac }}
         {% endif %}
     </div>
-</header>
-
-<script>
-	update_search = function() {
-		$.get("/sync", function (data) {
-			console.log(data);
-			$('#playlistEnCours').html("");
-			for (i in data.playlist) {
-				if (i == 0) {$('#playlistEnCours').append(
-					'<div class="ItemMusique now_playing">' +
-					'<div class="imageAlbum">' +
-					'<img src="' + data.playlist[i].albumart_url + '"/>' +
-					'</div>' +
-					'<div class="infosMusique">' +
-					'<h1>' + data.playlist[i].title + '</h1>' +
-					'<h2>' + data.playlist[i].artist + " - " + data.playlist[i].album + '</h2>' +
-					'</div>' +
-					'</div>'
-				);}
-				else { $('#playlistEnCours').append(
-					'<div class="ItemMusique">' +
-					'<div class="imageAlbum">' +
-					'<img src="' + data.playlist[i].albumart_url + '"/>' +
-					'</div>' +
-					'<div class="infosMusique">' +
-					'<h2>' + data.playlist[i].artist + " - " + data.playlist[i].album + '</h2>' +
-					'</div>' +
-					'</div>'
-				);}
-			}
-		});
-		window.setTimeout(arguments.callee, 5000);
-	}();
-
-	$('#inputRecherche').keyup(function() {
-		$.get("/search/"+$(this).val(), function(data) {
-			$("#search_results").html("")
-			console.log(data);
-			for (i in data) {
-				$("#search_results").append(
-                    "<div class='ItemMusique' data-track='"+JSON.stringify(data[i])+"'>" +
-                    '<div class="imageAlbum">' +
-                    '<img src="' + data[i].albumart_url + '"/>' +
-                    '</div>' +
-                    '<div class="infosMusique">' +
-                    '<h3>' + data[i].title + '</h3>' +
-                    '<h4>' + data[i].artist + '</h4>' +
-                    '</div>' +
-                    '</div>'
-				);
-				$('#search_results > div:last').click(function() {
-					$.post("/add", $(this).data("track"));
-					$('#search_results').hide();
-				});
-            }
-		}, dataType="json");
-	});
-	$('#inputRecherche').focus(function () {
-		$('#search_results').show();
-	});
-	$('#playlistEnCours').click(function () {
-		$('#search_results').hide();
-	});
-</script>
-
+	!-->
+<ul class="list-group" id="search_results"></ul>
+</div>
+<ul class="list-group" id="playlist"></ul>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+<script src="{{ url_for('static',filename='scripts/jquery.loadTemplate.min.js') }}" crossorigin="anonymous"></script>
+<script src="{{ url_for('static',filename='scripts/main.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>

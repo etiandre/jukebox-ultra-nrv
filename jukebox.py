@@ -19,6 +19,7 @@ app.secret_key = CONFIG["secret_key"]
 conn = sqlite3.connect("jukebox.sqlite3")
 playlist_lock = threading.Lock()
 playlist = []
+player_skip = threading.Event()
 
 @app.route("/")
 def accueil():
@@ -43,8 +44,13 @@ def player_worker():
     print("starting player")
     while len(playlist) > 0:
         print("playing {}".format(playlist[0]))
+        player = None
         if playlist[0]["source"] == "youtube":
-            subprocess.run(["mpv", "--no-video", "--quiet", playlist[0]["url"]], stdin=subprocess.DEVNULL)
+            player = subprocess.Popen(["mpv", "--no-video", "--quiet", playlist[0]["url"]], stdin=subprocess.DEVNULL)
+        while player.poll() is None and not player_skip.is_set():
+            time.sleep(0.1)
+        player.kill()
+        player_skip.clear()
         with playlist_lock:
             del(playlist[0])
     print("stopping player")
@@ -116,7 +122,16 @@ def search(query):
     renvoie une liste de tracks correspondant à la requête depuis divers services
     :return: un tableau contenant les infos que l'on a trouvé
     """
-
+    def parse_iso8601(x):
+        t = x[2:-1].split("M")
+        h=0
+        if "H" in t[0]:
+            h = int(t[0].split("H")[0])
+            t[0]=t[0].split("H")[1]
+        if len(t) == 2:
+            return int(t[0])*60 + int(t[1])
+        else:
+            return int(t[0])
     results = []
 
     # SPOTIFY
@@ -152,35 +167,59 @@ def search(query):
             "type": "video"
         })
         if r.status_code != 200:
-            raise Exception(r.status, r.reason)
+            raise Exception(r.text, r.reason)
         data = r.json()
+        print(",".join([i["id"]["videoId"] for i in data["items"]]))
         if len(data["items"]) == 0:   #   Si le servuer n'a rien trouvé
-            raise Exception("nothing found on youtube")
+            raise Exception("nothing found on youtube")  
+        r = requests.get("https://www.googleapis.com/youtube/v3/videos", params={
+            "part": "snippet,contentDetails",
+            "key": CONFIG["youtube_key"],
+            "id": ",".join([i["id"]["videoId"] for i in data["items"]])
+        })
+        data = r.json()
         for i in data["items"]:
+            print(i)
             results.append({
                 "source": "youtube",
                 "title": i["snippet"]["title"],
                 "artist": i["snippet"]["channelTitle"],
-                "url": "http://www.youtube.com/watch?v="+i["id"]["videoId"],
-                "albumart_url":  i["snippet"]["thumbnails"]["default"]["url"]
+                "url": "http://www.youtube.com/watch?v="+i["id"]    ,
+                "albumart_url":  i["snippet"]["thumbnails"]["medium"]["url"],
+                "duration": parse_iso8601(i["contentDetails"]["duration"])
             })
     return jsonify(results)
 @app.route("/logout")
 def logout():
     session['user'] = None
     return redirect("/")
-@app.route("/add", methods=['POST', 'GET'])
+@app.route("/add", methods=['POST'])
 def add():
     """
     Ajoute l'url à la playlist
     """
     track = request.form
-    
+    print("adding", track)
     with playlist_lock:
         playlist.append(track)
         if len(playlist) == 1:
             threading.Thread(target=player_worker).start()
     return "ok"
-
+@app.route("/remove", methods=['POST'])
+def remove():
+    """supprime la track de la playlist"""
+    track = request.form
+    with playlist_lock:
+        print("removing", track)
+        for i in playlist:
+            if i["url"] == track["url"]:
+                if playlist.index(i) == 0:
+                    player_skip.set()
+                else:
+                    playlist.remove(i)
+                break
+        else:
+            print("not found !")
+    return "ok"
 if __name__ == "__main__":
     app.run(host=CONFIG["listen_addr"], port=CONFIG["listen_port"])
