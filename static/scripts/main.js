@@ -65,14 +65,15 @@ var delay = (function(){
 })();
 
 $('#query').keyup(function() {
-	if ($('#query').val() == "") {
+	query = $('#query').val().trim()
+	if (query == "") {
 		$("#search_results").html("");
 		$("#search_results").hide();
 		return;
 	}
 	delay(function() {
 		console.log("searching "+$('#query').val());
-		$.post("/search", {"q": $('#query').val()}, function(data) {
+		$.post("/search", {"q": query}, function(data) {
 			$("#search_results").html("")
 			console.log(data);
 			for (i in data) {
@@ -91,12 +92,25 @@ $('#query').keyup(function() {
 		$("#search_results").hide();
 		return;
 	}
-	},150);
+	},250);
 });
 $('#query').focus(function () {
 	if ($('#query').val() != "")
 		$('#search_results').show();
 });
+
+suggest = function() {
+	$.get("/suggest", function (data) {
+		$('#suggestions').html("");
+		for (i in data) {
+			var t = data[i];
+			$('#suggestions').append(generate_track_html(t))
+				$('#suggestions li:last').click(function() {
+					$.post("/add", $(this).data("track"));
+				});
+		}
+	});
+}();
 
 $("#volume-slider").change(function() {
 	$.post("/volume", {"volume": $(this).val()})

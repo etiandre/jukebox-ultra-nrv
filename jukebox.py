@@ -147,7 +147,19 @@ def sync():
     }
 
     return jsonify(res)
-
+@app.route("/suggest")
+def suggest():
+    n = 5
+    if "n" in request.args:
+        n = request.args.get("n")
+    if n > 20:
+        n = 20
+    conn = sqlite3.connect("jukebox.sqlite3")
+    c = conn.cursor()
+    c.execute("SELECT track FROM log ORDER BY RANDOM() LIMIT ?;", (n,))
+    r = [json.loads(i[0]) for i in c.fetchall()]
+    print(r)
+    return jsonify(r)
 @app.route("/search", methods=['POST'])
 @requires_auth
 def search():
