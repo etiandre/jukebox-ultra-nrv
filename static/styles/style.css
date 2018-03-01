@@ -3,7 +3,7 @@
     display: block;
 }
 
-#search_results .btn-skip,.track-user{
+#search_results .btn-skip, #search_results .track-user{
     display: none;
 }
 #search_results li {

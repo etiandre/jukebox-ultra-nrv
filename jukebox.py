@@ -217,6 +217,10 @@ def add():
     track["user"] = session["user"]
     with playlist_lock:
         playlist.append(track)
+        conn = sqlite3.connect("jukebox.sqlite3")
+        c = conn.cursor()
+        c.execute("INSERT INTO log(track,user) VALUES (?,?)", (json.dumps(track), session['user']))
+        conn.commit()
         if len(playlist) == 1:
             threading.Thread(target=player_worker).start()
     return "ok"
