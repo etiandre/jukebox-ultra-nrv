@@ -9,9 +9,7 @@
 </head>
 
 <body>
-<script type="text/html" id="track_template">
 
-</script>
 <div class="container">
 	<div class="jumbotron my-4 py-4 clearfix">
 	<h1 class="display-3">Jukebox Ultra NRV mkII</h1>
@@ -22,9 +20,12 @@
     <div class="form-group">
         <input class="form-control form-control-lg" name="query" id="query" type="text" placeholder="Recherchez un morceau ou collez une url youtube"
                 spellcheck="false" dir="ltr" style="text-align: left; direction: ltr;" autocomplete="off"
-                aria-expanded="false"/>
+                aria-expanded="false" autofocus/>
     </div>
-
+	<div class="form-group form-inline">
+		<img src="/static/images/icons/volume.svg" class="icon">
+		<input type="range" class="volume-slider form-control" id="volume-slider" min="0" max="65535">
+	</div>
     <!--
 	<div>
         {% if user == None %}

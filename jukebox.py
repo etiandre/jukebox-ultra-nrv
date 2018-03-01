@@ -137,10 +137,13 @@ def sync():
     """
     # récupération du temps écoulé
     elapsed = 0
+    amixer_out = subprocess.check_output(['amixer', 'get', "'Master',0"]).decode()
+    volume = re.findall("Front Left: Playback (\d+)",amixer_out)[0]
     res = {
         "playlist": playlist,
         "time": elapsed, # temps actuel
         "maclist": maclist,
+        "volume": volume,
     }
 
     return jsonify(res)
@@ -241,5 +244,12 @@ def remove():
         else:
             print("not found !")
     return "ok"
+@app.route("/volume", methods=['POST'])
+@requires_auth
+def volume():
+    if request.method == 'POST':
+        subprocess.run(['amixer', '-q', 'set', "'Master',0", request.form["volume"]])
+        app.logger.info("Volume set to %s", request.form["volume"])
+        return "ok"
 if __name__ == "__main__":
     app.run(host=CONFIG["listen_addr"], port=CONFIG["listen_port"], debug=CONFIG["debug"])

@@ -15,7 +15,7 @@ function generate_track_html(t) {
 }
 
 track_template = `
-<li class="list-group-item {active}">
+<li class="list-group-item">
 <div class="row">
 	<div class="col-4 centered">
 		<img class="albumart" src="{albumart_url}">
@@ -27,20 +27,24 @@ track_template = `
 		<span class="track-user float-right">ajouté par {user}</span>
 	</div>
 	<div class="col-1 centered">
-		<img class="icon btn-remove" src="/static/images/icons/x.svg">
+		<img class="icon btn-remove" alt="Enlever" src="/static/images/icons/x.svg">
 	</div>
 
 </div>
 </li>
 `
-update_search = function() {
+sync = function() {
 	$.get("/sync", function (data) {
 		// console.log(data);
+		$('#volume-slider').val(data.volume);
 		$('#playlist').html("");
 		for (i in data.playlist) {
 			var t = data.playlist[i];
 			if (i == 0) {
-				t.active = "active";
+				$('#playlist').append("<p class='playlist-title'>Lecture en cours</p>")
+			}
+			else if (i == 1) {
+				$('#playlist').append("<p class='playlist-title'>À venir</p>")
 			}
 			$('#playlist').append(generate_track_html(t))
 			$('#playlist li:last .btn-remove').click(function() {
@@ -49,7 +53,7 @@ update_search = function() {
 			});
 		}
 	});
-	window.setTimeout(arguments.callee, 5000);
+	window.setTimeout(arguments.callee, 1000);
 }();
 
 var delay = (function(){
@@ -82,11 +86,20 @@ $('#query').keyup(function() {
 			}
 			$("#search_results").show()
 	}, dataType="json");
+	if ($('#query').val() == "") {
+		$("#search_results").html("");
+		$("#search_results").hide();
+		return;
+	}
 	},150);
 });
 $('#query').focus(function () {
 	if ($('#query').val() != "")
 		$('#search_results').show();
 });
+
+$("#volume-slider").change(function() {
+	$.post("/volume", {"volume": $(this).val()})
+})
 
 $('#search_results').hide();

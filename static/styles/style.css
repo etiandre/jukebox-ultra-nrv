@@ -31,3 +31,10 @@
 .track-duration,.track-user {
 	color: #aaa;
 }
+
+.playlist-title {
+	text-align: center;
+	color: grey;
+	letter-spacing: 10px;
+	margin-top: 13px;
+}
