@@ -1,11 +1,30 @@
 <html>
-<head>Login / Créer un compte</head>
-<body>
-<form action="/auth" method="post" class="login">
-    <input type="text" name="user" placeholder="nom d'utilisateur">
-    <input type="password" name="pass" placeholder="mot de passe">
-    <input type="submit" name="action" value="Connexion"> ou
-    <input type="submit" name="action" value="S'enregistrer">
-</form>
-</body>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/auth.css') }}">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Jukebox Ultra NRV mkII</title>
+</head>
+  <body class="text-center">
+    <form class="form-signin" action="/auth" method="post">
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+		<div class="alert alert-warning" role="alert">
+			{{ message }}
+		</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+      <h1 class="h3 mb-3 font-weight-normal">C koi ton p'tit nom ?</h1>
+      <label for="inputUser" class="sr-only">Pseudo</label>
+      <input type="text" id="inputUser" name="user" class="form-control" placeholder="Pseudo" required autofocus>
+      <label for="inputPassword" class="sr-only">Mot de passe</label>
+      <input type="password" id="inputPassword" name="pass" class="form-control" placeholder="Mot de passe" required>
+      <button class="btn btn-lg btn-primary btn-block" name="action" type="submit" value="login">Connexion</button>
+	  <p class="mt-1 mb-1 text-muted">- ou -</p>
+	  <button class="btn btn-lg btn-primary btn-block" name="action" type="submit" value="new">S'enregistrer</button>
+    </form>
+  </body>
 </html>

@@ -1,0 +1,20 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/auth.css') }}">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Jukebox Ultra NRV mkII</title>
+</head>
+  <body class="text-center">
+	<div class="container">
+	<h1>Attention !</h1>
+	<h2>Se déconnecter désassociera ce pc du compte {{ user }}.</h2>
+    <form class="form-signin" action="/logout" method="post">
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Oui allez</button>
+		
+    </form>
+	<a class="btn btn-lg" href="/">Ah non merde</a>
+	</div>
+  </body>
+</html>

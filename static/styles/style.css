@@ -3,7 +3,7 @@
     display: block;
 }
 
-#search_results .btn-skip {
+#search_results .btn-skip,.track-user{
     display: none;
 }
 #search_results li {
@@ -28,6 +28,6 @@
 .centered {
 	margin: auto
 }
-.track-duration {
+.track-duration,.track-user {
 	color: #aaa;
 }

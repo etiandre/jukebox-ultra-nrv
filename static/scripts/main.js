@@ -24,6 +24,7 @@ track_template = `
 		<span class="track-title">{title}</span>
 		<span class="track-artist">{artist}</span>
 		<span class="track-duration">{duration} s.</span>
+		<span class="track-user float-right">ajouté par {user}</span>
 	</div>
 	<div class="col-1 centered">
 		<img class="icon btn-remove" src="/static/images/icons/x.svg">
@@ -67,7 +68,7 @@ $('#query').keyup(function() {
 	}
 	delay(function() {
 		console.log("searching "+$('#query').val());
-		$.get("/search/"+$('#query').val(), function(data) {
+		$.post("/search", {"q": $('#query').val()}, function(data) {
 			$("#search_results").html("")
 			console.log(data);
 			for (i in data) {
@@ -75,6 +76,7 @@ $('#query').keyup(function() {
 				$('#search_results').append(generate_track_html(data[i]))
 				$('#search_results li:last').click(function() {
 					$.post("/add", $(this).data("track"));
+					$('#query').val("")
 					$('#search_results').hide();
 				});
 			}
