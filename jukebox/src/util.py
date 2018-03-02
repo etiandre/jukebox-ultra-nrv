@@ -1,4 +1,14 @@
-import subprocess, re
+from flask import current_app as app
+from flask import session, redirect
+from functools import wraps
+import re, subprocess
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "user" not in session or session['user'] is None:
+            return redirect("/auth")
+        return f(*args, **kwargs)
+    return decorated
 
 def get_subnet():
     ip_out = subprocess.check_output(["ip", "addr", "show", CONFIG["iface"]]).decode()
@@ -15,6 +25,3 @@ def get_mac(ip):
 	else:
 		arping_out = subprocess.check_output(["arping", "-f", "-w", "1", ip]).decode()
 		return re.findall("\[([\w:]+)",arping_out)[0]
-
-
-
