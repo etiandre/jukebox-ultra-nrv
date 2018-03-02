@@ -1,11 +1,12 @@
-# Projet info qu'il est chouette
+# Jukebox Ultra NRV mkII
 
-## Prérequis
-    installez python et flask
-## Sur le serveur de prod
-Pour màj:
+## Prequisites
+    python3, flask, mpv, youtube-dl, nmap, arping, alsa-utils have to be installed.&
 
-    $ cd projetinfo
-    $ git pull
-## Lancement
-    $ python jukebox.py
+## Installation
+ - clone the repo
+ - create database schema
+ - move config.py.example to config.py and edit
+
+## Usage
+    $ python main.py

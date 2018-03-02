@@ -1,6 +1,4 @@
 import subprocess, re
-from config import CONFIG
-from jukebox import app, render_template, session
 
 def get_subnet():
     ip_out = subprocess.check_output(["ip", "addr", "show", CONFIG["iface"]]).decode()
@@ -12,8 +10,11 @@ def scan(subnet):
     return re.findall("Host: ([\d\.]+) \(\)", nmap_out)[0]
 
 def get_mac(ip):
-    arping_out = subprocess.check_output(["arping", "-f", "-w", "1", ip]).decode()
-    return re.findall("\[([\w:]+)",arping_out)[0]
+	if ip == "127.0.0.1":
+		return "00:00:00:00:00:00"
+	else:
+		arping_out = subprocess.check_output(["arping", "-f", "-w", "1", ip]).decode()
+		return re.findall("\[([\w:]+)",arping_out)[0]
 
 
 

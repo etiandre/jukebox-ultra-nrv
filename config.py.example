@@ -1,14 +1,13 @@
 CONFIG = {
-    "secret_key": "",
+    "secret_key": "", #CHANGEME
     "mpc_host": "localhost",
     "mpc_port": "6600",
-    "youtube_key": "",
-    "spotify-clientid": "",
-    "spotify-secret": "",
+    "youtube_key": "", #CHANGEME
     "listen_addr": "0.0.0.0",
     "listen_port": 8080,
     "search_providers": [
-#        "spotify",
         "youtube"
     ]
+    "debug": True,
+	"amixer_channel": "'Master',0"
 }

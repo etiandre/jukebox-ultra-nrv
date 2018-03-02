@@ -138,7 +138,7 @@ def sync():
     # récupération du temps écoulé
     elapsed = 0
     amixer_out = subprocess.check_output(['amixer', 'get', "'Master',0"]).decode()
-    volume = re.findall("Front Left: Playback (\d+)",amixer_out)[0]
+    volume = re.findall("Playback \d+ \[(\d+)%\]",amixer_out)[0]
     res = {
         "playlist": playlist,
         "time": elapsed, # temps actuel
@@ -260,7 +260,7 @@ def remove():
 @requires_auth
 def volume():
     if request.method == 'POST':
-        subprocess.run(['amixer', '-q', 'set', "'Master',0", request.form["volume"]])
+        subprocess.run(['amixer', '-q', 'set', "'Master',0", request.form["volume"]+"%"])
         app.logger.info("Volume set to %s", request.form["volume"])
         return "ok"
 if __name__ == "__main__":
