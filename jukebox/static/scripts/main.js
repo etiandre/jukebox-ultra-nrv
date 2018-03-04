@@ -72,7 +72,10 @@ sync = function() {
                         yt.pauseVideo()
                     } else {
                         yt.playVideo()
-                        yt.seekTo(data.time)
+                        if (Math.abs(yt.getCurrentTime() - data.time) > 0.5) {
+                            console.log("out of sync !", Math.abs(yt.getCurrentTime() - data.time))
+                            yt.seekTo(data.time)
+                        }
                     }
                 }
 				$('#playlist').append("<p class='playlist-title'>Lecture en cours</p>")
