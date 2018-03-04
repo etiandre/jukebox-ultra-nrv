@@ -33,6 +33,27 @@ track_template = `
 </div>
 </li>
 `
+
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+var yt = 0;
+function onYouTubeIframeAPIReady() {
+        yt = new YT.Player('YT', {
+        height: '360',
+        width: '640',
+        events: {
+            'onReady': function() {
+                console.log("YT ready");
+                yt.mute();
+                yt.ready = true;
+
+            }
+        }
+    });
+}
+
 sync = function() {
 	$.get("/sync", function (data) {
 		// console.log(data);
@@ -41,6 +62,19 @@ sync = function() {
 		for (i in data.playlist) {
 			var t = data.playlist[i];
 			if (i == 0) {
+                if (yt.ready && $("#YT").is(":visible")) {
+                    if (yt.url != data.playlist[0]["id"]) {
+                        console.log("loading video", data.playlist[0]["id"])
+                        yt.cueVideoById(data.playlist[0]["id"])
+                        yt.url = data.playlist[0]["id"]
+                    }
+                    if (data.time == 0) {
+                        yt.pauseVideo()
+                    } else {
+                        yt.playVideo()
+                        yt.seekTo(data.time)
+                    }
+                }
 				$('#playlist').append("<p class='playlist-title'>Lecture en cours</p>")
 			}
 			else if (i == 1) {
@@ -118,5 +152,15 @@ $("#volume-slider").change(function() {
 })
 
 $("#refresh-suggestions").click(suggest);
+$("#toggle-YT").click(function() {
+    $("#YT").toggle();
+    if (!$("#YT").is(":visible")) {
+        yt.stopVideo();
+    } else {
+        yt.playVideo();
+    }
+});
 
 $('#search_results').hide();
+
+

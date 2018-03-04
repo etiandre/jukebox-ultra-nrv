@@ -24,13 +24,13 @@ def sync():
     """
     Renvoie quelque choise du type vnr
     """
-    # récupération du temps écoulé
     amixer_out = subprocess.check_output(['amixer', 'get',
                                           "'Master',0"]).decode()
     volume = re.findall("Playback \d+ \[(\d+)%\]", amixer_out)[0]
     res = {
         "playlist": app.playlist,
         "volume": volume,
+        "time": app.player_time
     }
 
     return jsonify(res)
@@ -105,6 +105,7 @@ def search():
             "albumart_url":
             i["snippet"]["thumbnails"]["medium"]["url"],
             "duration":
-            parse_iso8601(i["contentDetails"]["duration"])
+            parse_iso8601(i["contentDetails"]["duration"]),
+            "id": i["id"]
         })
     return jsonify(results)

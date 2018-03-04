@@ -37,7 +37,7 @@ def remove():
         for i in app.playlist:
             if i["url"] == track["url"]:
                 if app.playlist.index(i) == 0:
-                    app.player_skip.set()
+                    app.mpv.close()
                 else:
                     app.playlist.remove(i)
                 break
