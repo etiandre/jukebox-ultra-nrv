@@ -5,8 +5,8 @@
 
 ## Installation
  - clone the repo
- - create database schema
+- create database schema
  - move config.py.example to config.py and edit
 
 ## Usage
-    $ python main.py
+    $ python run.py
