@@ -39,15 +39,15 @@ def search():
     """
     query = request.form["q"]
     def parse_iso8601(x):
-        t = x[2:-1].split("M")
-        h=0
-        if "H" in t[0]:
-            h = int(t[0].split("H")[0])
-            t[0]=t[0].split("H")[1]
-        if len(t) == 2:
-            return int(t[0])*60 + int(t[1])
-        else:
-            return int(t[0])
+        triplet = re.findall("(\d*)H*(\d+)M(\d+)S", x)[0]
+        t = []
+        for i in triplet:    #triplet contient des strings
+            if i == '':        #si H n'est pas donné
+                t.append(0)    
+            else:
+                t.append(int(i))
+        res = t[0]*3600 + t[1]*60 + t[2]
+        return res
     results = []
 
     youtube_ids = None
