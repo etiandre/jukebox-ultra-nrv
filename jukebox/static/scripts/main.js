@@ -99,7 +99,7 @@ $('#query').focus(function () {
 		$('#search_results').show();
 });
 
-suggest = function() {
+function suggest() {
 	$.get("/suggest", function (data) {
 		$('#suggestions').html("");
 		for (i in data) {
@@ -110,10 +110,13 @@ suggest = function() {
 				});
 		}
 	});
-}();
+}
+suggest();
 
 $("#volume-slider").change(function() {
 	$.post("/volume", {"volume": $(this).val()})
 })
+
+$("#refresh-suggestions").click(suggest);
 
 $('#search_results').hide();

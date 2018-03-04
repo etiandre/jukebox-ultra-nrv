@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, session, request
+from flask import Blueprint, render_template, redirect, session, request, flash
 from flask import current_app as app
 import sqlite3, hashlib
 from jukebox.src.util import *

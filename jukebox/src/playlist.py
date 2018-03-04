@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, session, request
+from flask import Blueprint, render_template, redirect, session, request, jsonify
 from flask import current_app as app
 from jukebox.src.util import *
 import sqlite3, json, threading
