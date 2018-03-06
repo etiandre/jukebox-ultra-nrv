@@ -9,4 +9,4 @@
  - move config.py.example to config.py and edit it good sa mère
 
 ## Usage
-    $ python run.py
+    $ python3 run.py
