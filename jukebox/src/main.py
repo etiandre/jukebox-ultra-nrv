@@ -54,7 +54,7 @@ def search():
     results = []
 
     youtube_ids = None
-    m = re.search("youtube.com/watch\?v=(\w+)", query)
+    m = re.search("youtube.com/watch\?v=([\w\d\-_]+)", query)
     if m:
         youtube_ids = [m.groups()[0]]
     m = re.search("youtu.be/(\w+)", query)
