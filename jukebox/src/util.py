@@ -33,4 +33,4 @@ def get_mac(ip):
         return "00:00:00:00:00:00"
     else:
         arping_out = subprocess.check_output(["arp", "-a"]).decode()
-        returnre.findall("\({}\) at ([\w:]+)".format(ip), arping_out)[0]
+        return re.findall("\({}\) at ([\w:]+)".format(ip), arping_out)[0]
