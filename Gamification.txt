@@ -1,0 +1,13 @@
+fonctionalités
+	- musique en prio: passage en premier, unskipable (if length<10min) --> 3 pièces
+	- text to speech (message perso qui passe sur la borne) 			--> 1 pièce
+	- achat d'avatar 													--> à voir par avatar
+	- premium dark skin (trop putain de cher) 							--> 150 001 pièce
+	- Changer le surnom des autres gens									--> 25 pièces
+	
+Event: 
+	- S/AGDQ --> 1 euros = 1 pièce
+	- semaine poubelle (vider la benne) --> +30 pièces
+	- la 100e chanson gagne des pièces --> 25 pièces
+	
+Gain par jour = 5 pièces

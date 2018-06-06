@@ -1,7 +1,7 @@
 # Jukebox Ultra NRV mkII
 
 ## Prequisites
-`python3, flask, mpv, youtube-dl, nmap, arping, alsa-utils` have to be installed.
+`python3, flask, requests,  mpv, youtube-dl, nmap, arping, alsa-utils` have to be installed.
 
 ## Installation
  - clone the repo
@@ -9,4 +9,4 @@
  - move config.py.example to config.py and edit it good sa mère
 
 ## Usage
-    $ python run.py
+    $ python3 run.py

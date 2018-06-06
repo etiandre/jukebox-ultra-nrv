@@ -54,7 +54,39 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
+serverTime = 0;
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+function syncVideo() {
+	if (serverTime == 0) {
+		yt.pauseVideo();
+	} else {
+		ytTime = yt.getCurrentTime();
+		yt.playVideo();
+		delta = ytTime - serverTime;
+		if (Math.abs(delta) > 1) {
+			console.log("catching up");
+			yt.seekTo(serverTime);
+		}
+		
+		else if (delta > 0.05) {
+			console.log("en avance de", delta);
+			yt.pauseVideo();
+			sleep(delta/2).then(() => {
+				yt.playVideo();
+			});
+			
+		}
+		else if (delta < -0.1) {
+			console.log("en retard de", delta);
+			yt.seekTo(serverTime - delta/2);
+		}
+	}
+}
+
 sync = function() {
+	time = Date.now() / 1000
 	$.get("/sync", function (data) {
 		// console.log(data);
 		$('#volume-slider').val(data.volume);
@@ -68,11 +100,8 @@ sync = function() {
                         yt.cueVideoById(data.playlist[0]["id"])
                         yt.url = data.playlist[0]["id"]
                     }
-                    if (data.time == 0) {
-                        yt.pauseVideo()
-                    } else {
-                        yt.playVideo()
-                    }
+					serverTime = data.time + (Date.now()/1000-time)/2;
+					syncVideo();
                 }
 				$('#playlist').append("<p class='playlist-title'>Lecture en cours</p>")
 			}
