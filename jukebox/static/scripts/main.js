@@ -72,7 +72,6 @@ sync = function() {
                         yt.pauseVideo()
                     } else {
                         yt.playVideo()
-                        yt.seekTo(data.time)
                     }
                 }
 				$('#playlist').append("<p class='playlist-title'>Lecture en cours</p>")
