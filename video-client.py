@@ -50,18 +50,18 @@ if __name__ == "__main__":
     timeout = int(sys.argv[2])
     player = None
     while True:
-        print("idle for {}".format(idle.getIdleSec()))
         if idle.getIdleSec() < timeout:
             if player:
+                print("User detected, switching to mame")
                 player.close()
-                print("mpv closed")
                 subprocess.run(["killall", "-s", "SIGCONT", "mame"])
                 subprocess.run(["wmctrl", "-a", "mame"])
                 player = None
             time.sleep(1)
             continue
-        subprocess.run(["killall", "-s", "SIGSTOP", "mame"])
         if not player:
+            print("Idle for more than {}, switching to mpv".format(timeout))
+            subprocess.run(["killall", "-s", "SIGSTOP", "mame"])
             player = MyMPV(["--no-input-default-bindings", "--no-stop-screensaver", "--ontop", "--no-border", "--geometry=100%x100%+0+0"])
         orig_t = time.time()
         try:
@@ -86,7 +86,7 @@ if __name__ == "__main__":
             delay = time.time()-orig_t
             delta = remote - local
             offset = 0.5
-            # print("local: {} | remote : {} | delta {} | delay {}".format(local, remote, delta, delay))
+            print("local: {} | remote : {} | delta {} | delay {}".format(local, remote, delta, delay))
             if abs(delta) >= offset: # catch up
                 print("catching up")
                 player.seek(remote + delay + offset/2) # go ahead
