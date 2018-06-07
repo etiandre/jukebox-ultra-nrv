@@ -4,6 +4,7 @@ import requests
 import sys
 import threading
 import time
+import subprocess
 class MyMPV(mpv.MPV):
     def __init__(self, argv):
         super().__init__(argv, window_id=None, debug=False)
@@ -58,7 +59,7 @@ if __name__ == "__main__":
             time.sleep(1)
             continue
         if not player:
-            player = MyMPV(["--no-input-default-bindings", "--no-stop-screensaver"])
+            player = MyMPV(["--no-input-default-bindings", "--no-stop-screensaver", "--ontop", "--no-border", "--geometry=100%x100%+0+0"])
         orig_t = time.time()
         try:
             sync_data = requests.get(url).json()
