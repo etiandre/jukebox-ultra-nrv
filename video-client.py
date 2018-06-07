@@ -14,7 +14,7 @@ class MyMPV(mpv.MPV):
         
     def load(self, path):
         self.loaded.clear()
-        self.command("loadfile", path, "append")
+        self.command("loadfile", path, "replace")
         self.set_property("playlist-pos", 0)
         
     def on_file_loaded(self):
@@ -59,19 +59,24 @@ if __name__ == "__main__":
             if player:
                 print("User detected or playlist empty, switching to mame")
                 player.close()
-                subprocess.run(["killall", "-s", "SIGCONT", "mame"])
-                subprocess.run(["wmctrl", "-a", "mame"])
+                try:
+                    subprocess.run(["killall", "-s", "SIGCONT", "mame"])
+                    subprocess.run(["wmctrl", "-a", "mame"])
+                except: pass
                 player = None
             time.sleep(1)
             continue
         if not player:
             print("Idle for more than {}, switching to mpv".format(timeout))
-            subprocess.run(["killall", "-s", "SIGSTOP", "mame"])
+            try:
+                subprocess.run(["killall", "-s", "SIGSTOP", "mame"])
+            except:
+                pass
             player = MyMPV(["--no-input-default-bindings", "--no-audio", "--no-stop-screensaver", "--ontop", "--no-border", "--geometry=100%x100%+0+0"])
         orig_t = time.time()
         
         if player.file() != sync_data["playlist"][0]["url"]:
-            print("loading new track")
+            print("loading new track {} {}".format(player.file(),sync_data["playlist"][0]["url"]))
             player.load(sync_data["playlist"][0]["url"])
             player.pause()
             player.loaded.wait()

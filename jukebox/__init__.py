@@ -21,7 +21,7 @@ class MyMPV(mpv.MPV):
     def __init__(self, path, argv):
         super().__init__(argv, window_id=None, debug=False)
 
-        self.command("loadfile", path, "append")
+        self.command("loadfile", path, "replace")
         self.set_property("playlist-pos", 0)
         self.loaded = threading.Event()
         self.loaded.wait()
