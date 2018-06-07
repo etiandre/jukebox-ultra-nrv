@@ -50,9 +50,14 @@ if __name__ == "__main__":
     timeout = int(sys.argv[2])
     player = None
     while True:
-        if idle.getIdleSec() < timeout:
+        try:
+            sync_data = requests.get(url).json()
+        except:
+            print("connexion error, retrying...")
+            time.sleep(2)
+        if idle.getIdleSec() < timeout or len(sync_data["playlist"]) == 0:
             if player:
-                print("User detected, switching to mame")
+                print("User detected or playlist empty, switching to mame")
                 player.close()
                 subprocess.run(["killall", "-s", "SIGCONT", "mame"])
                 subprocess.run(["wmctrl", "-a", "mame"])
@@ -62,17 +67,8 @@ if __name__ == "__main__":
         if not player:
             print("Idle for more than {}, switching to mpv".format(timeout))
             subprocess.run(["killall", "-s", "SIGSTOP", "mame"])
-            player = MyMPV(["--no-input-default-bindings", "--no-stop-screensaver", "--ontop", "--no-border", "--geometry=100%x100%+0+0"])
+            player = MyMPV(["--no-input-default-bindings", "--no-audio", "--no-stop-screensaver", "--ontop", "--no-border", "--geometry=100%x100%+0+0"])
         orig_t = time.time()
-        try:
-            sync_data = requests.get(url).json()
-        except:
-            print("connexion error, retrying...")
-            time.sleep(2)
-        if len(sync_data["playlist"]) == 0:
-            print("playlist empty")
-            time.sleep(2)
-            continue
         
         if player.file() != sync_data["playlist"][0]["url"]:
             print("loading new track")
