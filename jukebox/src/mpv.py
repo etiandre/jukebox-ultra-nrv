@@ -66,15 +66,15 @@ class MPVBase:
         "--idle",
         "--no-input-default-bindings",
         "--no-terminal",
-        "--no-video"
+        # "--no-video"
     ]
 
-    def __init__(self, window_id=None, debug=False):
+    def __init__(self, argv=[], window_id=None, debug=False):
         self.window_id = window_id
         self.debug = debug
 
         self._prepare_socket()
-        self._prepare_process()
+        self._prepare_process(argv)
         self._start_process()
         self._start_socket()
         self._prepare_thread()
@@ -91,11 +91,12 @@ class MPVBase:
     #
     # Process
     #
-    def _prepare_process(self):
+    def _prepare_process(self, argv):
         """Prepare the argument list for the mpv process.
         """
         self.argv = [self.executable]
         self.argv += self.default_argv
+        self.argv += argv
         self.argv += ["--input-ipc-server", self._sock_filename]
         if self.window_id is not None:
             self.argv += ["--wid", str(self.window_id)]

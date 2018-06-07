@@ -18,8 +18,8 @@ import subprocess, time
 
 import jukebox.src.mpv as mpv
 class MyMPV(mpv.MPV):
-    def __init__(self, path):
-        super().__init__(window_id=None, debug=False)
+    def __init__(self, path, argv):
+        super().__init__(argv, window_id=None, debug=False)
 
         self.command("loadfile", path, "append")
         self.set_property("playlist-pos", 0)
@@ -58,7 +58,7 @@ def player_worker():
         print("playing {}".format(app.playlist[0]))
         player = None
         if app.playlist[0]["source"] == "youtube":
-            app.mpv = MyMPV(app.playlist[0]["url"])
+            app.mpv = MyMPV(app.playlist[0]["url"], ["--no-video"])
         while not app.mpv.finished():
             time.sleep(0.5)
         del(app.mpv)
