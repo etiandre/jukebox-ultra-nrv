@@ -55,9 +55,12 @@ if __name__ == "__main__":
             if player:
                 player.close()
                 print("mpv closed")
+                subprocess.run(["killall", "-s", "SIGCONT", "mame"])
+                subprocess.run(["wmctrl", "-a", "mame"])
                 player = None
             time.sleep(1)
             continue
+        subprocess.run(["killall", "-s", "SIGSTOP", "mame"])
         if not player:
             player = MyMPV(["--no-input-default-bindings", "--no-stop-screensaver", "--ontop", "--no-border", "--geometry=100%x100%+0+0"])
         orig_t = time.time()
