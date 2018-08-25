@@ -16,7 +16,7 @@ app.player_skip = threading.Event()
 app.player_time = 0
 import subprocess, time
 
-import jukebox.src.mpv as mpv
+import jukebox.src.lib.mpv as mpv
 class MyMPV(mpv.MPV):
     def __init__(self, path, argv):
         super().__init__(argv, window_id=None, debug=False)

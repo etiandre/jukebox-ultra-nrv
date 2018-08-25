@@ -1,5 +1,5 @@
-import jukebox.src.mpv as mpv
-import jukebox.src.idle as idle
+import jukebox.src.lib.mpv as mpv
+import jukebox.src.lib.idle as idle
 import requests
 import sys
 import threading
@@ -11,12 +11,12 @@ class MyMPV(mpv.MPV):
         self.loaded = threading.Event()
     def on_property_time_pos(self, position=None):
         pass
-        
+
     def load(self, path):
         self.loaded.clear()
         self.command("loadfile", path, "replace")
         self.set_property("playlist-pos", 0)
-        
+
     def on_file_loaded(self):
         self.loaded.set()
 
@@ -27,7 +27,7 @@ class MyMPV(mpv.MPV):
             return self.get_property("path")
         except mpv.MPVCommandError:
             return None
-    
+
     def finished(self):
         r = None
         try:
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 pass
             player = MyMPV(["--no-input-default-bindings", "--no-audio", "--no-stop-screensaver", "--ontop", "--no-border", "--geometry=100%x100%+0+0"])
         orig_t = time.time()
-        
+
         if player.file() != sync_data["playlist"][0]["url"]:
             print("loading new track {} {}".format(player.file(),sync_data["playlist"][0]["url"]))
             player.load(sync_data["playlist"][0]["url"])
@@ -96,7 +96,7 @@ if __name__ == "__main__":
                 player.pause()
                 time.sleep(abs(delta+delay)/2)
                 player.play()
-                
+
             player.play()
         time.sleep(1)
     mpv.close()
