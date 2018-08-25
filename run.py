@@ -1,13 +1,12 @@
 from jukebox import app
 import os
-app.config.from_pyfile("../config.cfg")
 if __name__ == "__main__":
     # cleanup leftovers
     if os.path.exists("mpv.socket"):
         os.remove("mpv.socket")
     # create database if it doesn't exists
     if not os.path.exists(app.config["DATABASE_PATH"]):
-        print("Databse nonexistent, creating schema")
+        app.logger.info("Databse nonexistent, creating schema")
         import sqlite3
         conn = sqlite3.connect(app.config["DATABASE_PATH"])
         c = conn.cursor()

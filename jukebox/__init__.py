@@ -5,7 +5,11 @@ from flask import Flask
 from jukebox.src.main import main
 from jukebox.src.auth import auth
 from jukebox.src.playlist import playlist
+
 app = Flask(__name__)
+
+app.config.from_pyfile("../config.py")
+
 app.register_blueprint(main)
 app.register_blueprint(auth)
 app.register_blueprint(playlist)
@@ -16,6 +20,7 @@ app.player_skip = threading.Event()
 app.player_time = 0
 import subprocess, time
 
+# Initialize MPV Controller
 import jukebox.src.lib.mpv as mpv
 class MyMPV(mpv.MPV):
     def __init__(self, path, argv):
@@ -51,7 +56,7 @@ class MyMPV(mpv.MPV):
 
     def seek(self, position):
         self.command("seek", position, "absolute")
-
+# create player worker
 def player_worker():
     print("starting player")
     while len(app.playlist) > 0:
@@ -66,5 +71,10 @@ def player_worker():
             del (app.playlist[0])
     print("stopping player")
 
-
 app.player_worker = player_worker
+
+# Load backends
+import importlib
+app.search_backends = []
+for i in app.config["SEARCH_BACKENDS"]:
+    app.search_backends.append(importlib.import_module("jukebox.src.backends.search."+i))

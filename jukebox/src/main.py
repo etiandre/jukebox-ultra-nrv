@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, session, jsonify, request
 from flask import current_app as app
 from jukebox.src.util import *
-import subprocess, requests
+import subprocess, requests, importlib
 
 main = Blueprint('main', __name__)
 
@@ -44,63 +44,7 @@ def search():
     :return: un tableau contenant les infos que l'on a trouvé
     """
     query = request.form["q"]
-
-    def parse_iso8601(x):
-        t = [int(i) for i in re.findall("(\d+)", x)]
-        r = 0
-        for i in range(len(t)):
-            r += 60**(i) * t[-i-1]
-        return r
     results = []
-
-    youtube_ids = None
-    m = re.search("youtube.com/watch\?v=([\w\d\-_]+)", query)
-    if m:
-        youtube_ids = [m.groups()[0]]
-    m = re.search("youtu.be/(\w+)", query)
-    if m:
-        youtube_ids = [m.groups()[0]]
-    if youtube_ids:
-        app.logger.info("Youtube video pasted by %s: %s", session["user"],
-                        youtube_ids[0])
-    else:
-        app.logger.info("Youtube search by %s : %s", session["user"], query)
-        r = requests.get(
-            "https://www.googleapis.com/youtube/v3/search",
-            params={
-                "part": "snippet",
-                "q": query,
-                "key": app.config["YOUTUBE_KEY"],
-                "type": "video"
-            })
-        if r.status_code != 200:
-            raise Exception(r.text, r.reason)
-        data = r.json()
-        if len(data["items"]) == 0:  #   Si le servuer n'a rien trouvé
-            raise Exception("nothing found on youtube")
-        youtube_ids = [i["id"]["videoId"] for i in data["items"]]
-    r = requests.get(
-        "https://www.googleapis.com/youtube/v3/videos",
-        params={
-            "part": "snippet,contentDetails",
-            "key": app.config["YOUTUBE_KEY"],
-            "id": ",".join(youtube_ids)
-        })
-    data = r.json()
-    for i in data["items"]:
-        results.append({
-            "source":
-            "youtube",
-            "title":
-            i["snippet"]["title"],
-            "artist":
-            i["snippet"]["channelTitle"],
-            "url":
-            "http://www.youtube.com/watch?v=" + i["id"],
-            "albumart_url":
-            i["snippet"]["thumbnails"]["medium"]["url"],
-            "duration":
-            parse_iso8601(i["contentDetails"]["duration"]),
-            "id": i["id"]
-        })
+    for i in app.search_backends:
+        results += i.search(query)
     return jsonify(results)
