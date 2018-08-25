@@ -1,11 +1,10 @@
 # Jukebox Ultra NRV mkII
 
 ## Prequisites
-`python3, flask, requests,  mpv, youtube-dl, nmap, arping, alsa-utils` have to be installed.
+`python3, python-flask, python-requests,  mpv, youtube-dl, alsa-utils` have to be installed.
 
 ## Installation
  - clone the repo
- - create database schema : `sqlite3 jukebox.sqlite3 < schema.sql`
  - move config.py.example to config.py and edit it good sa mère
 
 ## Usage
