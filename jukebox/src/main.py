@@ -9,9 +9,9 @@ main = Blueprint('main', __name__)
 @main.route("/app")
 @requires_auth
 def app_view():
-    app.logger.info("App access from %s %s", session["user"], session["mac"])
+    app.logger.info("App access from %s", session["user"])
     return render_template(
-        "accueil.html", user=session["user"], mac=session["mac"])
+        "accueil.html", user=session["user"])
 
 
 @main.route("/")

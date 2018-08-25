@@ -17,7 +17,7 @@ def add():
     track["user"] = session["user"]
     with app.playlist_lock:
         app.playlist.append(track)
-        conn = sqlite3.connect("jukebox.sqlite3")
+        conn = sqlite3.connect(app.config["DATABASE_PATH"])
         c = conn.cursor()
         c.execute("INSERT INTO log(track,user) VALUES (?,?)",
                   (json.dumps(track), session['user']))
@@ -64,7 +64,7 @@ def suggest():
         n = request.args.get("n")
     if n > 20:
         n = 20
-    conn = sqlite3.connect("jukebox.sqlite3")
+    conn = sqlite3.connect(app.config["DATABASE_PATH"])
     c = conn.cursor()
     c.execute("SELECT track FROM log ORDER BY RANDOM() LIMIT ?;", (n, ))
     r = [json.loads(i[0]) for i in c.fetchall()]
