@@ -8,9 +8,10 @@ function template(html, d) {
 }
 
 function generate_track_html(t) {
-	track_html = document.createElement("div")
-	track_html.innerHTML = template(track_template, t)		
-	$(track_html).children().data("track", t);
+	track_html = $("<div></div>")
+	track_html.html(template(track_template, t))
+	track_html.children().data("track", t);
+	//console.log(track_html.children().data("track"));
 	return track_html
 }
 
@@ -69,14 +70,14 @@ function syncVideo() {
 			console.log("catching up");
 			yt.seekTo(serverTime);
 		}
-		
+
 		else if (delta > 0.05) {
 			console.log("en avance de", delta);
 			yt.pauseVideo();
 			sleep(delta/2).then(() => {
 				yt.playVideo();
 			});
-			
+
 		}
 		else if (delta < -0.1) {
 			console.log("en retard de", delta);
@@ -90,7 +91,8 @@ sync = function() {
 	$.get("/sync", function (data) {
 		// console.log(data);
 		$('#volume-slider').val(data.volume);
-		$('#playlist').html("");
+		playlistHTML = $("<div></div>")
+		//$('#playlist').html("");
 		for (i in data.playlist) {
 			var t = data.playlist[i];
 			if (i == 0) {
@@ -103,17 +105,22 @@ sync = function() {
 					serverTime = data.time + (Date.now()/1000-time)/2;
 					syncVideo();
                 }
-				$('#playlist').append("<p class='playlist-title'>Lecture en cours</p>")
+				playlistHTML.append("<p class='playlist-title'>Lecture en cours</p>")
 			}
 			else if (i == 1) {
-				$('#playlist').append("<p class='playlist-title'>À venir</p>")
+				playlistHTML.append("<p class='playlist-title'>À venir</p>")
 			}
-			$('#playlist').append(generate_track_html(t))
-			$('#playlist li:last .btn-remove').click(function() {
+			playlistHTML.append(generate_track_html(t))
+			console.log(playlistHTML.find('li:last .btn-remove'))
+			playlistHTML.find('li:last .btn-remove').click(function() {
+				console.log("Deleting track")
+				console.log($(this).parents("li").data("track"))
 				$.post("/remove", $(this).parents("li").data("track"));
 				$(this).parents("li").hide();
+				return false;
 			});
 		}
+		$("#playlist").html(playlistHTML)
 	});
 	window.setTimeout(arguments.callee, 1000);
 }();
@@ -190,5 +197,3 @@ $("#toggle-YT").click(function() {
 });
 
 $('#search_results').hide();
-
-
