@@ -9,3 +9,15 @@
 
 ## Usage
     $ python3 run.py
+
+## Troubleshooting
+Check if the service is properly running :
+ `$ sudo systemctl status jukebox`
+ 
+Check the logs :
+ `$ sudo journalctl -e`
+ 
+Check if youtube-dl is working and up to date
+ `youtube-dl https://www.youtube.com/watch?v=6xKWiCMKKJg`
+
+If not, update it : `sudo youtube-dl -U`
