@@ -133,8 +133,12 @@ var delay = (function(){
   };
 })();
 
-// TODO : not send search on each keyup
-$('#query').keyup(function() {
+$('#query').keyup(function(e) {
+    var code = e.which;
+    // We make a search **only** if the enter key has been pressed
+    if (code != 13) {
+        return;
+    }
 	query = $('#query').val().trim()
 	if (query == "") {
 		$("#search_results").html("");
