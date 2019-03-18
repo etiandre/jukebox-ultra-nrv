@@ -133,6 +133,7 @@ var delay = (function(){
   };
 })();
 
+// TODO : not send search on each keyup
 $('#query').keyup(function() {
 	query = $('#query').val().trim()
 	if (query == "") {
