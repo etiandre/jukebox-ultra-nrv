@@ -1,3 +1,4 @@
+import html
 import re, requests
 from flask import current_app as app
 from flask import session
