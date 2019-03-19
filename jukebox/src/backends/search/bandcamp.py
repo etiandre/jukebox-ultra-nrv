@@ -2,9 +2,9 @@ import html
 import re, requests
 from flask import current_app as app
 from flask import session
-# Parse YouTube's length format
-# TODO: Completely buggy.
 
+
+# Parse YouTube's length format
 def parse_iso8601(x):
     t = [int(i) for i in re.findall("(\d+)", x)]
     r = 0
