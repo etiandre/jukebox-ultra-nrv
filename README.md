@@ -1,16 +1,20 @@
-# Jukebox Ultra NRV mkII
+# Jukebox Ultra NRV mkIII
 
 ## Prequisites
-`python3, python-flask, python-requests,  mpv, youtube-dl, alsa-utils` have to be installed.
+`python3, python-flask, python-requests,  mpv, youtube-dl, alsa-utils,
+python3-pip` have to be installed.
+Also from pip, get `youtube_dl`
 
 ## Installation
  - clone the repo
- - move config.py.example to config.py and edit it good sa mère
+ - move config.py.example to config.py and edit it 😎
 
 ## Usage
     $ python3 run.py
 
 ## Troubleshooting
+
+If you are using a systemctl service.
 Check if the service is properly running :
  `$ sudo systemctl status jukebox`
  
