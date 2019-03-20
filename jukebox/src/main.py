@@ -55,8 +55,8 @@ def search():
     regex_bandcamp = re.compile('(http://|https://)?\S*\.bandcamp.com')
     regex_soundcloud = re.compile('(http://|https://)?soundcloud.com')
 
-    print(re.match(regex_soundcloud, query))
-    print('jukebox.src.backends.search.soundcloud' in sys.modules)
+    #print(re.match(regex_soundcloud, query))
+    #print('jukebox.src.backends.search.soundcloud' in sys.modules)
     if re.match(regex_bandcamp, query) != None \
     and 'jukebox.src.backends.search.bandcamp' in sys.modules:
         for bandcamp in app.search_backends:
@@ -69,7 +69,11 @@ def search():
             if soundcloud.__name__ == 'jukebox.src.backends.search.soundcloud':
                 break
         results += soundcloud.search(query)
+    elif 'jukebox.src.backends.search.youtube' in sys.modules:
+        for youtube in app.search_backends:
+            if youtube.__name__ == 'jukebox.src.backends.search.youtube':
+                break
+        results += youtube.search(query)
     else:
-        for i in app.search_backends:
-            results += i.search(query)
+        print("Error: no search module found")
     return jsonify(results)
