@@ -1,75 +1,54 @@
 import html
 import re, requests
+import json
+from html.parser import HTMLParser
 from flask import current_app as app
 from flask import session
 
+class BandcampParser(HTMLParser):
+	def __init__(self):
+		super().__init__()
+		self.track_informations = {}
+	def handle_starttag(self, tag, attrs):
+		is_image = False;
+		for item in attrs:
+			if (item[0] == 'rel' and item[1] == 'image_src'):
+				is_image = True;
+			elif (is_image and item[0] == 'href'):
+				self.track_informations["image"]=item[1]
+	def handle_endtag(self, tag):
+		pass
 
-# Parse YouTube's length format
-def parse_iso8601(x):
-    t = [int(i) for i in re.findall("(\d+)", x)]
-    r = 0
-    for i in range(len(t)):
-        r += 60**(i) * t[-i-1]
-    return r
+	def handle_data(self, data):
+		index_ad_b=data.find("var TralbumData")
+		if index_ad_b >= 0:
+			index_ad_e=data.find("};", index_ad_b)
+			albumData=data[index_ad_b:index_ad_e+2]
+			index_ti_b=albumData.find("trackinfo: [{")
+			index_ti_e=albumData.find("}]", index_ti_b)
+			track_info=json.loads(albumData[index_ti_b+12:index_ti_e+1])
+			self.track_informations["title"]=track_info["title"]
+			self.track_informations["length"]=track_info["duration"]
+			# on repère le nom d'artiste comme étant une chaine de la forme 'artist: "*",' ce qui peut poser problème si le nom d'artiste comporte '",'
+			index_artist_b=albumData.find("artist: \"")
+			index_artist_e=albumData.find("\",", index_artist_b)
+			self.track_informations["artist"]=albumData[index_artist_b+9:index_artist_e]
 
 def search(query):
     """
     Search for a bandcamp url
     """
     results = []
-    """
-    youtube_ids = None
-    m = re.search("youtube.com/watch\?v=([\w\d\-_]+)", query)
-    if m:
-        youtube_ids = [m.groups()[0]]
-    m = re.search("youtu.be/(\w+)", query)
-    if m:
-        youtube_ids = [m.groups()[0]]
-    if youtube_ids:
-        app.logger.info("Youtube video pasted by %s: %s", session["user"],
-                        youtube_ids[0])
-    else:
-        app.logger.info("Youtube search by %s : %s", session["user"], query)
-        r = requests.get(
-            "https://www.googleapis.com/youtube/v3/search",
-            params={
-                "part": "snippet",
-                "q": query,
-                "key": app.config["YOUTUBE_KEY"],
-                "type": "video"
-            })
-        if r.status_code != 200:
-            raise Exception(r.text, r.reason)
-        data = r.json()
-        if len(data["items"]) == 0:  #   Si le servuer n'a rien trouvé
-            raise Exception("nothing found on youtube")
-        youtube_ids = [i["id"]["videoId"] for i in data["items"]]
-    r = requests.get(
-        "https://www.googleapis.com/youtube/v3/videos",
-        params={
-            "part": "snippet,contentDetails",
-            "key": app.config["YOUTUBE_KEY"],
-            "id": ",".join(youtube_ids)
-        })
-    data = r.json()
-    for i in data["items"]:
-        results.append({
-            "source": "youtube",
-            "title": i["snippet"]["title"],
-            "artist": i["snippet"]["channelTitle"],
-            "url": "http://www.youtube.com/watch?v=" + i["id"],
-            "albumart_url": i["snippet"]["thumbnails"]["medium"]["url"],
-            "duration": parse_iso8601(i["contentDetails"]["duration"]),
-            "id": i["id"]
-        })
-        """
+    parser = BandcampParser()
+    response = requests.get(query) # response : Response
+    parser.feed(response.text)
     results.append({
         "source": "bandcamp",
-        "title": "Unknown",
-        "artist": "Unknown",
+        "title": parser.track_informations["title"],
+        "artist": parser.track_informations["artist"],
         "url": query,
-        "albumart_url": "https://f4.bcbits.com/img/a2062875306_16.jpg",
-        "duration": 666,
+        "albumart_url": parser.track_informations["image"],
+        "duration": parser.track_informations["length"],
         "id": 42
         })
     return results
