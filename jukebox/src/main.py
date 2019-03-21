@@ -12,13 +12,24 @@ main = Blueprint('main', __name__)
 @requires_auth
 def app_view():
     app.logger.info("App access from %s", session["user"])
-    return render_template(
-        "accueil.html", user=session["user"])
+    return render_template("accueil.html",
+            user=session["user"], jk_name = app.config["JK_NAME"])
 
 
 @main.route("/")
 def accueil():
     return redirect("/app")
+
+@main.route("/help")
+def help():
+    # we should add a modules argument to render_template to
+    # display which search functions are available
+    modules = []
+    for i in app.config["SEARCH_BACKENDS"]:
+        modules.append(i)
+    print(modules)
+    return render_template("help.html", modules = modules,
+            jk_name = app.config["JK_NAME"])
 
 
 @main.route("/sync")

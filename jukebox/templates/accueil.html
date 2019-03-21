@@ -1,52 +1,63 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <title>Jukebox Ultra NRV mkIII</title>
-</head>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <title>{{ jk_name }}</title>
+    </head>
 
-<body>
+    <body>
 
-<div class="container-fluid"><div class="row">
-	<div class="col-xl-8">
-		<h1 class="display-3">Jukebox Ultra NRV mkIII</h1>
-		<div class="clearfix">
-			<p class="float-left lead">Coucou {{ user }}</p>
-			<p class="float-right lead"><a href="/logout">Logout</a></p>
-		</div>
-		<div class="form-group">
-			<input class="form-control form-control-lg" name="query" id="query" type="text" placeholder="Recherchez un morceau ou collez une url"
-					spellcheck="false" dir="ltr" style="text-align: left; direction: ltr;" autocomplete="off"
-					aria-expanded="false" autofocus/>
-		</div>
-		<div class="form-group form-inline">
-			<img src="/static/images/icons/volume.svg" class="icon">
-			<input type="range" class="volume-slider form-control" id="volume-slider" min="0" max="100">
-		</div>
-		<ul class="list-group" id="search_results"></ul>
-		<ul class="list-group" id="playlist"></ul>
-	</div>
-	<div class="col-xl-4">
-        <div id="YT"></div>
-        <div class="clearfix">
-            <p class="display-4 float-left">Suggestions</p>
-            <p class="float-right lead py-4">
-                <a href="#" id="refresh-suggestions">Rafraîchir</a>
-                <a href="#" id="toggle-YT">Afficher/Masquer la vidéo</a>
-            </p>
-        </div>
-		<ul class="list-group" id="suggestions"></ul>
-	</div>
-</div></div>
+        <div class="container-fluid"><div class="row">
+                <div class="col-xl-8">
+                    <h1 class="display-3">{{ jk_name }}</h1>
+                    <div class="clearfix">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <p class="nav-link active">Coucou {{ user }}</p>
+                            </li>
+                            <li class="nav-item">
+                                <p class="nav-link">
+                                <a href="/help">Help</a>
+                                </p>
+                            </li>
+                            <li class="nav-item">
+                                <p class="nav-link"><a href="/logout">Logout</a></p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control form-control-lg" name="query" id="query" type="text" placeholder="Recherchez un morceau ou collez une url"
+                                                                                                        spellcheck="false" dir="ltr" style="text-align: left; direction: ltr;" autocomplete="off"
+                                                                                                                                                                               aria-expanded="false" autofocus/>
+                    </div>
+                    <div class="form-group form-inline">
+                        <img src="/static/images/icons/volume.svg" class="icon">
+                        <input type="range" class="volume-slider form-control" id="volume-slider" min="0" max="100">
+                    </div>
+                    <ul class="list-group" id="search_results"></ul>
+                    <ul class="list-group" id="playlist"></ul>
+                </div>
+                <div class="col-xl-4">
+                    <div id="YT"></div>
+                    <div class="clearfix">
+                        <p class="display-4 float-left">Suggestions</p>
+                        <p class="float-right lead py-4">
+                        <a href="#" id="refresh-suggestions">Rafraîchir</a>
+                        <a href="#" id="toggle-YT">Afficher/Masquer la vidéo</a>
+                        </p>
+                    </div>
+                    <ul class="list-group" id="suggestions"></ul>
+                </div>
+            </div></div>
 
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
-<script src="{{ url_for('static',filename='scripts/jquery.loadTemplate.min.js') }}" crossorigin="anonymous"></script>
-<script src="{{ url_for('static',filename='scripts/main.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</body>
+            <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+            <script src="{{ url_for('static',filename='scripts/jquery.loadTemplate.min.js') }}" crossorigin="anonymous"></script>
+            <script src="{{ url_for('static',filename='scripts/main.js') }}"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </body>
 </html>

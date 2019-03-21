@@ -16,3 +16,5 @@ YOUTUBE_KEY=""
 SEARCH_BACKENDS=[
   "youtube"
 ]
+# Name of the app
+JK_NAME="Jukebox Ultra NRV MkIII"
