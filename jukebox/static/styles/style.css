@@ -28,7 +28,7 @@
 .centered {
 	margin: auto
 }
-.track-duration,.track-user {
+.track-duration,.track-user,.track-source {
 	color: #aaa;
 }
 
