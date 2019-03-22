@@ -19,8 +19,33 @@ def add():
         app.playlist.append(track)
         conn = sqlite3.connect(app.config["DATABASE_PATH"])
         c = conn.cursor()
+        # check if track not in track_info : id = url
+        c.execute("""
+        select * from track_info
+        where url = ?
+        ;
+        """,
+        (track["url"]))
+        r = c.fetchall()
+        print(r)
+        if r != None:
+            c.execute("""INSERT INTO track_info VALUES
+                    (url, track, artist, album, duration, albumart_url,
+                    source)
+                    (?,   ?,     ?,      ?,     ?,        ?,
+                    ?)
+                    ;""",
+                    (track["url"], track["title"], track["artist"],
+                        track["album"], track["duration"],
+                        track["albumart_url"], track["source"]))
+            # get id
+            track_id = None
+        else:
+            # we must get the id
+            track_id = None
+            pass
         c.execute("INSERT INTO log(track,user) VALUES (?,?)",
-                  (json.dumps(track), session['user']))
+                  (track_id, session['user']))
         conn.commit()
         if len(app.playlist) == 1:
             threading.Thread(target=app.player_worker).start()
