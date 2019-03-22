@@ -65,9 +65,10 @@ def search():
     # else we search only on youtube (in the future, maybe soundcloud too
     regex_bandcamp = re.compile('(http://|https://)?\S*\.bandcamp.com')
     regex_soundcloud = re.compile('(http://|https://)?soundcloud.com')
+    regex_jamendo = re.compile('(http://|https://)?(www.)?jamendo.com')
 
-    #print(re.match(regex_soundcloud, query))
-    #print('jukebox.src.backends.search.soundcloud' in sys.modules)
+    print(re.match(regex_jamendo, query))
+    #print('jukebox.src.backends.search.jamendo' in sys.modules)
     if re.match(regex_bandcamp, query) != None \
     and 'jukebox.src.backends.search.bandcamp' in sys.modules:
         for bandcamp in app.search_backends:
@@ -80,6 +81,12 @@ def search():
             if soundcloud.__name__ == 'jukebox.src.backends.search.soundcloud':
                 break
         results += soundcloud.search(query)
+    elif re.match(regex_jamendo, query) != None \
+    and 'jukebox.src.backends.search.jamendo' in sys.modules:
+        for jamendo in app.search_backends:
+            if jamendo.__name__ == 'jukebox.src.backends.search.jamendo':
+                break
+        results += jamendo.search(query)
     elif 'jukebox.src.backends.search.youtube' in sys.modules:
         for youtube in app.search_backends:
             if youtube.__name__ == 'jukebox.src.backends.search.youtube':
