@@ -4,5 +4,7 @@ CREATE TABLE "track_info" (
     "artist" TEXT,
     "album" TEXT,
     "duration" TEXT,
-    "albumart_url" TEXT
+    "albumart_url" TEXT,
+    "source" TEXT,
+    "album" TEXT
 );

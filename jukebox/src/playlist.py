@@ -19,6 +19,11 @@ def add():
         app.playlist.append(track)
         conn = sqlite3.connect(app.config["DATABASE_PATH"])
         c = conn.cursor()
+        c.execute("INSERT INTO track_info VALUES(url, track, artist,
+                album, duration, albumart_url, source) ?",
+                (track["url"], track["title"], track["artist"],
+                    track["album"], track["duration"],
+                    track["albumart_url"], track["source"]))
         c.execute("INSERT INTO log(track,user) VALUES (?,?)",
                   (json.dumps(track), session['user']))
         conn.commit()
