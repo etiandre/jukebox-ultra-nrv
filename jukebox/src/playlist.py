@@ -34,7 +34,7 @@ def remove():
     track = request.form
     with app.playlist_lock:
         app.logger.info("Removing track %s", track["url"])
-        track["user"] = session["user"]
+        #track["user"] = session["user"]
         for i in app.playlist:
             if i["url"] == track["url"]:
                 if app.playlist.index(i) == 0:

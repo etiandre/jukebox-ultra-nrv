@@ -63,18 +63,24 @@ def search():
     # (if bandcamp loaded)
     # similar for soundcloud
     # else we search only on youtube (in the future, maybe soundcloud too
-    regex_bandcamp = re.compile('(http://|https://)?\S*\.bandcamp.com')
-    regex_soundcloud = re.compile('(http://|https://)?soundcloud.com')
-    regex_jamendo = re.compile('(http://|https://)?(www.)?jamendo.com')
+    regex_bandcamp = re.compile('^(http://|https://)?\S*\.bandcamp.com')
+    regex_soundcloud = re.compile('^(http://|https://)?soundcloud.com')
+    regex_jamendo = re.compile('^(https?://)?(www.)?jamendo.com')
+    regex_search_soundcloud = re.compile('(\!sc\s)|(.*\s\!sc\s)|(.*\s\!sc$)')
+    regex_search_youtube = re.compile('i(\!yt\s)|(.*\s\!yt\s)|(.*\s\!yt$)')
 
-    print(re.match(regex_jamendo, query))
+
+    #print("Query : \"" + query + "\"")
+    #print("Regex match :", re.match(regex_search_soundcloud, query))
     #print('jukebox.src.backends.search.jamendo' in sys.modules)
+    # Bandcamp
     if re.match(regex_bandcamp, query) != None \
     and 'jukebox.src.backends.search.bandcamp' in sys.modules:
         for bandcamp in app.search_backends:
             if bandcamp.__name__ == 'jukebox.src.backends.search.bandcamp':
                 break
         results += bandcamp.search(query)
+    # Soundcloud
     elif re.match(regex_soundcloud, query) != None \
     and 'jukebox.src.backends.search.soundcloud' in sys.modules:
         for soundcloud in app.search_backends:
@@ -87,6 +93,15 @@ def search():
             if jamendo.__name__ == 'jukebox.src.backends.search.jamendo':
                 break
         results += jamendo.search(query)
+    # Soundcloud search
+    elif re.match(regex_search_soundcloud, query) != None \
+    and 'jukebox.src.backends.search.soundcloud' in sys.modules:
+        for soundcloud in app.search_backends:
+            if soundcloud.__name__ == 'jukebox.src.backends.search.soundcloud':
+                break
+        results += soundcloud.search_engine(re.sub("\!sc", "", query))
+
+
     elif 'jukebox.src.backends.search.youtube' in sys.modules:
         for youtube in app.search_backends:
             if youtube.__name__ == 'jukebox.src.backends.search.youtube':
