@@ -56,3 +56,6 @@ def search(query):
             "id": i["id"]
         })
     return results
+
+def search_engine(query):
+    return search(query)

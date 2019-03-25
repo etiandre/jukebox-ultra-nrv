@@ -101,6 +101,13 @@ def search():
                 break
         results += soundcloud.search_engine(re.sub("\!sc", "", query))
 
+    # Youtube search (explicit)
+    elif re.match(regex_search_youtube, query) != None \
+    and 'jukebox.src.backends.search.youtube' in sys.modules:
+        for youtube in app.search_backends:
+            if youtube.__name__ == 'jukebox.src.backends.search.youtube':
+                break
+        results += youtube.search_engine(re.sub("\!yt", "", query))
 
     elif 'jukebox.src.backends.search.youtube' in sys.modules:
         for youtube in app.search_backends:
