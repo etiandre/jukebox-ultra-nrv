@@ -11,18 +11,12 @@ def search(query):
     # We use youtube-dl to get the song metadata
     # only problem : it's a bit slow (about 3 seconds)
     ydl_opts = {
-            'writeinfojson': True,
+            #'writeinfojson': True,
             'skip_download': True, # we do want only a json file
-            'outtmpl': "tmp_music", # the json is tmp_music.info.json
+            #'outtmpl': "tmp_music", # the json is tmp_music.info.json
             }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([query])
-
-    with open("tmp_music.info.json", 'r') as f:
-        metadata = f.read()
-        metadata = json.loads(metadata)
-        print(type(metadata))
-
+        metadata = ydl.extract_info(query, False)
 
     results.append({
         "source": "jamendo",
