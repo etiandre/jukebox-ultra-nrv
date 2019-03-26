@@ -1,6 +1,8 @@
 import re, requests
 from flask import current_app as app
 from flask import session
+import youtube_dl
+import json
 # Parse YouTube's length format
 # TODO: Completely buggy.
 def parse_iso8601(x):
@@ -32,7 +34,10 @@ def search(query):
                 "type": "video"
             })
         if r.status_code != 200:
-            raise Exception(r.text, r.reason)
+            if r.status_code != 403:
+                raise Exception(r.text, r.reason)
+            else:
+                return search_fallback(query)
         data = r.json()
         if len(data["items"]) == 0:  #   Si le servuer n'a rien trouvé
             raise Exception("nothing found on youtube")
@@ -59,3 +64,46 @@ def search(query):
 
 def search_engine(query):
     return search(query)
+
+def search_fallback(query):
+    ydl_opts = {
+        'writeinfojson': True,
+        'skip_download': True, # we do want only a json file
+        'outtmpl': "tmp_music_%(playlist_index)s", # the json is tmp_music.info.json
+        }
+
+    results = []
+
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        try:
+            ydl.download(["ytsearch5:" + query])
+            # TODO : for now, we just interrupt the search, it could
+            # be cool to have a yt-dl option to ignore it
+        except youtube_dl.utils.DownloadError:
+            pass
+
+
+    for i in range(5):
+
+        with open("tmp_music_" + str(i+1) + ".info.json", 'r') as f:
+            metadata = f.read()
+            metadata = json.loads(metadata)
+            print(type(metadata))
+
+        artist = metadata["artist"]
+        if artist == None:
+            artist = metadata["uploader"]
+        title = metadata["track"]
+        if title == None:
+            title = metadata["title"]
+
+        results.append({
+            "source": "youtube",
+            "title": title,
+            "artist": artist,
+            "url": metadata["webpage_url"],
+            "albumart_url": metadata["thumbnail"],
+            "duration": metadata["duration"],
+            "id": metadata["id"]
+            })
+    return results
