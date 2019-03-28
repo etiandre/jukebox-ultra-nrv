@@ -4,13 +4,19 @@ from flask import session
 
 import youtube_dl
 import json
+from urllib.parse import unquote
+
 
 def search(query):
     results = []
-    print("---")
-    print(query)
-    print("---")
+    #print("---")
+    #print(query)
+    #print("---")
     query = query.strip(" ")
+    if query[0:5] == "ftp://":
+        query = unquote(query)
+    #print(query)
+    #print("---")
 
     # We use youtube-dl to get the song metadata
     # only problem : it's a bit slow (about 3 seconds)
