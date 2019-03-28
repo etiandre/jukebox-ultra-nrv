@@ -13,7 +13,8 @@ def search(query):
     #print(query)
     #print("---")
     query = query.strip(" ")
-    if query[0:5] == "ftp://":
+    print(query[:6])
+    if query[:6] == "ftp://":
         query = unquote(query)
     #print(query)
     #print("---")
