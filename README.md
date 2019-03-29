@@ -8,6 +8,7 @@ Also from pip, get `youtube_dl`
 ## Installation
  - clone the repo
  - move config.py.example to config.py and edit it 😎
+ - To add a favicon, place it in the `jukebox/static` folder
 
 ## Usage
     $ python3 run.py
