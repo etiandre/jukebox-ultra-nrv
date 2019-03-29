@@ -17,15 +17,27 @@ def search(query):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         metadata = ydl.extract_info(query, False)
 
-    results.append({
-        "source": "soundcloud",
-        "title": metadata["title"],
-        "artist": metadata["uploader"],
-        "url": query,
-        "albumart_url": metadata["thumbnail"],
-        "duration": metadata["duration"],
-        "id": metadata["id"]
-        })
+    if "_type" in metadata and metadata["_type"] == "playlist":
+        for res in metadata["entries"]:
+            results.append({
+                "source": "soundcloud",
+                "title": res["title"],
+                "artist": res["uploader"],
+                "url": res["webpage_url"],
+                "albumart_url": res["thumbnails"][0]["url"],
+                "duration": res["duration"],
+                "id": res["id"]
+                })
+    else:
+        results.append({
+            "source": "soundcloud",
+            "title": metadata["title"],
+            "artist": metadata["uploader"],
+            "url": metadata["webpage_url"],
+            "albumart_url": metadata["thumbnail"],
+            "duration": metadata["duration"],
+            "id": metadata["id"]
+            })
     return results
 
 def search_engine(query):
