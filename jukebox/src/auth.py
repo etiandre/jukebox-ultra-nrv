@@ -22,7 +22,7 @@ def auth_page():
     if request.form["action"] == "new":
         try:
             c.execute(
-                'INSERT INTO users VALUES (?,?)',
+                'INSERT INTO users ("user", "pass") VALUES (?,?)',
                 (request.form["user"],
                  hashlib.sha512(request.form["pass"].encode()).hexdigest()))
             conn.commit()

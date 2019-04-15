@@ -46,6 +46,7 @@ def search(query):
         })
     data = r.json()
     for i in data["items"]:
+        album = None
         results.append({
             "source": "youtube",
             "title": i["snippet"]["title"],
@@ -53,6 +54,7 @@ def search(query):
             "url": "http://www.youtube.com/watch?v=" + i["id"],
             "albumart_url": i["snippet"]["thumbnails"]["medium"]["url"],
             "duration": parse_iso8601(i["contentDetails"]["duration"]),
-            "id": i["id"]
+            "id": i["id"],
+            "album": album,
         })
     return results

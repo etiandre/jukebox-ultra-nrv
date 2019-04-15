@@ -1,5 +1,5 @@
 CREATE TABLE "users" (
     "id" INTEGER PRIMARY KEY,
-    "user" TEXT NOT NULL PRIMARY KEY,
-    "pass" TEXT
+    "user" TEXT NOT NULL,
+    "pass" TEXT NOT NULL
 );

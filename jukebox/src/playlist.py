@@ -15,23 +15,23 @@ def add():
     track = request.form.to_dict()
     print("adding", track)
     track["user"] = session["user"]
+    print(track["url"])
     with app.playlist_lock:
         app.playlist.append(track)
         conn = sqlite3.connect(app.config["DATABASE_PATH"])
         c = conn.cursor()
-        # check if track not in track_info : id = url
-        c.execute("""
-        select * from track_info
-        where url = ?
-        ;
-        """,
-        (track["url"]))
+        # check if track not in track_info i.e. if url no already there
+        c.execute("""select id
+                     from track_info
+                     where url = ?;
+                  """,
+        (track["url"],))
         r = c.fetchall()
         print(r)
         if r != None:
-            c.execute("""INSERT INTO track_info VALUES
+            c.execute("""INSERT INTO track_info
                     (url, track, artist, album, duration, albumart_url,
-                    source)
+                    source) VALUES
                     (?,   ?,     ?,      ?,     ?,        ?,
                     ?)
                     ;""",
