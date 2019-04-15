@@ -40,10 +40,6 @@ def add():
                         track["albumart_url"], track["source"]))
             # get id
             track_id = None
-        else:
-            # we must get the id
-            track_id = None
-            pass
         c.execute("INSERT INTO log(track,user) VALUES (?,?)",
                   (track_id, session['user']))
         conn.commit()
