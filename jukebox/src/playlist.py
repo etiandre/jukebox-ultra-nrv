@@ -13,7 +13,7 @@ def add():
     Ajoute l'url à la playlist
     """
     track = request.form.to_dict()
-    print("adding", track)
+    app.logger.info("Adding track %s", track["url"])
     track["user"] = session["user"]
     print(track["url"])
     with app.playlist_lock:
@@ -54,7 +54,8 @@ def remove():
     """supprime la track de la playlist"""
     track = request.form
     with app.playlist_lock:
-        print("removing", track)
+        app.logger.info("Removing track %s", track["url"])
+        #track["user"] = session["user"]
         for i in app.playlist:
             if i["url"] == track["url"]:
                 if app.playlist.index(i) == 0:

@@ -63,23 +63,61 @@ def search():
     # (if bandcamp loaded)
     # similar for soundcloud
     # else we search only on youtube (in the future, maybe soundcloud too
-    regex_bandcamp = re.compile('(http://|https://)?\S*\.bandcamp.com')
-    regex_soundcloud = re.compile('(http://|https://)?soundcloud.com')
+    regex_bandcamp = re.compile('^(http://|https://)?\S*\.bandcamp.com')
+    regex_soundcloud = re.compile('^(http://|https://)?soundcloud.com')
+    regex_jamendo = re.compile('^(https?://)?(www.)?jamendo.com')
+    regex_search_soundcloud = re.compile('(\!sc\s)|(.*\s\!sc\s)|(.*\s\!sc$)')
+    regex_search_youtube = re.compile('(\!yt\s)|(.*\s\!yt\s)|(.*\s\!yt$)')
+    regex_generic = re.compile('(\!url\s)|(.*\s\!url\s)|(.*\s\!url$)')
 
-    #print(re.match(regex_soundcloud, query))
-    #print('jukebox.src.backends.search.soundcloud' in sys.modules)
+
+    #print("Query : \"" + query + "\"")
+    print("Regex match :", re.match(regex_generic, query))
+    #print('jukebox.src.backends.search.jamendo' in sys.modules)
+    # Bandcamp
     if re.match(regex_bandcamp, query) != None \
     and 'jukebox.src.backends.search.bandcamp' in sys.modules:
         for bandcamp in app.search_backends:
             if bandcamp.__name__ == 'jukebox.src.backends.search.bandcamp':
                 break
         results += bandcamp.search(query)
+    # Soundcloud
     elif re.match(regex_soundcloud, query) != None \
     and 'jukebox.src.backends.search.soundcloud' in sys.modules:
         for soundcloud in app.search_backends:
             if soundcloud.__name__ == 'jukebox.src.backends.search.soundcloud':
                 break
         results += soundcloud.search(query)
+    elif re.match(regex_jamendo, query) != None \
+    and 'jukebox.src.backends.search.jamendo' in sys.modules:
+        for jamendo in app.search_backends:
+            if jamendo.__name__ == 'jukebox.src.backends.search.jamendo':
+                break
+        results += jamendo.search(query)
+    # Soundcloud search
+    elif re.match(regex_search_soundcloud, query) != None \
+    and 'jukebox.src.backends.search.soundcloud' in sys.modules:
+        for soundcloud in app.search_backends:
+            if soundcloud.__name__ == 'jukebox.src.backends.search.soundcloud':
+                break
+        results += soundcloud.search_engine(re.sub("\!sc", "", query))
+
+    # Youtube search (explicit)
+    elif re.match(regex_search_youtube, query) != None \
+    and 'jukebox.src.backends.search.youtube' in sys.modules:
+        for youtube in app.search_backends:
+            if youtube.__name__ == 'jukebox.src.backends.search.youtube':
+                break
+        results += youtube.search_engine(re.sub("\!yt", "", query))
+
+    # Generic extractor
+    elif re.match(regex_generic, query) != None \
+    and 'jukebox.src.backends.search.generic' in sys.modules:
+        for generic in app.search_backends:
+            if generic.__name__ == 'jukebox.src.backends.search.generic':
+                break
+        results += generic.search(re.sub("\!url", "", query))
+
     elif 'jukebox.src.backends.search.youtube' in sys.modules:
         for youtube in app.search_backends:
             if youtube.__name__ == 'jukebox.src.backends.search.youtube':

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import threading, time
 
+import logging
 from flask import Flask
 from jukebox.src.main import main
 from jukebox.src.auth import auth
@@ -18,6 +19,8 @@ app.playlist_lock = threading.Lock()
 app.playlist = []
 app.player_skip = threading.Event()
 app.player_time = 0
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.WARNING)
 import subprocess, time
 
 # Initialize MPV Controller
@@ -62,8 +65,8 @@ def player_worker():
     while len(app.playlist) > 0:
         print("playing {}".format(app.playlist[0]))
         player = None
-        if app.playlist[0]["source"] in ["youtube", "bandcamp", "soundcloud"]:
-            app.mpv = MyMPV(app.playlist[0]["url"], ["--no-video"])
+        #if app.playlist[0]["source"] in ["youtube", "bandcamp", "soundcloud", "jamendo"]:
+        app.mpv = MyMPV(app.playlist[0]["url"], ["--no-video"])
         while not app.mpv.finished():
             time.sleep(0.5)
         del(app.mpv)
