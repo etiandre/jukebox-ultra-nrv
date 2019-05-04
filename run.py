@@ -21,9 +21,6 @@ if __name__ == "__main__":
         with open(path_sql+"schema-track-info.sql", 'r') as f:
             schema_track_info = f.read()
         c.execute(schema_track_info)
-        with open(path_sql+"schema-track-blacklist.sql", 'r') as f:
-            schema_track_blacklist = f.read()
-        c.execute(schema_track_blacklist)
         conn.commit()
         conn.close()
 
