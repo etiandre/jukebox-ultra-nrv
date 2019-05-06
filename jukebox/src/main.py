@@ -11,7 +11,7 @@ main = Blueprint('main', __name__)
 @main.route("/app")
 @requires_auth
 def app_view():
-    app.logger.info("App access from %s", session["user"])
+    #app.logger.info("App access from %s", session["user"])
     return render_template("accueil.html",
             user=session["user"], jk_name = app.config["JK_NAME"])
 
@@ -27,7 +27,7 @@ def help():
     modules = []
     for i in app.config["SEARCH_BACKENDS"]:
         modules.append(i)
-    print(modules)
+    #print(modules)
     return render_template("help.html", modules = modules,
             jk_name = app.config["JK_NAME"])
 
@@ -72,7 +72,7 @@ def search():
 
 
     #print("Query : \"" + query + "\"")
-    print("Regex match :", re.match(regex_generic, query))
+    #print("Regex match :", re.match(regex_generic, query))
     #print('jukebox.src.backends.search.jamendo' in sys.modules)
     # Bandcamp
     if re.match(regex_bandcamp, query) != None \
@@ -124,5 +124,5 @@ def search():
                 break
         results += youtube.search(query)
     else:
-        print("Error: no search module found")
+        app.logger.error("Error: no search module found")
     return jsonify(results)
