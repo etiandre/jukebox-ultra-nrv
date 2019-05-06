@@ -27,8 +27,7 @@ def add():
                   """,
         (track["url"],))
         r = c.fetchall()
-        print(r)
-        if r != None:
+        if r == []:
             c.execute("""INSERT INTO track_info
                     (url, track, artist, album, duration, albumart_url,
                     source) VALUES
@@ -39,9 +38,27 @@ def add():
                         track["album"], track["duration"],
                         track["albumart_url"], track["source"]))
             # get id
-            track_id = None
-        c.execute("INSERT INTO log(track,user) VALUES (?,?)",
-                  (track_id, session['user']))
+            c.execute("""select id
+                         from track_info
+                         where url = ?;
+                      """,
+            (track["url"],))
+            r = c.fetchall()
+            track_id = r[0][0]
+        else:
+            track_id = r[0][0]
+
+        print("User: " + str(session['user']))
+        c.execute("""select id
+                     from users
+                     where user = ?;
+                  """,
+        (session['user'],))
+        r = c.fetchall()
+        print(r)
+        user_id = r[0][0]
+        c.execute("INSERT INTO log(trackid,userid) VALUES (?,?)",
+                  (track_id, user_id))
         conn.commit()
         if len(app.playlist) == 1:
             threading.Thread(target=app.player_worker).start()

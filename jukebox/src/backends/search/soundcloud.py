@@ -25,6 +25,7 @@ def search(query):
                 "artist": res["uploader"],
                 "url": res["webpage_url"],
                 "albumart_url": res["thumbnails"][0]["url"],
+                "album": None,
                 "duration": res["duration"],
                 "id": res["id"]
                 })
@@ -35,6 +36,7 @@ def search(query):
             "artist": metadata["uploader"],
             "url": metadata["webpage_url"],
             "albumart_url": metadata["thumbnail"],
+            "album": None,
             "duration": metadata["duration"],
             "id": metadata["id"]
             })
@@ -65,6 +67,7 @@ def search_engine(query):
             "artist": metadata["uploader"],
             "url": metadata["url"],
             "albumart_url": metadata["thumbnail"],
+            "album": None,
             "duration": metadata["duration"],
             "id": metadata["id"]
             })

@@ -1,6 +1,8 @@
 CREATE TABLE log (
     "id" INTEGER PRIMARY KEY,
-    "track" INT references track_info(id),
+    trackid INTEGER,
+    userid INTEGER,
     "time" INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "user" INT references users(id)  
+    FOREIGN KEY(trackid) references track_info(id),
+    FOREIGN KEY(userid) references users(id)  
 );
