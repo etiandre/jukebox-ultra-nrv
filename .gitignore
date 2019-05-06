@@ -3,5 +3,7 @@ __pycache__
 *.pyc
 config.py
 *.sqlite3
+*.sqlite3.old
 *.socket
-tmp_music.info.json
+tmp_music*
+favicon.ico
