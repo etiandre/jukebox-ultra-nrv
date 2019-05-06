@@ -121,13 +121,17 @@ def suggest():
         #track_tuple = r[0]
         for track_tuple in r:
             #app.logger.info("nbr : " + str(nbr))
-            if track_tuple[8] == 0: # 0 means it is not blacklisted
+            source = track_tuple[7]
+            # 0 means it is not blacklisted
+            if track_tuple[8] == 0 and \
+                    source in app.config["SEARCH_BACKENDS"]:
+                # TODO : check that it the source is loaded
                 result.append({
                     "albumart_url": track_tuple[6],
                     "title": track_tuple[2],
                     "artist": track_tuple[3],
                     "duration": track_tuple[5],
-                    "source": track_tuple[7],
+                    "source": source,
                     "user": user,
                     "url": track_tuple[1]
                         })
