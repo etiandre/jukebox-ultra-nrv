@@ -20,28 +20,27 @@ def search(query):
     m = re.search("youtu.be/(\w+)", query)
     if m:
         youtube_ids = [m.groups()[0]]
-    if youtube_ids:
-        app.logger.info("Youtube video pasted by %s: %s", session["user"],
-                        youtube_ids[0])
-    else:
-        app.logger.info("Youtube search by %s : %s", session["user"], query)
-        r = requests.get(
-            "https://www.googleapis.com/youtube/v3/search",
-            params={
-                "part": "snippet",
-                "q": query,
-                "key": app.config["YOUTUBE_KEY"],
-                "type": "video"
-            })
-        if r.status_code != 200:
-            if r.status_code != 403:
-                raise Exception(r.text, r.reason)
-            else:
-                return search_fallback(query)
-        data = r.json()
-        if len(data["items"]) == 0:  #   Si le servuer n'a rien trouvé
-            raise Exception("nothing found on youtube")
-        youtube_ids = [i["id"]["videoId"] for i in data["items"]]
+    #if youtube_ids:
+        #app.logger.info("Youtube video pasted by %s: %s", session["user"], youtube_ids[0])
+    #else:
+        #app.logger.info("Youtube search by %s : %s", session["user"], query)
+    r = requests.get(
+        "https://www.googleapis.com/youtube/v3/search",
+        params={
+            "part": "snippet",
+            "q": query,
+            "key": app.config["YOUTUBE_KEY"],
+            "type": "video"
+        })
+    if r.status_code != 200:
+        if r.status_code != 403:
+            raise Exception(r.text, r.reason)
+        else:
+            return search_fallback(query)
+    data = r.json()
+    if len(data["items"]) == 0:  #   Si le servuer n'a rien trouvé
+        raise Exception("nothing found on youtube")
+    youtube_ids = [i["id"]["videoId"] for i in data["items"]]
     r = requests.get(
         "https://www.googleapis.com/youtube/v3/videos",
         params={

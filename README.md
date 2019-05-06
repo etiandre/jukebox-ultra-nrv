@@ -26,3 +26,8 @@ Check if youtube-dl is working and up to date
  `youtube-dl https://www.youtube.com/watch?v=6xKWiCMKKJg`
 
 If not, update it : `sudo youtube-dl -U`
+
+
+## Development
+
+For the logs, please use `app.logger.info`, `app.logger.warning` or `app.logger.error`.

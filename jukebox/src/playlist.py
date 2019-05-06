@@ -15,7 +15,7 @@ def add():
     track = request.form.to_dict()
     app.logger.info("Adding track %s", track["url"])
     track["user"] = session["user"]
-    print(track["url"])
+    #print(track["url"])
     with app.playlist_lock:
         app.playlist.append(track)
         conn = sqlite3.connect(app.config["DATABASE_PATH"])
@@ -48,14 +48,14 @@ def add():
         else:
             track_id = r[0][0]
 
-        print("User: " + str(session['user']))
+        #print("User: " + str(session['user']))
         c.execute("""select id
                      from users
                      where user = ?;
                   """,
         (session['user'],))
         r = c.fetchall()
-        print(r)
+        #print(r)
         user_id = r[0][0]
         c.execute("INSERT INTO log(trackid,userid) VALUES (?,?)",
                   (track_id, user_id))
@@ -71,7 +71,7 @@ def remove():
     """supprime la track de la playlist"""
     track = request.form
     with app.playlist_lock:
-        app.logger.info("Removing track %s", track["url"])
+        #app.logger.info("Removing track %s", track["url"])
         #track["user"] = session["user"]
         for i in app.playlist:
             if i["url"] == track["url"]:
@@ -81,7 +81,7 @@ def remove():
                     app.playlist.remove(i)
                 break
         else:
-            print("not found !")
+            print("Track " + track["url"] + " not found !")
     return "ok"
 
 
@@ -100,12 +100,37 @@ def volume():
 def suggest():
     n = 5
     if "n" in request.args:
-        n = request.args.get("n")
-    if n > 20:
-        n = 20
+        n = int(request.args.get("n"))
+    #if n > 20:
+    #    n = 20
+    result = []
     conn = sqlite3.connect(app.config["DATABASE_PATH"])
     c = conn.cursor()
-    c.execute("SELECT track FROM log ORDER BY RANDOM() LIMIT ?;", (n, ))
-    r = [json.loads(i[0]) for i in c.fetchall()]
-    print(r)
-    return jsonify(r)
+    nbr = 0
+    while nbr < n: # we use a while to be able not to add a song
+        # if it is blacklisted
+        c.execute("SELECT * FROM log ORDER BY RANDOM() LIMIT 1;")
+        r_log = c.fetchall()
+        track_id = r_log[0][1]
+        user_id = r_log[0][2]
+        c.execute("SELECT user FROM users WHERE id = ?;", (user_id,))
+        r = c.fetchall()
+        user = r[0][0]
+        c.execute("SELECT * FROM track_info WHERE id = ?;", (track_id,))
+        r = c.fetchall()
+        #track_tuple = r[0]
+        for track_tuple in r:
+            #app.logger.info("nbr : " + str(nbr))
+            if track_tuple[8] == 0: # 0 means it is not blacklisted
+                result.append({
+                    "albumart_url": track_tuple[6],
+                    "title": track_tuple[2],
+                    "artist": track_tuple[3],
+                    "duration": track_tuple[5],
+                    "source": track_tuple[7],
+                    "user": user,
+                    "url": track_tuple[1]
+                        })
+                nbr += 1
+    #app.logger.info(jsonify(result))
+    return jsonify(result)

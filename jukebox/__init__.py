@@ -61,18 +61,14 @@ class MyMPV(mpv.MPV):
         self.command("seek", position, "absolute")
 # create player worker
 def player_worker():
-    print("starting player")
     while len(app.playlist) > 0:
-        print("playing {}".format(app.playlist[0]))
         player = None
-        #if app.playlist[0]["source"] in ["youtube", "bandcamp", "soundcloud", "jamendo"]:
         app.mpv = MyMPV(app.playlist[0]["url"], ["--no-video"])
         while not app.mpv.finished():
             time.sleep(0.5)
         del(app.mpv)
         with app.playlist_lock:
             del (app.playlist[0])
-    print("stopping player")
 
 app.player_worker = player_worker
 
