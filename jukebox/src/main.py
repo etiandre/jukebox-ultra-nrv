@@ -1,9 +1,13 @@
 import re
 import sys
-from flask import Blueprint, render_template, redirect, session, jsonify, request
+from flask import Blueprint, render_template, redirect, session, jsonify, request, flash
 from flask import current_app as app
+from flask_wtf import FlaskForm
+from wtforms import SelectField, SubmitField
 from jukebox.src.util import *
 import subprocess, requests, importlib
+from os import listdir
+from os.path import isfile, join
 
 main = Blueprint('main', __name__)
 
@@ -31,6 +35,34 @@ def help():
     return render_template("help.html", modules = modules,
             jk_name = app.config["JK_NAME"])
 
+@main.route("/settings", methods=['GET', 'POST'])
+def settings():
+    # we should add a modules argument to render_template to
+    # display which search functions are available
+
+    style_path = "jukebox/static/styles/custom/"
+    styles = [(f,f) for f in listdir(style_path) if isfile(join(style_path, f)) and f[-4:] == ".css"]
+    app.logger.info(styles)
+    class SettingsForm(FlaskForm):
+        style = SelectField("Styles", choices=styles)
+        submit = SubmitField("Send")
+    form = SettingsForm()
+
+    if request.method == 'POST':
+        #if not(form.validate()):
+        #    flash('All fields are required.')
+        #    app.logger.info("All fields are required.")
+        #    return render_template('settings.html',
+        #            jk_name = app.config["JK_NAME"],form = form)
+        #else:
+        app.logger.info(request.form)
+        style = request.form["style"]
+        app.logger.info("Style : " + style)
+        return render_template('accueil.html',
+                jk_name = app.config["JK_NAME"])
+    elif request.method == 'GET':
+        return render_template('settings.html',
+                 jk_name = app.config["JK_NAME"], form = form)
 
 @main.route("/sync")
 def sync():

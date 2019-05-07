@@ -3,7 +3,7 @@
 ## Prequisites
 `python3, python-flask, python-requests,  mpv, youtube-dl, alsa-utils,
 python3-pip` have to be installed.
-Also from pip, get `youtube_dl`
+Also from pip, get `youtube_dl` and `flask-WTF`
 
 ## Installation
  - clone the repo

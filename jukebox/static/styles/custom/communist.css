@@ -1,0 +1,148 @@
+body
+{
+    background-color: red;
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_the_Soviet_Union.svg");
+    color: orange;
+}
+
+a
+{
+    color: yellow;
+}
+
+h1
+{
+    text-shadow: -1px 1px 0 red,
+				  1px 1px 0 red,
+				 1px -1px 0 red,
+				-1px -1px 0 red;
+}
+
+h1:after
+{
+    content:" ☭";
+}
+
+h1:before
+{
+    content:" ☭";
+}
+
+h1
+{
+    color: yellow;
+}
+
+.h3
+{
+    color: yellow;
+}
+
+.nav
+{
+    text-shadow: -1px 1px 0 red,
+				  1px 1px 0 red,
+				 1px -1px 0 red,
+				-1px -1px 0 red;
+    border: 5px double yellow;
+    background: red;
+    /*
+    -webkit-text-stroke: 1px black;
+    -webkit-text-fill-color: yellow;*/
+}
+
+.container
+{
+    border: 3px double yellow;
+    background: red;
+}
+
+code
+{
+    color: yellow;
+    font-style: monospace;
+}
+#volume-slider
+{
+    -webkit-appearance: none;
+    background-color: yellow;
+    /*outline: 1px solid red;*/
+    /*opacity: 100;*/
+}
+
+#volume-slider::-webkit-slider-thumb
+{
+    -webkit-appearance: none;
+    background: red;
+}
+#volume-slider::-moz-range-thumb
+{
+    background: red;
+    border: none;
+    border-radius: 2px;
+}
+    
+#inputUser,#inputPassword
+{
+    background-color: yellow;
+    color: red;
+    border: 1px solid grey;
+}
+
+#query
+{
+    background-color: yellow;
+    color: red;
+    border: 4px double red;
+}
+#query::placeholder
+{
+    color: grey;
+}
+
+.btn-primary
+{
+    background-color: yellow;
+    color: red;
+    border: 1px solid grey;
+}
+
+.list-group-item
+{
+    background-color: red;
+    color: orange;
+    border: 1px solid yellow;
+    border-radius: 0;
+}
+
+.playlist-title
+{
+    color: orange;   
+}
+.track-title
+{
+    color: yellow;
+    font-weight: bold;
+}
+
+.track-artist
+{
+    color: yellow;
+    font-style: italic;
+}
+
+.track-user
+{
+    color: orange;
+}
+
+
+.track-source
+{
+    font-family: monospace;
+}
+
+.track-duration
+{
+    
+}
