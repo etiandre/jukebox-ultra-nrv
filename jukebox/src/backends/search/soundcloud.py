@@ -1,7 +1,3 @@
-import re, requests
-from flask import current_app as app
-from flask import session
-
 import youtube_dl
 import json
 
@@ -42,6 +38,7 @@ def search(query):
             })
     return results
 
+
 def search_engine(query):
     ydl_opts = {
             'writeinfojson': True,
@@ -59,7 +56,6 @@ def search_engine(query):
             metadata = f.read()
             metadata = json.loads(metadata)
             print(type(metadata))
-
 
         results.append({
             "source": "soundcloud",

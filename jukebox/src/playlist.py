@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, redirect, session, request, jsonify
-from flask import current_app as app
+from flask import Blueprint, request, jsonify
 from jukebox.src.util import *
-import sqlite3, json, threading
+import sqlite3
+import threading
 
 playlist = Blueprint('playlist', __name__)
 
@@ -16,50 +16,51 @@ def add():
     app.logger.info("Adding track %s", track["url"])
     track["user"] = session["user"]
     #print(track["url"])
-    with app.playlist_lock:
-        app.playlist.append(track)
-        conn = sqlite3.connect(app.config["DATABASE_PATH"])
-        c = conn.cursor()
-        # check if track not in track_info i.e. if url no already there
+    conn = sqlite3.connect(app.config["DATABASE_PATH"])
+    c = conn.cursor()
+    # check if track not in track_info i.e. if url no already there
+    c.execute("""select id
+                 from track_info
+                 where url = ?;
+              """,
+    (track["url"],))
+    r = c.fetchall()
+    if r == []:
+        c.execute("""INSERT INTO track_info
+                (url, track, artist, album, duration, albumart_url,
+                source) VALUES
+                (?,   ?,     ?,      ?,     ?,        ?,
+                ?)
+                ;""",
+                (track["url"], track["title"], track["artist"],
+                    track["album"], track["duration"],
+                    track["albumart_url"], track["source"]))
+        # get id
         c.execute("""select id
                      from track_info
                      where url = ?;
                   """,
         (track["url"],))
         r = c.fetchall()
-        if r == []:
-            c.execute("""INSERT INTO track_info
-                    (url, track, artist, album, duration, albumart_url,
-                    source) VALUES
-                    (?,   ?,     ?,      ?,     ?,        ?,
-                    ?)
-                    ;""",
-                    (track["url"], track["title"], track["artist"],
-                        track["album"], track["duration"],
-                        track["albumart_url"], track["source"]))
-            # get id
-            c.execute("""select id
-                         from track_info
-                         where url = ?;
-                      """,
-            (track["url"],))
-            r = c.fetchall()
-            track_id = r[0][0]
-        else:
-            track_id = r[0][0]
+        track_id = r[0][0]
+    else:
+        track_id = r[0][0]
 
-        #print("User: " + str(session['user']))
-        c.execute("""select id
-                     from users
-                     where user = ?;
-                  """,
-        (session['user'],))
-        r = c.fetchall()
-        #print(r)
-        user_id = r[0][0]
-        c.execute("INSERT INTO log(trackid,userid) VALUES (?,?)",
-                  (track_id, user_id))
-        conn.commit()
+    #print("User: " + str(session['user']))
+    c.execute("""select id
+                 from users
+                 where user = ?;
+              """,
+    (session['user'],))
+    r = c.fetchall()
+    #print(r)
+    user_id = r[0][0]
+    c.execute("INSERT INTO log(trackid,userid) VALUES (?,?)",
+              (track_id, user_id))
+    conn.commit()
+    #app.mpv.playlist_append(track["url"])
+    with app.playlist_lock:
+        app.playlist.append(track)
         if len(app.playlist) == 1:
             threading.Thread(target=app.player_worker).start()
     return "ok"
@@ -71,18 +72,16 @@ def remove():
     """supprime la track de la playlist"""
     track = request.form
     with app.playlist_lock:
-        #app.logger.info("Removing track %s", track["url"])
-        #track["user"] = session["user"]
-        for i in app.playlist:
-            if i["url"] == track["url"]:
-                if app.playlist.index(i) == 0:
-                    app.mpv.close()
-                else:
-                    app.playlist.remove(i)
-                break
-        else:
-            print("Track " + track["url"] + " not found !")
-    return "ok"
+        for track_p in app.playlist:
+            if track_p["url"] == track["url"]:
+                if app.playlist.index(track_p) == 0:
+                    #app.logger.info("Removing currently playing track")
+                    app.mpv.terminate()
+                app.playlist.remove(track_p)
+                #app.playlist_skip.set()
+                return "ok"
+    app.logger.info("Track " + track["url"] + " not found !")
+    return "nok"
 
 
 @playlist.route("/volume", methods=['POST'])
