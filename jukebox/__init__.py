@@ -28,7 +28,7 @@ class Jukebox(Flask):
             self.mpv = MyMPV(None)  # we start the track
             self.mpv.play(self.currently_played)
             self.mpv.wait_for_playback()  # it's stuck here while it's playing
-            self.mpv .terminate() # the track is finished
+            self.mpv.terminate() # the track is finished
             with self.playlist_lock:
                 if len(self.playlist) > 0 and self.playlist[0]["url"] == self.currently_played:
                     del self.playlist[0]
