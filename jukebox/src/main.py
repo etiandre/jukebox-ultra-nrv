@@ -76,10 +76,13 @@ def sync():
     amixer_out = subprocess.check_output(['amixer', 'get',
                                           "'Master',0"]).decode()
     volume = re.findall("Playback \d+ \[(\d+)%\]", amixer_out)[0]
-    try:
-        time_pos = app.mpv.time_pos
-    except AttributeError:
-        time_pos = None
+    # segfault was here
+    with app.mpv_lock:
+        if app.mpv is not None and app.mpv != "unavailable" and hasattr(app.mpv, 'time_pos') \
+                and app.mpv.time_pos is not None:
+            time_pos = app.mpv.time_pos
+        else:
+            time_pos = 0
     res = {
         "playlist": app.playlist,
         "volume": volume,
@@ -108,7 +111,7 @@ def search():
     regex_jamendo = re.compile('^(https?://)?(www.)?jamendo.com')
     regex_search_soundcloud = re.compile('(\!sc\s)|(.*\s\!sc\s)|(.*\s\!sc$)')
     regex_search_youtube = re.compile('(\!yt\s)|(.*\s\!yt\s)|(.*\s\!yt$)')
-    regex_generic = re.compile('(\!url\s)|(.*\s\!url\s)|(.*\s\!url$)')
+    regex_generic = re.compile('(\!url\s)|(.*\s\!url\s)|(.*\s\!url$)|(\!g\s)|(.*\s\!g\s)|(.*\s\!g$)')
 
     # print("Query : \"" + query + "\"")
     # print("Regex match :", re.match(regex_generic, query))
