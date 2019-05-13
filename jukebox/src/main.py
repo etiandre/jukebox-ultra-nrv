@@ -40,13 +40,13 @@ def sync():
     amixer_out = subprocess.check_output(['amixer', 'get',
                                           "'Master',0"]).decode()
     volume = re.findall("Playback \d+ \[(\d+)%\]", amixer_out)[0]
-    if hasattr(app, 'mpv') and app.mpv is not None and hasattr(app.mpv, 'time_pos') and app.mpv.time_pos is not None:
-        # app.logger.info("MPV exists")
-        time_pos = app.mpv.time_pos  # creates SEGFAULTs
-        #time_pos = 1
-    else:
-        # app.logger.info("Second except")
-        time_pos = 0
+    # segfault was here
+    with app.mpv_lock:
+        if app.mpv is not None and app.mpv != "unavailable" and hasattr(app.mpv, 'time_pos') \
+                and app.mpv.time_pos is not None:
+            time_pos = app.mpv.time_pos
+        else:
+            time_pos = 0
     res = {
         "playlist": app.playlist,
         "volume": volume,
