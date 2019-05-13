@@ -1,6 +1,7 @@
 .idea
 __pycache__
 *.pyc
+venv/
 config.py
 *.sqlite3
 *.sqlite3.old
