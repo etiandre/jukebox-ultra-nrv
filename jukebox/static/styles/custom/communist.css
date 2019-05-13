@@ -57,6 +57,15 @@ h1
     background: red;
 }
 
+.icon {
+    height: 20px;
+    display: block;
+}
+
+#search_results .btn-remove, #search_results .track-user, #suggestions .btn-remove{
+    display: none;
+}
+
 code
 {
     color: yellow;
@@ -95,6 +104,7 @@ code
     color: red;
     border: 4px double red;
 }
+
 #query::placeholder
 {
     color: grey;
@@ -107,6 +117,22 @@ code
     border: 1px solid grey;
 }
 
+#search_results li {
+	cursor: pointer;
+}
+
+.albumart {
+        display: block;
+        max-width: 280px;
+        max-height: 140px;
+	width: 100%;;
+        height: auto;
+}
+
+.list {
+    background-color: red;
+}
+
 .list-group-item
 {
     background-color: red;
@@ -115,9 +141,31 @@ code
     border-radius: 0;
 }
 
+.track-title {
+	display: block;
+    font-size: x-large;
+}
+.track-artist {
+	display: block;
+}
+
+.btn-remove {
+	cursor:pointer
+}
+.centered {
+	margin: auto
+}
+
+iframe#YT {
+    width: 100%;
+}
+
 .playlist-title
 {
-    color: orange;   
+	text-align: center;
+    color: orange;
+	letter-spacing: 10px;
+	margin-top: 13px;
 }
 .track-title
 {

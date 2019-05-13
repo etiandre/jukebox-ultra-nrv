@@ -15,14 +15,15 @@ main = Blueprint('main', __name__)
 @main.route("/app")
 @requires_auth
 def app_view():
-    #app.logger.info("App access from %s", session["user"])
+    # app.logger.info("App access from %s", session["user"])
     return render_template("accueil.html",
-            user=session["user"], jk_name = app.config["JK_NAME"])
+                           user=session["user"], jk_name=app.config["JK_NAME"], stylesheet=app.stylesheet)
 
 
 @main.route("/")
 def accueil():
     return redirect("/app")
+
 
 @main.route("/help")
 def help():
@@ -31,9 +32,9 @@ def help():
     modules = []
     for i in app.config["SEARCH_BACKENDS"]:
         modules.append(i)
-    #print(modules)
     return render_template("help.html", modules = modules,
-            jk_name = app.config["JK_NAME"])
+                           jk_name=app.config["JK_NAME"], stylesheet=app.stylesheet)
+
 
 @main.route("/settings", methods=['GET', 'POST'])
 def settings():
@@ -41,33 +42,36 @@ def settings():
     # display which search functions are available
 
     style_path = "jukebox/static/styles/custom/"
-    styles = [(f,f) for f in listdir(style_path) if isfile(join(style_path, f)) and f[-4:] == ".css"]
+    styles = [(f, f) for f in listdir(style_path) if isfile(join(style_path, f)) and f[-4:] == ".css"]
     app.logger.info(styles)
+
     class SettingsForm(FlaskForm):
         style = SelectField("Styles", choices=styles)
         submit = SubmitField("Send")
     form = SettingsForm()
 
     if request.method == 'POST':
-        #if not(form.validate()):
+        # if not(form.validate()):
         #    flash('All fields are required.')
         #    app.logger.info("All fields are required.")
         #    return render_template('settings.html',
         #            jk_name = app.config["JK_NAME"],form = form)
-        #else:
+        # else:
         app.logger.info(request.form)
         style = request.form["style"]
+        app.stylesheet = style
         app.logger.info("Style : " + style)
-        return render_template('accueil.html',
-                jk_name = app.config["JK_NAME"])
+        return render_template('settings.html',
+                               jk_name=app.config["JK_NAME"], form=form, stylesheet=app.stylesheet)
     elif request.method == 'GET':
         return render_template('settings.html',
-                 jk_name = app.config["JK_NAME"], form = form)
+                               jk_name=app.config["JK_NAME"], form=form, stylesheet=app.stylesheet)
+
 
 @main.route("/sync")
 def sync():
     """
-    Renvoie quelque choise du type vnr
+    Renvoie la playlist en cours
     """
     amixer_out = subprocess.check_output(['amixer', 'get',
                                           "'Master',0"]).decode()
@@ -106,32 +110,31 @@ def search():
     regex_search_youtube = re.compile('(\!yt\s)|(.*\s\!yt\s)|(.*\s\!yt$)')
     regex_generic = re.compile('(\!url\s)|(.*\s\!url\s)|(.*\s\!url$)')
 
-
-    #print("Query : \"" + query + "\"")
-    #print("Regex match :", re.match(regex_generic, query))
-    #print('jukebox.src.backends.search.jamendo' in sys.modules)
+    # print("Query : \"" + query + "\"")
+    # print("Regex match :", re.match(regex_generic, query))
+    # print('jukebox.src.backends.search.jamendo' in sys.modules)
     # Bandcamp
-    if re.match(regex_bandcamp, query) != None \
+    if re.match(regex_bandcamp, query) is not None \
     and 'jukebox.src.backends.search.bandcamp' in sys.modules:
         for bandcamp in app.search_backends:
             if bandcamp.__name__ == 'jukebox.src.backends.search.bandcamp':
                 break
         results += bandcamp.search(query)
     # Soundcloud
-    elif re.match(regex_soundcloud, query) != None \
+    elif re.match(regex_soundcloud, query) is not None \
     and 'jukebox.src.backends.search.soundcloud' in sys.modules:
         for soundcloud in app.search_backends:
             if soundcloud.__name__ == 'jukebox.src.backends.search.soundcloud':
                 break
         results += soundcloud.search(query)
-    elif re.match(regex_jamendo, query) != None \
+    elif re.match(regex_jamendo, query) is not None \
     and 'jukebox.src.backends.search.jamendo' in sys.modules:
         for jamendo in app.search_backends:
             if jamendo.__name__ == 'jukebox.src.backends.search.jamendo':
                 break
         results += jamendo.search(query)
     # Soundcloud search
-    elif re.match(regex_search_soundcloud, query) != None \
+    elif re.match(regex_search_soundcloud, query) is not None \
     and 'jukebox.src.backends.search.soundcloud' in sys.modules:
         for soundcloud in app.search_backends:
             if soundcloud.__name__ == 'jukebox.src.backends.search.soundcloud':
@@ -139,7 +142,7 @@ def search():
         results += soundcloud.search_engine(re.sub("\!sc", "", query))
 
     # Youtube search (explicit)
-    elif re.match(regex_search_youtube, query) != None \
+    elif re.match(regex_search_youtube, query) is not None \
     and 'jukebox.src.backends.search.youtube' in sys.modules:
         for youtube in app.search_backends:
             if youtube.__name__ == 'jukebox.src.backends.search.youtube':
@@ -147,7 +150,7 @@ def search():
         results += youtube.search_engine(re.sub("\!yt", "", query))
 
     # Generic extractor
-    elif re.match(regex_generic, query) != None \
+    elif re.match(regex_generic, query) is not None \
     and 'jukebox.src.backends.search.generic' in sys.modules:
         for generic in app.search_backends:
             if generic.__name__ == 'jukebox.src.backends.search.generic':

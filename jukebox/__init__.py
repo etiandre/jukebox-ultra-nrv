@@ -36,6 +36,7 @@ class Jukebox(Flask):
 
 app = Jukebox(__name__)
 
+app.stylesheet = "default.css"
 app.config.from_pyfile("../config.py")
 app.register_blueprint(main)
 app.register_blueprint(auth)
