@@ -1,6 +1,11 @@
+/*
+Script managing the interface.
+It uses JQuery
+ */
+
 function template(html, d) {
-    var r = html;
-    for (i in d) {
+    let r = html;
+    for (let i in d) {
         r=r.replace("{"+i+"}", d[i]);
     }
     r=r.replace(/{\w+}/g, "")
@@ -8,7 +13,7 @@ function template(html, d) {
 }
 
 function generate_track_html(t) {
-    track_html = $("<div></div>")
+    let track_html = $("<div></div>")
     track_html.html(template(track_template, t))
     track_html.children().data("track", t);
     //console.log(track_html.children().data("track"));
@@ -26,7 +31,7 @@ track_template = `
                 <span class="track-artist">{artist}</span>
                 <span class="track-duration">{duration} s.</span>
                 <span class="track-source">{source}</span>
-                <span class="track-user float-right">ajouté par {user}</span>
+                <span class="track-user float-right">Ajouté par {user}</span>
         </div>
         <div class="col-1 centered">
                 <img class="icon btn-remove" alt="Enlever" src="/static/images/icons/x.svg">
@@ -36,10 +41,12 @@ track_template = `
 </li>
 `
 
+// We load the Youtube iframe
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
 var yt = 0;
 function onYouTubeIframeAPIReady() {
     yt = new YT.Player('YT', {
@@ -56,63 +63,58 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-serverTime = 0;
+
 function sleep (time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
-function syncVideo() {
-    if (serverTime == 0) {
+function syncVideo(mpv_time) {
+    if (mpv_time === 0) {
         yt.pauseVideo();
     } else {
-        ytTime = yt.getCurrentTime();
+        let ytTime = yt.getCurrentTime();
         yt.playVideo();
-        delta = ytTime - serverTime;
+        let delta = ytTime - mpv_time;
         if (Math.abs(delta) > 1) {
             console.log("catching up");
-            yt.seekTo(serverTime);
-        }
-
-        else if (delta > 0.05) {
-            console.log("en avance de", delta);
-            yt.pauseVideo();
-            sleep(delta/2).then(() => {
-                yt.playVideo();
-            });
-
-        }
-        else if (delta < -0.1) {
-            console.log("en retard de", delta);
-            yt.seekTo(serverTime - delta/2);
+            yt.seekTo(mpv_time);
         }
     }
 }
 
 sync = function() {
-    time = Date.now() / 1000
+    let time = Date.now() / 1000
     $.get("/sync", function (data) {
-        // console.log(data);
         $('#volume-slider').val(data.volume);
-        playlistHTML = $("<div></div>")
+        let playlistHTML = $("<div></div>");
         //$('#playlist').html("");
-        for (i in data.playlist) {
-            var t = data.playlist[i];
-            if (i == 0) {
-                if (yt.ready && $("#YT").is(":visible")) {
-                    if (yt.url != data.playlist[0]["id"]) {
-                        console.log("loading video", data.playlist[0]["id"])
-                        yt.cueVideoById(data.playlist[0]["id"])
-                        yt.url = data.playlist[0]["id"]
+        for (let i=0; i<data.playlist.length; i++) {
+            let track = data.playlist[i];
+            if (i === 0) {
+                if (yt.ready && $("#YT").is(":visible") && track["source"] === "youtube") {
+                    let url = new URL(data.playlist[0]["url"]);
+                    let videoId = url.searchParams.get("v");
+                    let t;
+                    if (url.searchParams.has("t")) {
+                        t = parseInt(url.searchParams.get("t"), 10);
+                    } else {
+                        t = 0;
                     }
-                    serverTime = data.time + (Date.now()/1000-time)/2;
-                    syncVideo();
+                    if (yt.url !== videoId) {
+                        //console.log("Loading now !");
+                        console.log("Loading video with id : ", videoId, " at time ", t);
+                        yt.cueVideoById(new String(videoId), t);
+                        yt.url = videoId;
+                        yt.playVideo();
+                    }
+                    syncVideo(data.time);
                 }
                 playlistHTML.append("<p class='playlist-title'>Lecture en cours</p>")
             }
             else if (i == 1) {
                 playlistHTML.append("<p class='playlist-title'>À venir</p>")
             }
-            playlistHTML.append(generate_track_html(t))
-            console.log(playlistHTML.find('li:last .btn-remove'))
+            playlistHTML.append(generate_track_html(track))
+            //console.log(playlistHTML.find('li:last .btn-remove'))
             playlistHTML.find('li:last .btn-remove').click(function() {
                 console.log("Deleting track")
                 console.log($(this).parents("li").data("track"))

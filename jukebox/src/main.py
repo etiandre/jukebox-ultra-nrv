@@ -27,7 +27,7 @@ def help():
     modules = []
     for i in app.config["SEARCH_BACKENDS"]:
         modules.append(i)
-    #print(modules)
+    # print(modules)
     return render_template("help.html", modules = modules,
             jk_name = app.config["JK_NAME"])
 
@@ -40,11 +40,12 @@ def sync():
     amixer_out = subprocess.check_output(['amixer', 'get',
                                           "'Master',0"]).decode()
     volume = re.findall("Playback \d+ \[(\d+)%\]", amixer_out)[0]
-    if hasattr(app, 'mpv') and app.mpv is not None:
-        #app.logger.info("MPV exists")
-        time_pos = app.mpv.time_pos
+    if hasattr(app, 'mpv') and app.mpv is not None and hasattr(app.mpv, 'time_pos') and app.mpv.time_pos is not None:
+        # app.logger.info("MPV exists")
+        time_pos = app.mpv.time_pos  # creates SEGFAULTs
+        #time_pos = 1
     else:
-        #app.logger.info("Second except")
+        # app.logger.info("Second except")
         time_pos = 0
     res = {
         "playlist": app.playlist,
@@ -74,7 +75,7 @@ def search():
     regex_jamendo = re.compile('^(https?://)?(www.)?jamendo.com')
     regex_search_soundcloud = re.compile('(\!sc\s)|(.*\s\!sc\s)|(.*\s\!sc$)')
     regex_search_youtube = re.compile('(\!yt\s)|(.*\s\!yt\s)|(.*\s\!yt$)')
-    regex_generic = re.compile('(\!url\s)|(.*\s\!url\s)|(.*\s\!url$)')
+    regex_generic = re.compile('(\!url\s)|(.*\s\!url\s)|(.*\s\!url$)|(\!g\s)|(.*\s\!g\s)|(.*\s\!g$)')
 
 
     #print("Query : \"" + query + "\"")
