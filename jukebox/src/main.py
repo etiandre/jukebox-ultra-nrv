@@ -20,6 +20,7 @@ def app_view():
 def accueil():
     return redirect("/app")
 
+
 @main.route("/help")
 def help():
     # we should add a modules argument to render_template to
@@ -77,10 +78,9 @@ def search():
     regex_search_youtube = re.compile('(\!yt\s)|(.*\s\!yt\s)|(.*\s\!yt$)')
     regex_generic = re.compile('(\!url\s)|(.*\s\!url\s)|(.*\s\!url$)|(\!g\s)|(.*\s\!g\s)|(.*\s\!g$)')
 
-
-    #print("Query : \"" + query + "\"")
-    #print("Regex match :", re.match(regex_generic, query))
-    #print('jukebox.src.backends.search.jamendo' in sys.modules)
+    # print("Query : \"" + query + "\"")
+    # print("Regex match :", re.match(regex_generic, query))
+    # print('jukebox.src.backends.search.jamendo' in sys.modules)
     # Bandcamp
     if re.match(regex_bandcamp, query) != None \
     and 'jukebox.src.backends.search.bandcamp' in sys.modules:

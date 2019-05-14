@@ -21,6 +21,7 @@ class Jukebox(Flask):
         self.mpv = None
         self.currently_played = None
         self.mpv_lock = threading.Lock()
+        self.database_lock = threading.Lock()
 
     def player_worker(self):
         while len(self.playlist) > 0:
@@ -29,7 +30,8 @@ class Jukebox(Flask):
             self.mpv = MyMPV(None)  # we start the track
             start = time.time()
             end = start
-            track = Track.import_from_url(app.config["DATABASE_PATH"], url)
+            with self.database_lock:
+                track = Track.import_from_url(app.config["DATABASE_PATH"], url)
             counter = 0
             app.logger.info(track.duration)
             app.logger.info(end - start)
