@@ -7,6 +7,7 @@ import logging
 from flask import Flask
 
 from jukebox.src.MyMPV import MyMPV
+from jukebox.src.Track import Track
 from jukebox.src.main import main
 from jukebox.src.auth import auth
 from jukebox.src.playlist import playlist
@@ -23,15 +24,27 @@ class Jukebox(Flask):
 
     def player_worker(self):
         while len(self.playlist) > 0:
-            self.currently_played = self.playlist[0]["url"]
+            url = self.playlist[0]["url"]
+            self.currently_played = url
             self.mpv = MyMPV(None)  # we start the track
-            self.mpv.play(self.currently_played)
-            self.mpv.wait_for_playback()  # it's stuck here while it's playing
+            start = time.time()
+            end = start
+            track = Track.import_from_url(app.config["DATABASE_PATH"], url)
+            counter = 0
+            app.logger.info(track.duration)
+            app.logger.info(end - start)
+            while counter < 5 and track.duration is not None and end - start < track.duration:  # duration of track
+                # note for the future : what if track is passed with a timestamp ?
+                start = time.time()
+                self.mpv.play(self.currently_played)
+                self.mpv.wait_for_playback()  # it's stuck here while it's playing
+                end = time.time()
+                counter += 1
             with self.mpv_lock:
                 self.mpv.terminate()  # the track is finished
                 self.mpv = "unavailable"  # or del app.mpv
             with self.playlist_lock:
-                if len(self.playlist) > 0 and self.playlist[0]["url"] == self.currently_played:
+                if len(self.playlist) > 0 and url == self.currently_played:
                     del self.playlist[0]
 
 
