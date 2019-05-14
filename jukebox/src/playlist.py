@@ -16,48 +16,49 @@ def add():
     app.logger.info("Adding track %s", track["url"])
     track["user"] = session["user"]
     #print(track["url"])
-    conn = sqlite3.connect(app.config["DATABASE_PATH"])
-    c = conn.cursor()
-    # check if track not in track_info i.e. if url no already there
-    c.execute("""select id
-                 from track_info
-                 where url = ?;
-              """,
-    (track["url"],))
-    r = c.fetchall()
-    if r == []:
-        c.execute("""INSERT INTO track_info
-                (url, track, artist, album, duration, albumart_url,
-                source) VALUES
-                (?,   ?,     ?,      ?,     ?,        ?,
-                ?)
-                ;""",
-                (track["url"], track["title"], track["artist"],
-                    track["album"], track["duration"],
-                    track["albumart_url"], track["source"]))
-        # get id
+    with app.database_lock:
+        conn = sqlite3.connect(app.config["DATABASE_PATH"])
+        c = conn.cursor()
+        # check if track not in track_info i.e. if url no already there
         c.execute("""select id
                      from track_info
                      where url = ?;
                   """,
         (track["url"],))
         r = c.fetchall()
-        track_id = r[0][0]
-    else:
-        track_id = r[0][0]
+        if r == []:
+            c.execute("""INSERT INTO track_info
+                    (url, track, artist, album, duration, albumart_url,
+                    source) VALUES
+                    (?,   ?,     ?,      ?,     ?,        ?,
+                    ?)
+                    ;""",
+                    (track["url"], track["title"], track["artist"],
+                        track["album"], track["duration"],
+                        track["albumart_url"], track["source"]))
+            # get id
+            c.execute("""select id
+                         from track_info
+                         where url = ?;
+                      """,
+            (track["url"],))
+            r = c.fetchall()
+            track_id = r[0][0]
+        else:
+            track_id = r[0][0]
 
-    #print("User: " + str(session['user']))
-    c.execute("""select id
-                 from users
-                 where user = ?;
-              """,
-    (session['user'],))
-    r = c.fetchall()
-    #print(r)
-    user_id = r[0][0]
-    c.execute("INSERT INTO log(trackid,userid) VALUES (?,?)",
-              (track_id, user_id))
-    conn.commit()
+        #print("User: " + str(session['user']))
+        c.execute("""select id
+                     from users
+                     where user = ?;
+                  """,
+        (session['user'],))
+        r = c.fetchall()
+        #print(r)
+        user_id = r[0][0]
+        c.execute("INSERT INTO log(trackid,userid) VALUES (?,?)",
+                  (track_id, user_id))
+        conn.commit()
     #app.mpv.playlist_append(track["url"])
     with app.playlist_lock:
         app.playlist.append(track)
