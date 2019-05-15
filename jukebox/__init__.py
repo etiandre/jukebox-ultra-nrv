@@ -27,24 +27,31 @@ class Jukebox(Flask):
         while len(self.playlist) > 0:
             url = self.playlist[0]["url"]
             self.currently_played = url
-            self.mpv = MyMPV(None)  # we start the track
+            with app.mpv_lock:
+                if self.mpv:
+                    del self.mpv
+                self.mpv = MyMPV(None)  # we start the track
             start = time.time()
             end = start
             with self.database_lock:
                 track = Track.import_from_url(app.config["DATABASE_PATH"], url)
             counter = 0
-            app.logger.info(track.duration)
-            app.logger.info(end - start)
-            while counter < 5 and track.duration is not None and end - start < track.duration:  # duration of track
+            # duration of track
+            while counter < 5 and track.duration is not None and end - start < min(track.duration, 10):
                 # note for the future : what if track is passed with a timestamp ?
                 start = time.time()
-                self.mpv.play(self.currently_played)
+                with app.mpv_lock:
+                    self.mpv.play(self.currently_played)
+                # the next instruction should be the only one without a lock
+                # but it causes a segfault
+                # I fear fixing it may be dirty
+                # we could switch to mpv playlists though
                 self.mpv.wait_for_playback()  # it's stuck here while it's playing
                 end = time.time()
                 counter += 1
             with self.mpv_lock:
-                self.mpv.terminate()  # the track is finished
-                self.mpv = "unavailable"  # or del app.mpv
+                del self.mpv  # the track is finished
+                # self.mpv = "unavailable"  # or del app.mpv
             with self.playlist_lock:
                 if len(self.playlist) > 0 and url == self.currently_played:
                     del self.playlist[0]

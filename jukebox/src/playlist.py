@@ -24,9 +24,9 @@ def add():
                      from track_info
                      where url = ?;
                   """,
-        (track["url"],))
+                  (track["url"],))
         r = c.fetchall()
-        if r == []:
+        if not r:
             c.execute("""INSERT INTO track_info
                     (url, track, artist, album, duration, albumart_url,
                     source) VALUES
@@ -77,7 +77,11 @@ def remove():
             if track_p["url"] == track["url"]:
                 if app.playlist.index(track_p) == 0:
                     #app.logger.info("Removing currently playing track")
-                    app.mpv.terminate()
+                    with app.mpv_lock:
+                        # app.mpv.stop()
+                        app.mpv.event_callback('shutdown')
+                        # app.mpv.terminate()
+                        # app.mpv = "unavailable"
                 app.playlist.remove(track_p)
                 #app.playlist_skip.set()
                 return "ok"
@@ -104,20 +108,22 @@ def suggest():
     #if n > 20:
     #    n = 20
     result = []
-    conn = sqlite3.connect(app.config["DATABASE_PATH"])
-    c = conn.cursor()
+    with app.database_lock:
+        conn = sqlite3.connect(app.config["DATABASE_PATH"])
+        c = conn.cursor()
     nbr = 0
     while nbr < n: # we use a while to be able not to add a song
         # if it is blacklisted
-        c.execute("SELECT * FROM log ORDER BY RANDOM() LIMIT 1;")
-        r_log = c.fetchall()
-        track_id = r_log[0][1]
-        user_id = r_log[0][2]
-        c.execute("SELECT user FROM users WHERE id = ?;", (user_id,))
-        r = c.fetchall()
-        user = r[0][0]
-        c.execute("SELECT * FROM track_info WHERE id = ?;", (track_id,))
-        r = c.fetchall()
+        with app.database_lock:
+            c.execute("SELECT * FROM log ORDER BY RANDOM() LIMIT 1;")
+            r_log = c.fetchall()
+            track_id = r_log[0][1]
+            user_id = r_log[0][2]
+            c.execute("SELECT user FROM users WHERE id = ?;", (user_id,))
+            r = c.fetchall()
+            user = r[0][0]
+            c.execute("SELECT * FROM track_info WHERE id = ?;", (track_id,))
+            r = c.fetchall()
         #track_tuple = r[0]
         for track_tuple in r:
             #app.logger.info("nbr : " + str(nbr))

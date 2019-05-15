@@ -43,7 +43,7 @@ def sync():
     volume = re.findall("Playback \d+ \[(\d+)%\]", amixer_out)[0]
     # segfault was here
     with app.mpv_lock:
-        if app.mpv is not None and app.mpv != "unavailable" and hasattr(app.mpv, 'time_pos') \
+        if hasattr(app, 'mpv') and app.mpv is not None and hasattr(app.mpv, 'time_pos') \
                 and app.mpv.time_pos is not None:
             time_pos = app.mpv.time_pos
         else:
