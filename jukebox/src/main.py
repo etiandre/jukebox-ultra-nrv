@@ -45,7 +45,7 @@ def sync():
     with app.mpv_lock:
         if hasattr(app, 'mpv') and app.mpv is not None and hasattr(app.mpv, 'time_pos') \
                 and app.mpv.time_pos is not None:
-            time_pos = app.mpv.time_pos
+            time_pos = app.mpv.time_pos  # when track is finished, continues augmenting time_pos
         else:
             time_pos = 0
     res = {

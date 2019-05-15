@@ -28,6 +28,5 @@ class Track:
                   """,
                   (url,))
         r = c.fetchall()
-        print(r[0])
         return Track(id=r[0][0], url=r[0][1], track=r[0][2], artist=r[0][3], album=r[0][4], duration=r[0][5],
                      albumart_url=r[0][6], source=r[0][7], blacklisted=r[0][8])
