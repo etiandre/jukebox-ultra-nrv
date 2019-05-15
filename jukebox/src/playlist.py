@@ -3,6 +3,8 @@ from jukebox.src.util import *
 import sqlite3
 import threading
 
+from mpv import MpvEventID
+
 playlist = Blueprint('playlist', __name__)
 
 
@@ -76,13 +78,15 @@ def remove():
         for track_p in app.playlist:
             if track_p["url"] == track["url"]:
                 if app.playlist.index(track_p) == 0:
-                    #app.logger.info("Removing currently playing track")
+                    app.logger.info("Removing currently playing track")
                     with app.mpv_lock:
                         # app.mpv.stop()
-                        app.mpv.event_callback('shutdown')
+                        # app.mpv.command(["set_property", "pause", True])
+                        app.mpv.quit()
                         # app.mpv.terminate()
                         # app.mpv = "unavailable"
-                app.playlist.remove(track_p)
+                else:
+                    app.playlist.remove(track_p)
                 #app.playlist_skip.set()
                 return "ok"
     app.logger.info("Track " + track["url"] + " not found !")
