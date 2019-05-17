@@ -42,8 +42,8 @@ def search(query):
         else:
             return search_fallback(query)
     data = r.json()
-    if len(data["items"]) == 0:  #   Si le servuer n'a rien trouvé
-        raise Exception("nothing found on youtube")
+    if len(data["items"]) == 0:  #   Si le serveur n'a rien trouvé
+        app.logger.warning("Nothing found on youtube for query {}".format(query))
     youtube_ids = [i["id"]["videoId"] for i in data["items"]]
     r = requests.get(
         "https://www.googleapis.com/youtube/v3/videos",
