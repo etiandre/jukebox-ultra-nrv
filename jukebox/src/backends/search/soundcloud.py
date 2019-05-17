@@ -4,7 +4,7 @@ import json
 
 def search(query):
     ydl_opts = {
-        'skip_download': True, # we do want only a json file
+        'skip_download': True,  # we do want only a json file
         }
     results = []
 

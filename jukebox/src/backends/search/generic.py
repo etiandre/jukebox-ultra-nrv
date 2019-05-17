@@ -9,9 +9,6 @@ from urllib.parse import unquote
 
 def search(query):
     results = []
-    #print("---")
-    #print(query)
-    #print("---")
     query = query.strip(" ")
     print(query[:6])
     if query[:6] == "ftp://":
