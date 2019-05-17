@@ -3,12 +3,14 @@
 ## Prequisites
 `python3, python-flask, python-requests,  mpv, youtube-dl, alsa-utils,
 python3-pip` have to be installed.
-Also from pip, get `youtube_dl` and `flask-WTF`
+Also from pip, get `youtube_dl`, `passlib` and `flask-WTF`
 
 ## Installation
+
  - clone the repo
  - move config.py.example to config.py and edit it 😎
  - To add a favicon, place it in the `jukebox/static` folder
+ - Install requirements using `pip -r requirements.py`
 
 ## Usage
 
@@ -21,6 +23,12 @@ or with a systemd service jukebox
 ```bash
 $ systemctl start jukebox.service
 ```
+
+## Security
+
+The current use of this application is only among a "friendly" and local network.
+As such, we haven't yet focused much on security.
+The passwords are stored using pbkdf2_sha256 from library `passlib`.
 
 ## Troubleshooting
 

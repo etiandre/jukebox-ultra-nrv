@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, session, request, flash
 from flask import current_app as app
-import sqlite3, hashlib
+import sqlite3
+from passlib.hash import pbkdf2_sha256
 
 from jukebox.src.User import User
 from jukebox.src.util import *
@@ -29,7 +30,8 @@ def auth_page():
         if user is not None:
             flash("Account already exists")
             return render_template("auth.html")
-        user = User(None, request.form["user"], hashlib.sha512(request.form["pass"].encode()).hexdigest())
+        password_hashed = pbkdf2_sha256.hash(request.form["pass"])
+        user = User(None, request.form["user"], password_hashed)
         user.insert_to_database(app.config["DATABASE_PATH"])
         app.logger.info("Created account for %s", request.form["user"])
         session['user'] = request.form['user']
@@ -37,13 +39,15 @@ def auth_page():
 
     else:  # handle login
         user = User.init_from_username(app.config["DATABASE_PATH"], request.form["user"])
-        if user is not None and user.password == hashlib.sha512(request.form["pass"].encode()).hexdigest():
-            app.logger.info("Logging in {}".format(request.form["user"]))
-            session['user'] = request.form['user']
-            return redirect("/app")
-        else:
-            flash("Raté")
-            app.logger.info("Failed log attempt for %s", request.form["user"])
+        try:
+            if user is not None and pbkdf2_sha256.verify(request.form["pass"], user.password):
+                app.logger.info("Logging in {}".format(request.form["user"]))
+                session['user'] = request.form['user']
+                return redirect("/app")
+        except ValueError:
+            pass
+        flash("Raté")
+        app.logger.info("Failed log attempt for %s", request.form["user"])
     # if account successfully created OR login successful
     return render_template("auth.html")
 
