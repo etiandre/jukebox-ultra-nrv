@@ -61,10 +61,10 @@ def settings():
         style = request.form["style"]
         app.stylesheet = style
         app.logger.info("Style : " + style)
-        return render_template('settings.html',
+        return render_template('settings.html', user=session["user"],
                                jk_name=app.config["JK_NAME"], form=form, stylesheet=app.stylesheet)
     elif request.method == 'GET':
-        return render_template('settings.html',
+        return render_template('settings.html', user=session["user"],
                                jk_name=app.config["JK_NAME"], form=form, stylesheet=app.stylesheet)
 
 

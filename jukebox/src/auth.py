@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, redirect, session, request, flash
 from flask import current_app as app
 import sqlite3, hashlib
+
+from jukebox.src.User import User
 from jukebox.src.util import *
 auth = Blueprint('auth', __name__)
 
@@ -11,42 +13,38 @@ def auth_page():
     c = conn.cursor()
 
     if request.method == 'GET':
-        # If the user is aready logged, redirect it to the app
+        # If the user is already logged in, redirect them to the app
         if "user" in session and session['user'] is not None:
             return redirect("/app")
-        else: # else, render login form
+        else:  # else, render login form
             return render_template("auth.html")
 
     # handle account creation
     success = False
     if request.form["action"] == "new":
-        try:
-            c.execute(
-                'INSERT INTO users ("user", "pass") VALUES (?,?)',
-                (request.form["user"],
-                 hashlib.sha512(request.form["pass"].encode()).hexdigest()))
-            conn.commit()
-            app.logger.info("Created account for %s", request.form["user"])
-            success = True
-        except sqlite3.IntegrityError:
-            app.logger.info("Account already exists for %s",
-                            request.form["user"])
-            flash("T'as déjà un compte gros malin")
-    else: # handle login
-        c.execute("SELECT user FROM users WHERE user=? AND pass=?",
-                  (request.form["user"],
-                   hashlib.sha512(request.form["pass"].encode()).hexdigest()))
-        if c.fetchone() != None:
-            app.logger.info("Logging in %s using password",
-                            request.form["user"])
-            success = True
+        # we must first check if the username isn't aleady taken
+        # then we do as usual
+        # if it is, display a notification
+        user = User.init_from_username(app.config["DATABASE_PATH"], request.form["user"])
+        if user is not None:
+            flash("Account already exists")
+            return render_template("auth.html")
+        user = User(None, request.form["user"], hashlib.sha512(request.form["pass"].encode()).hexdigest())
+        user.insert_to_database(app.config["DATABASE_PATH"])
+        app.logger.info("Created account for %s", request.form["user"])
+        session['user'] = request.form['user']
+        return redirect("/app")
+
+    else:  # handle login
+        user = User.init_from_username(app.config["DATABASE_PATH"], request.form["user"])
+        if user is not None and user.password == hashlib.sha512(request.form["pass"].encode()).hexdigest():
+            app.logger.info("Logging in {}".format(request.form["user"]))
+            session['user'] = request.form['user']
+            return redirect("/app")
         else:
             flash("Raté")
             app.logger.info("Failed log attempt for %s", request.form["user"])
     # if account successfully created OR login successful
-    if success == True:
-        session['user'] = request.form['user']
-        return redirect("/app")
     return render_template("auth.html")
 
 
