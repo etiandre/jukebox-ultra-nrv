@@ -98,8 +98,8 @@ def remove():
 def volume():
     if request.method == 'POST':
         subprocess.run([
-            'amixer', '-q', 'set', "'Master',0", request.form["volume"] + "%"
-        ])
+            'amixer', '-q', 'set', "Master", request.form["volume"] + "%"
+        ], shell=True)
         app.logger.info("Volume set to %s", request.form["volume"])
         return "ok"
 

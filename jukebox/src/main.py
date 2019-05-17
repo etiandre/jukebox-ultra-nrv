@@ -87,7 +87,7 @@ def sync():
     Renvoie la playlist en cours
     """
     amixer_out = subprocess.check_output(['amixer', 'get',
-                                          "'Master',0"]).decode()
+                                          'Master'], shell=True).decode()
     volume = re.findall("Playback \d+ \[(\d+)%\]", amixer_out)[0]
     # segfault was here
     with app.mpv_lock:
