@@ -129,7 +129,7 @@ def search():
         for youtube in app.search_backends:
             if youtube.__name__ == 'jukebox.src.backends.search.youtube':
                 break
-        results += youtube.search(query)
+        results += youtube.search_engine(query)
     else:
         app.logger.error("Error: no search module found")
     return jsonify(results)
