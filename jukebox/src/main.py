@@ -11,13 +11,23 @@ from os.path import isfile, join
 
 main = Blueprint('main', __name__)
 
+def get_style():
+    try:
+        if session["stylesheet"] is not None:
+            stylesheet = session["stylesheet"]
+        else:
+            stylesheet = app.stylesheet
+    except KeyError:
+        stylesheet = app.stylesheet
+    return stylesheet
 
 @main.route("/app")
 @requires_auth
 def app_view():
     # app.logger.info("App access from %s", session["user"])
     return render_template("accueil.html",
-                           user=session["user"], jk_name=app.config["JK_NAME"], stylesheet=app.stylesheet)
+                           user=session["user"], jk_name=app.config["JK_NAME"],
+                           stylesheet=get_style())
 
 
 @main.route("/")
@@ -33,7 +43,8 @@ def help():
     for i in app.config["SEARCH_BACKENDS"]:
         modules.append(i)
     return render_template("help.html", modules = modules,
-                           jk_name=app.config["JK_NAME"], stylesheet=app.stylesheet)
+                           jk_name=app.config["JK_NAME"],
+                           stylesheet=get_style())
 
 
 @main.route("/settings", methods=['GET', 'POST'])
@@ -59,13 +70,15 @@ def settings():
         # else:
         app.logger.info(request.form)
         style = request.form["style"]
-        app.stylesheet = style
+        session["stylesheet"] = style
         app.logger.info("Style : " + style)
         return render_template('settings.html', user=session["user"],
-                               jk_name=app.config["JK_NAME"], form=form, stylesheet=app.stylesheet)
+                               jk_name=app.config["JK_NAME"], form=form,
+                               stylesheet=get_style())
     elif request.method == 'GET':
         return render_template('settings.html', user=session["user"],
-                               jk_name=app.config["JK_NAME"], form=form, stylesheet=app.stylesheet)
+                               jk_name=app.config["JK_NAME"], form=form,
+                               stylesheet=get_style())
 
 
 @main.route("/sync")
