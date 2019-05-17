@@ -10,7 +10,7 @@ Also from pip, get `youtube_dl`, `passlib` and `flask-WTF`
  - clone the repo
  - move config.py.example to config.py and edit it 😎
  - To add a favicon, place it in the `jukebox/static` folder
- - Install requirements using `pip -r requirements.py`
+ - Install requirements using `pip install -r requirements.py`
 
 ## Usage
 
