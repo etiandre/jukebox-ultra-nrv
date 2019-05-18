@@ -18,10 +18,31 @@ import importlib
 class Jukebox(Flask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        log = logging.getLogger('werkzeug')
+        log.setLevel(logging.WARNING)
+        with open("version.txt", 'r') as f:
+            self.version = f.read()
+
         self.mpv = None
         self.currently_played = None
         self.mpv_lock = threading.Lock()
         self.database_lock = threading.Lock()
+        self.stylesheet = "default.css"
+        self.config.from_pyfile("../config.py")
+        self.register_blueprint(main)
+        self.register_blueprint(auth)
+        self.register_blueprint(playlist)
+
+        self.playlist_lock = threading.Lock()
+        self.playlist = []
+        self.player_skip = threading.Event()
+        self.player_time = 0
+
+        # Load backends
+
+        self.search_backends = []
+        for i in self.config["SEARCH_BACKENDS"]:
+            self.search_backends.append(importlib.import_module("jukebox.src.backends.search." + i))
 
     def player_worker(self):
         while len(self.playlist) > 0:
@@ -58,21 +79,3 @@ class Jukebox(Flask):
 
 
 app = Jukebox(__name__)
-
-app.config.from_pyfile("../config.py")
-app.register_blueprint(main)
-app.register_blueprint(auth)
-app.register_blueprint(playlist)
-
-app.playlist_lock = threading.Lock()
-app.playlist = []
-app.player_skip = threading.Event()
-app.player_time = 0
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.WARNING)
-
-# Load backends
-
-app.search_backends = []
-for i in app.config["SEARCH_BACKENDS"]:
-    app.search_backends.append(importlib.import_module("jukebox.src.backends.search." + i))

@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='styles/bootstrap.min.css') }}">
+	    <link rel="stylesheet" href="{{ url_for('static', filename='styles/bootstrap.min.css') }}">
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/custom/') }}{{ stylesheet }}">
         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
         <title>{{ jk_name }}</title>
     </head>
@@ -17,7 +17,7 @@
                     <div class="clearfix">
                         <ul class="nav">
                             <li class="nav-item">
-                                <p class="nav-link active">Coucou {{ user }}</p>
+                                <p class="nav-link"><a href="/settings">Settings</a></p>
                             </li>
                             <li class="nav-item">
                                 <p class="nav-link">
@@ -25,7 +25,7 @@
                                 </p>
                             </li>
                             <li class="nav-item">
-                                <p class="nav-link"><a href="/logout">Logout</a></p>
+                                <p class="nav-link"><a href="/logout">Logout from {{ user }}</a></p>
                             </li>
                         </ul>
                     </div>

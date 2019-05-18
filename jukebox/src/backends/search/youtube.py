@@ -5,12 +5,16 @@ import youtube_dl
 import json
 # Parse YouTube's length format
 # TODO: Completely buggy.
+
+
 def parse_iso8601(x):
     t = [int(i) for i in re.findall("(\d+)", x)]
     r = 0
     for i in range(len(t)):
         r += 60**(i) * t[-i-1]
     return r
+
+
 def search(query):
     results = []
     youtube_ids = None
@@ -38,8 +42,8 @@ def search(query):
         else:
             return search_fallback(query)
     data = r.json()
-    if len(data["items"]) == 0:  #   Si le servuer n'a rien trouvé
-        raise Exception("nothing found on youtube")
+    if len(data["items"]) == 0:  #   Si le serveur n'a rien trouvé
+        app.logger.warning("Nothing found on youtube for query {}".format(query))
     youtube_ids = [i["id"]["videoId"] for i in data["items"]]
     r = requests.get(
         "https://www.googleapis.com/youtube/v3/videos",
@@ -63,14 +67,16 @@ def search(query):
         })
     return results
 
+
 def search_engine(query):
     return search(query)
+
 
 def search_fallback(query):
     ydl_opts = {
         'writeinfojson': True,
-        'skip_download': True, # we do want only a json file
-        'outtmpl': "tmp_music_%(playlist_index)s", # the json is tmp_music.info.json
+        'skip_download': True,  # we do want only a json file
+        'outtmpl': "tmp_music_%(playlist_index)s",  # the json is tmp_music.info.json
         }
 
     results = []
@@ -83,25 +89,35 @@ def search_fallback(query):
         except youtube_dl.utils.DownloadError:
             pass
 
-
     for i in range(5):
 
         with open("tmp_music_" + str(i+1) + ".info.json", 'r') as f:
             metadata = f.read()
             metadata = json.loads(metadata)
-            print(type(metadata))
+            # app.logger.info(metadata)
 
+        """
+        app.logger.info("Title: {}".format(metadata["title"]))
+        app.logger.info("Track: {}".format(metadata["track"]))
+        app.logger.info("Alt Title: {}".format(metadata["alt_title"]))
+        app.logger.info("Album: {}".format(metadata["album"]))
+        app.logger.info("Artist: {}".format(metadata["artist"]))
+        app.logger.info("Uploader: {}".format(metadata["uploader"]))
+        """
+
+        title = metadata["title"]
+        if title is None and metadata["track"] is not None:
+            title = metadata["track"]
         artist = metadata["artist"]
-        if artist == None:
+        if artist is None:
             artist = metadata["uploader"]
-        title = metadata["track"]
-        if title == None:
-            title = metadata["title"]
+        album = metadata["album"]
 
         results.append({
             "source": "youtube",
             "title": title,
             "artist": artist,
+            "album": album,
             "url": metadata["webpage_url"],
             "albumart_url": metadata["thumbnail"],
             "duration": metadata["duration"],
