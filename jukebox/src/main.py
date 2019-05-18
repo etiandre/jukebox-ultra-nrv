@@ -68,10 +68,10 @@ def settings():
         #    return render_template('settings.html',
         #            jk_name = app.config["JK_NAME"],form = form)
         # else:
-        app.logger.info(request.form)
+        # app.logger.info(request.form)
         style = request.form["style"]
         session["stylesheet"] = style
-        app.logger.info("Style : " + style)
+        # app.logger.info("Style : " + style)
         return render_template('settings.html', user=session["user"],
                                jk_name=app.config["JK_NAME"], form=form,
                                stylesheet=get_style())
@@ -87,7 +87,7 @@ def sync():
     Renvoie la playlist en cours
     """
     amixer_out = subprocess.check_output(['amixer', 'get',
-                                          'Master'], shell=True).decode()
+                                          app.config["AMIXER_CHANNEL"]], shell=True).decode()
     volume = re.findall("Playback \d+ \[(\d+)%\]", amixer_out)[0]
     # segfault was here
     with app.mpv_lock:

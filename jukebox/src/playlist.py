@@ -17,7 +17,6 @@ def add():
     track = request.form.to_dict()
     app.logger.info("Adding track %s", track["url"])
     track["user"] = session["user"]
-    #print(track["url"])
     with app.database_lock:
         conn = sqlite3.connect(app.config["DATABASE_PATH"])
         c = conn.cursor()
@@ -35,33 +34,33 @@ def add():
                     (?,   ?,     ?,      ?,     ?,        ?,
                     ?)
                     ;""",
-                    (track["url"], track["title"], track["artist"],
-                        track["album"], track["duration"],
-                        track["albumart_url"], track["source"]))
+                      (track["url"], track["title"], track["artist"],
+                       track["album"], track["duration"],
+                       track["albumart_url"], track["source"]))
             # get id
             c.execute("""select id
                          from track_info
                          where url = ?;
                       """,
-            (track["url"],))
+                      (track["url"],))
             r = c.fetchall()
             track_id = r[0][0]
         else:
             track_id = r[0][0]
 
-        #print("User: " + str(session['user']))
+        # print("User: " + str(session['user']))
         c.execute("""select id
                      from users
                      where user = ?;
                   """,
-        (session['user'],))
+                  (session['user'],))
         r = c.fetchall()
-        #print(r)
+        # print(r)
         user_id = r[0][0]
         c.execute("INSERT INTO log(trackid,userid) VALUES (?,?)",
                   (track_id, user_id))
         conn.commit()
-    #app.mpv.playlist_append(track["url"])
+    # app.mpv.playlist_append(track["url"])
     with app.playlist_lock:
         app.playlist.append(track)
         if len(app.playlist) == 1:
@@ -87,7 +86,7 @@ def remove():
                         # app.mpv = "unavailable"
                 else:
                     app.playlist.remove(track_p)
-                #app.playlist_skip.set()
+                # app.playlist_skip.set()
                 return "ok"
     app.logger.info("Track " + track["url"] + " not found !")
     return "nok"
@@ -98,7 +97,7 @@ def remove():
 def volume():
     if request.method == 'POST':
         subprocess.run([
-            'amixer', '-q', 'set', "Master", request.form["volume"] + "%"
+            'amixer', '-q', 'set', app.config["AMIXER_CHANNEL"], request.form["volume"] + "%"
         ], shell=True)
         app.logger.info("Volume set to %s", request.form["volume"])
         return "ok"
@@ -109,14 +108,14 @@ def suggest():
     n = 5
     if "n" in request.args:
         n = int(request.args.get("n"))
-    #if n > 20:
+    # if n > 20:
     #    n = 20
     result = []
     with app.database_lock:
         conn = sqlite3.connect(app.config["DATABASE_PATH"])
         c = conn.cursor()
     nbr = 0
-    while nbr < n: # we use a while to be able not to add a song
+    while nbr < n:  # we use a while to be able not to add a song
         # if it is blacklisted
         with app.database_lock:
             c.execute("SELECT * FROM log ORDER BY RANDOM() LIMIT 1;")
@@ -128,9 +127,9 @@ def suggest():
             user = r[0][0]
             c.execute("SELECT * FROM track_info WHERE id = ?;", (track_id,))
             r = c.fetchall()
-        #track_tuple = r[0]
+        # track_tuple = r[0]
         for track_tuple in r:
-            #app.logger.info("nbr : " + str(nbr))
+            # app.logger.info("nbr : " + str(nbr))
             source = track_tuple[7]
             # 0 means it is not blacklisted
             if track_tuple[8] == 0 and \
@@ -144,7 +143,7 @@ def suggest():
                     "source": source,
                     "user": user,
                     "url": track_tuple[1]
-                        })
+                })
                 nbr += 1
-    #app.logger.info(jsonify(result))
+    # app.logger.info(jsonify(result))
     return jsonify(result)
