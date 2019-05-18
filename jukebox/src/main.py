@@ -11,6 +11,7 @@ from os.path import isfile, join
 
 main = Blueprint('main', __name__)
 
+
 def get_style():
     try:
         if session["stylesheet"] is not None:
@@ -20,6 +21,7 @@ def get_style():
     except KeyError:
         stylesheet = app.stylesheet
     return stylesheet
+
 
 @main.route("/app")
 @requires_auth
@@ -87,9 +89,7 @@ def sync():
     """
     Renvoie la playlist en cours
     """
-    amixer_out = subprocess.check_output(['amixer', 'get',
-                                          app.config["AMIXER_CHANNEL"]], shell=True).decode()
-    volume = re.findall("Playback \d+ \[(\d+)%\]", amixer_out)[0]
+    volume = get_volume()
     # segfault was here
     with app.mpv_lock:
         if hasattr(app, 'mpv') and app.mpv is not None and hasattr(app.mpv, 'time_pos') \

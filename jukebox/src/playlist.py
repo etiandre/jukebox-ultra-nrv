@@ -98,10 +98,7 @@ def remove():
 @requires_auth
 def volume():
     if request.method == 'POST':
-        subprocess.run([
-            'amixer', '-q', 'set', app.config["AMIXER_CHANNEL"], request.form["volume"] + "%"
-        ], shell=True)
-        app.logger.info("Volume set to %s", request.form["volume"])
+        set_volume(request.form["volume"])
         return "ok"
 
 
@@ -118,7 +115,9 @@ def suggest():
         # if it is blacklisted
         with app.database_lock:
             track = Track.get_random_track(app.config["DATABASE_PATH"])
-        if track.blacklisted == 0 and track.source in app.config["SEARCH_BACKENDS"]:
-                result.append(track.serialize())
-                nbr += 1
+        if track is None:
+            nbr += 1
+        elif track.blacklisted == 0 and track.source in app.config["SEARCH_BACKENDS"]:
+            result.append(track.serialize())
+            nbr += 1
     return jsonify(result)
