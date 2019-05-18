@@ -42,9 +42,10 @@ def help():
     modules = []
     for i in app.config["SEARCH_BACKENDS"]:
         modules.append(i)
-    return render_template("help.html", modules = modules,
+    return render_template("help.html", modules=modules,
                            jk_name=app.config["JK_NAME"],
-                           stylesheet=get_style())
+                           stylesheet=get_style(),
+                           version=app.version)
 
 
 @main.route("/settings", methods=['GET', 'POST'])

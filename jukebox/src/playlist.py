@@ -1,4 +1,6 @@
 from flask import Blueprint, request, jsonify
+
+from jukebox.src.Track import Track
 from jukebox.src.util import *
 import sqlite3
 import threading
@@ -111,39 +113,12 @@ def suggest():
     # if n > 20:
     #    n = 20
     result = []
-    with app.database_lock:
-        conn = sqlite3.connect(app.config["DATABASE_PATH"])
-        c = conn.cursor()
     nbr = 0
     while nbr < n:  # we use a while to be able not to add a song
         # if it is blacklisted
         with app.database_lock:
-            c.execute("SELECT * FROM log ORDER BY RANDOM() LIMIT 1;")
-            r_log = c.fetchall()
-            track_id = r_log[0][1]
-            user_id = r_log[0][2]
-            c.execute("SELECT user FROM users WHERE id = ?;", (user_id,))
-            r = c.fetchall()
-            user = r[0][0]
-            c.execute("SELECT * FROM track_info WHERE id = ?;", (track_id,))
-            r = c.fetchall()
-        # track_tuple = r[0]
-        for track_tuple in r:
-            # app.logger.info("nbr : " + str(nbr))
-            source = track_tuple[7]
-            # 0 means it is not blacklisted
-            if track_tuple[8] == 0 and \
-                    source in app.config["SEARCH_BACKENDS"]:
-                # TODO : check that it the source is loaded
-                result.append({
-                    "albumart_url": track_tuple[6],
-                    "title": track_tuple[2],
-                    "artist": track_tuple[3],
-                    "duration": track_tuple[5],
-                    "source": source,
-                    "user": user,
-                    "url": track_tuple[1]
-                })
+            track = Track.get_random_track(app.config["DATABASE_PATH"])
+        if track.blacklisted == 0 and track.source in app.config["SEARCH_BACKENDS"]:
+                result.append(track.serialize())
                 nbr += 1
-    # app.logger.info(jsonify(result))
     return jsonify(result)
