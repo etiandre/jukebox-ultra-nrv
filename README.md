@@ -7,10 +7,20 @@ Also from pip, get `pyalsaaudio`, `youtube_dl`, `passlib` and `flask-WTF`
 
 ## Installation
 
- - clone the repo
- - move config.py.example to config.py and edit it 😎
+ - Clone the repo
+ - Move config.py.example to config.py and edit it 😎
  - To add a favicon, place it in the `jukebox/static` folder
  - Install requirements using `pip install -r requirements.py`
+ 
+ ```bash
+ $ git clone https://github.com/matthias4217/jukebox-ultra-nrv.git
+ $ cd jukebox-ultra-nrv
+ $ pip -r requirements.txt
+ $ cp config.py.example config.py
+ $ <edit config.py>
+ $ <optionally add a favicon.ico>
+ $ python3 run.py
+ ```
 
 ## Usage
 
@@ -18,7 +28,7 @@ Also from pip, get `pyalsaaudio`, `youtube_dl`, `passlib` and `flask-WTF`
 $ python3 run.py
 ```
 
-or with a systemd service jukebox
+or with a systemd service jukebox (currently very buggy)
 
 ```bash
 $ systemctl start jukebox.service
