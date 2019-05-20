@@ -16,55 +16,22 @@ def add():
     """
     Ajoute l'url à la playlist
     """
-    track = request.form.to_dict()
-    app.logger.info("Adding track %s", track["url"])
-    track["user"] = session["user"]
+    track_dict = request.form.to_dict()
+    app.logger.info(track_dict)
+    app.logger.info("Adding track %s", track_dict["url"])
+    # track["user"] = session["user"]
     with app.database_lock:
-        conn = sqlite3.connect(app.config["DATABASE_PATH"])
-        c = conn.cursor()
-        # check if track not in track_info i.e. if url no already there
-        c.execute("""select id
-                     from track_info
-                     where url = ?;
-                  """,
-                  (track["url"],))
-        r = c.fetchall()
-        if not r:
-            c.execute("""INSERT INTO track_info
-                    (url, track, artist, album, duration, albumart_url,
-                    source) VALUES
-                    (?,   ?,     ?,      ?,     ?,        ?,
-                    ?)
-                    ;""",
-                      (track["url"], track["title"], track["artist"],
-                       track["album"], track["duration"],
-                       track["albumart_url"], track["source"]))
-            # get id
-            c.execute("""select id
-                         from track_info
-                         where url = ?;
-                      """,
-                      (track["url"],))
-            r = c.fetchall()
-            track_id = r[0][0]
+        if not Track.does_track_exist(app.config["DATABASE_PATH"], track_dict["url"]):
+            Track.insert_track(app.config["DATABASE_PATH"], track_dict)
+        track = Track.import_from_url(app.config["DATABASE_PATH"], track_dict["url"])
+        if track is not None:
+            track.insert_track_log(app.config["DATABASE_PATH"], session['user'])
         else:
-            track_id = r[0][0]
+            app.logger.warning("Track is None !")
+            return "nok"
 
-        # print("User: " + str(session['user']))
-        c.execute("""select id
-                     from users
-                     where user = ?;
-                  """,
-                  (session['user'],))
-        r = c.fetchall()
-        # print(r)
-        user_id = r[0][0]
-        c.execute("INSERT INTO log(trackid,userid) VALUES (?,?)",
-                  (track_id, user_id))
-        conn.commit()
-    # app.mpv.playlist_append(track["url"])
     with app.playlist_lock:
-        app.playlist.append(track)
+        app.playlist.append(track.serialize())
         if len(app.playlist) == 1:
             threading.Thread(target=app.player_worker).start()
     return "ok"
@@ -77,9 +44,10 @@ def remove():
     track = request.form
     with app.playlist_lock:
         for track_p in app.playlist:
-            if track_p["url"] == track["url"]:
+            if track_p["randomid"] == int(track["randomid"]):
                 if app.playlist.index(track_p) == 0:
                     app.logger.info("Removing currently playing track")
+                    # app.logger.info(track)
                     with app.mpv_lock:
                         # app.mpv.stop()
                         # app.mpv.command(["set_property", "pause", True])

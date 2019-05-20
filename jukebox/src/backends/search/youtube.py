@@ -55,6 +55,7 @@ def search(query):
     data = r.json()
     for i in data["items"]:
         album = None
+        app.logger.info(i)
         results.append({
             "source": "youtube",
             "title": i["snippet"]["title"],

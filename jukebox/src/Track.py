@@ -1,4 +1,5 @@
 import sqlite3
+import random
 
 from jukebox.src.util import *
 
@@ -17,7 +18,7 @@ class Track:
         :param album:
         :param duration:
         :param blacklisted:
-        :param user: may be None, else it means we get it from a log
+        :param user: may be None, else it means we get it from a log and it is a str
         """
         self.ident = ident
         self.url = url
@@ -32,6 +33,25 @@ class Track:
 
     def __str__(self):
         return self.ident + ": " + self.url
+
+    @classmethod
+    def does_track_exist(cls, database, url):
+        """
+
+        :param database:
+        :param url:
+        :return:
+        """
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+        # check if track not in track_info i.e. if url no already there
+        c.execute("""select id
+                     from track_info
+                     where url = ?;
+                  """,
+                  (url,))
+        r = c.fetchall()
+        return not not r
 
     @classmethod
     def import_from_id(cls, database, ident):
@@ -60,11 +80,11 @@ class Track:
                      where url = ?;
                   """,
                   (url,))
-        r = c.fetchall()
+        r = c.fetchone()
         if r is None:
             return None
-        return Track(ident=r[0][0], url=r[0][1], track=r[0][2], artist=r[0][3], album=r[0][4], duration=r[0][5],
-                     albumart_url=r[0][6], source=r[0][7], blacklisted=r[0][8])
+        return Track(ident=r[0], url=r[1], track=r[2], artist=r[3], album=r[4], duration=r[5],
+                     albumart_url=r[6], source=r[7], blacklisted=r[8])
 
     @classmethod
     def get_random_track(cls, database):
@@ -89,6 +109,51 @@ LIMIT 1;",
             track.user = r[0]
         return track
 
+    @classmethod
+    def insert_track(cls, database, track_form):
+        """
+
+        :param database:
+        :param track:
+        :return:
+        """
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+        c.execute("""INSERT INTO track_info
+                            (url, track, artist, album, duration, albumart_url,
+                            source) VALUES
+                            (?,   ?,     ?,      ?,     ?,        ?,
+                            ?)
+                            ;""",
+                  (track_form["url"], track_form["title"], track_form["artist"],
+                   track_form["album"], track_form["duration"],
+                   track_form["albumart_url"], track_form["source"]))
+        conn.commit()
+
+    def insert_track_log(self, database, user):
+        """
+        As it creates a log, it also updates the value of self.useré
+
+        :param database:
+        :param user:
+        :return:
+        """
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+        self.user = user
+        c.execute("""select id
+                             from users
+                             where user = ?;
+                          """,
+                  (user,))
+
+        r = c.fetchall()
+        # print(r)
+        user_id = r[0][0]
+        c.execute("INSERT INTO log(trackid,userid) VALUES (?,?)",
+                  (self.ident, user_id))
+        conn.commit()
+
     def serialize(self):
         return {
             'id': self.ident,
@@ -100,5 +165,7 @@ LIMIT 1;",
             'album': self.album,
             'duration': self.duration,
             'blacklisted': self.blacklisted,
-            'user': self.user
+            'user': self.user,
+            'randomid': random.randint(1, 999_999_999_999)  # to identify each track in the playlist
+            # even if they have the same url
         }

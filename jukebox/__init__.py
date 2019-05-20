@@ -58,7 +58,7 @@ class Jukebox(Flask):
                 track = Track.import_from_url(app.config["DATABASE_PATH"], url)
             counter = 0
             # duration of track
-            while counter < 5 and track.duration is not None and end - start < min(track.duration, 10):
+            while counter < 5 and track.duration is not None and end - start < min(track.duration, 1):
                 # note for the future : what if track is passed with a timestamp ?
                 start = time.time()
                 with app.mpv_lock:
@@ -74,7 +74,7 @@ class Jukebox(Flask):
                 del self.mpv  # the track is finished
                 # self.mpv = "unavailable"  # or del app.mpv
             with self.playlist_lock:
-                if len(self.playlist) > 0 and url == self.currently_played:
+                if len(self.playlist) > 0:  # and url == self.currently_played:
                     del self.playlist[0]
 
 

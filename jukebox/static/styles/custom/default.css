@@ -3,11 +3,13 @@
     display: block;
 }
 
+
+#track #track-title {
+	cursor: pointer;
+}
+
 #search_results .btn-remove, #search_results .track-user, #suggestions .btn-remove{
     display: none;
-}
-#search_results li {
-	cursor: pointer;
 }
 
 .albumart {
