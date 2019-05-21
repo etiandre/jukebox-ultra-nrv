@@ -53,7 +53,7 @@ def remove():
                         # app.mpv.command(["set_property", "pause", True])
                         app.mpv.quit()
                         # app.mpv.terminate()
-                        # app.mpv = "unavailable"
+                        # app.mpv = "unavailable
                 else:
                     app.playlist.remove(track_p)
                 # app.playlist_skip.set()
