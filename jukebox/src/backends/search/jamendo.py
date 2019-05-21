@@ -18,14 +18,14 @@ def search(query):
             }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         metadata = ydl.extract_info(query, False)
-    app.logger.info(metadata)
+    # app.logger.info(metadata)
     try:
         album = metadata["album"]
     except KeyError:
         album = None
     duration = metadata["duration"]
     if duration is None:
-        app.logger.info("Duration is None")
+        # app.logger.info("Duration is None")
         duration = 42  # TODO: arbitrary value because youtube-dl is borken
 
     results.append({

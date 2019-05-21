@@ -17,7 +17,6 @@ def add():
     Ajoute l'url à la playlist
     """
     track_dict = request.form.to_dict()
-    app.logger.info(track_dict)
     app.logger.info("Adding track %s", track_dict["url"])
     # track["user"] = session["user"]
     with app.database_lock:

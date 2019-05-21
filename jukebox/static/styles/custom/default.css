@@ -1,15 +1,28 @@
 .icon {
     height: 20px;
     display: block;
+    margin: 6px;
+	cursor: pointer
 }
 
-
-#track #track-title {
-	cursor: pointer;
+.btn-remove, .btn-add, .btn-back, .btn-more {
+    position: relative;
+    top: 2px;
 }
 
 #search_results .btn-remove, #search_results .track-user, #suggestions .btn-remove{
     display: none;
+}
+
+#playlist-playing, #playlist-queue {
+    list-style-type: none;
+    margin: 10px;
+    padding: 0;
+	text-align: center;
+	color: grey;
+	letter-spacing: 10px;
+	margin-top: 13px;
+
 }
 
 .albumart {
@@ -28,9 +41,14 @@
 	display: block;
 }
 
-.btn-remove {
-	cursor:pointer
+.track-url {
+    display: block;
 }
+
+.track-album {
+    display: block;
+}
+
 .centered {
 	margin: auto
 }
@@ -39,10 +57,6 @@
 }
 
 .playlist-title {
-	text-align: center;
-	color: grey;
-	letter-spacing: 10px;
-	margin-top: 13px;
 }
 
 iframe#YT {

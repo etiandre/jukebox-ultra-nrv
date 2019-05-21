@@ -6,6 +6,9 @@ It uses JQuery
 function template(html, d) {
     let r = html;
     for (let i in d) {
+        if (i=="title") { // track title appears both on verso and recto
+            r=r.replace("{"+i+"}", d[i]);
+        }
         r=r.replace("{"+i+"}", d[i]);
     }
     r=r.replace(/{\w+}/g, "");
@@ -15,10 +18,9 @@ function template(html, d) {
 
 function toggle_recto_verso() {
     /*
-    Called by a .btn-more
+    Called by a .btn-more or .btn-back
      */
     // console.log("prout");
-    // console.log($(this));
     let track_li = $(this).closest("li");
     //let id = track_li.attr('id');
     // console.log(id);
@@ -67,20 +69,23 @@ track_template = `
             <span class="track-title">{title}</span>
             <span class="track-artist">{artist}</span>
             <span class="track-duration">{duration} s.</span>
-            <span class="track-source">{source}</span>
-            <span class="track-user float-right">Ajouté par {user}</span>
+            <span class="track-user float-right">Added by {user}</span>
         </div>
-        <div class="col-1 centered">
-            <span class="btn-add">Play</span>
-            <span class="btn-more">More...</span>
+        <div class="col-1">
+            <img class="icon btn-more" alt="More" src="/static/images/icons/ellipsis-h-solid.svg">
+            <img class="icon btn-add" alt="Play" src="/static/images/icons/plus-square-regular.svg">
             <img class="icon btn-remove" alt="Enlever" src="/static/images/icons/x.svg">
         </div>
      </div>
      <div class="row verso">
-        <div>
-            <span class="track-url">{url}</span>
-            <span class="track-album">{album}</span>
-            <span class="btn-back">⬅️</span>
+        <div class="col">
+            <span class="track-title">{title}</span>
+            <span class="track-url"><a href="{url}">Link to media</a></span>
+            <span class="track-album">Album : {album}</span>
+            <span class="track-source">From {source}</span>
+        </div>
+        <div class="col-1">
+            <img class="icon btn-back" alt="Back" src="/static/images/icons/arrow-alt-circle-left-solid.svg">
         </div>
     </div>
 </li>

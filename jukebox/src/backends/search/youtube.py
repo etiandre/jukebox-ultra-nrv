@@ -24,10 +24,10 @@ def search(query):
     m = re.search("youtu.be/(\w+)", query)
     if m:
         youtube_ids = [m.groups()[0]]
-    #if youtube_ids:
-        #app.logger.info("Youtube video pasted by %s: %s", session["user"], youtube_ids[0])
-    #else:
-        #app.logger.info("Youtube search by %s : %s", session["user"], query)
+    # if youtube_ids:
+        # app.logger.info("Youtube video pasted by %s: %s", session["user"], youtube_ids[0])
+    # else:
+        # app.logger.info("Youtube search by %s : %s", session["user"], query)
     r = requests.get(
         "https://www.googleapis.com/youtube/v3/search",
         params={
@@ -55,7 +55,7 @@ def search(query):
     data = r.json()
     for i in data["items"]:
         album = None
-        app.logger.info(i)
+        # app.logger.info(i)
         results.append({
             "source": "youtube",
             "title": i["snippet"]["title"],

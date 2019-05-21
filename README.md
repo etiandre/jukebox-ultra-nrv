@@ -58,3 +58,8 @@ If not, update it : `sudo youtube-dl -U`
 ## Development
 
 For the logs, please use `app.logger.info`, `app.logger.warning` or `app.logger.error`.
+
+## Licensing
+
+This project uses Fontawesome icons, which underare Creative Commons Attribution 4.0
+International license. The complete license can be found [here](https://fontawesome.com/license).
