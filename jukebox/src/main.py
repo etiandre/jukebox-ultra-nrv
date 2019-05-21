@@ -143,6 +143,13 @@ def move_track():
     return "ok"
 
 
+@main.route("/statistics", methods=['POST'])
+@requires_auth
+def statistics():
+
+    pass
+
+
 @main.route("/search", methods=['POST'])
 @requires_auth
 def search():
