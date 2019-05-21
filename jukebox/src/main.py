@@ -109,8 +109,11 @@ def sync():
 @main.route("/move-track", methods=['POST'])
 @requires_auth
 def move_track():
-    action = request.form["action"]
-    randomid = request.form["randomid"]
+    try:
+        action = request.form["action"]
+        randomid = request.form["randomid"]
+    except KeyError:
+        return "nok"
 
     index = None
     with app.playlist_lock:
@@ -135,6 +138,8 @@ def move_track():
             track_temp = app.playlist[index+1]
             app.playlist[index+1] = app.playlist[index]
             app.playlist[index] = track_temp
+        else:
+            return "nok"
     return "ok"
 
 
