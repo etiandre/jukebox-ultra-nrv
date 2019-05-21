@@ -106,6 +106,38 @@ def sync():
     return jsonify(res)
 
 
+@main.route("/move-track", methods=['POST'])
+@requires_auth
+def move_track():
+    action = request.form["action"]
+    randomid = request.form["randomid"]
+
+    index = None
+    with app.playlist_lock:
+        for x in app.playlist:
+            if str(x["randomid"]) == randomid:
+                index = app.playlist.index(x)
+                break
+        if index is None:
+            # app.logger.warning("Track {} not found".format(randomid))
+            return "nok"
+        if action == "up":
+            if index < 2:
+                app.logger.warning("Track {} has index".format(index))
+                return "nok"
+            track_temp = app.playlist[index-1]
+            app.playlist[index-1] = app.playlist[index]
+            app.playlist[index] = track_temp
+        elif action == "down":
+            if len(app.playlist)-2 < index or index < 1:
+                # app.logger.warning("Track {} has index".format(index))
+                return "nok"
+            track_temp = app.playlist[index+1]
+            app.playlist[index+1] = app.playlist[index]
+            app.playlist[index] = track_temp
+    return "ok"
+
+
 @main.route("/search", methods=['POST'])
 @requires_auth
 def search():

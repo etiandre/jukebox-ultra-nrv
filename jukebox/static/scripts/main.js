@@ -35,6 +35,12 @@ function generate_track_html(t) {
     track_html.find(".verso").hide();
     track_html.find(".btn-more").click(toggle_recto_verso);
     track_html.find(".btn-back").click(toggle_recto_verso);
+    track_html.find(".btn-up").click(function() {
+        $.post("/move-track", {"action": "up", "randomid": t["randomid"]});
+    });
+    track_html.find(".btn-down").click(function() {
+        $.post("/move-track", {"action": "down", "randomid": t["randomid"]});
+    });
 
     return track_html
 }
@@ -45,6 +51,8 @@ function generate_track_html_suggest(t) {
         $.post("/add", t); //$(this).parents("li").data("track"));
     });
     track_html.find(".btn-remove").remove();
+    track_html.find(".btn-up").remove();
+    track_html.find(".btn-down").remove();
     return track_html;
 }
 
@@ -74,6 +82,8 @@ track_template = `
         <div class="col-1">
             <img class="icon btn-more" alt="More" src="/static/images/icons/ellipsis-h-solid.svg">
             <img class="icon btn-add" alt="Play" src="/static/images/icons/plus-square-regular.svg">
+            <img class="icon btn-up" alt="Up" src="/static/images/icons/chevron-up-solid.svg">
+            <img class="icon btn-down" alt="Down" src="/static/images/icons/chevron-down-solid.svg">
             <img class="icon btn-remove" alt="Enlever" src="/static/images/icons/x.svg">
         </div>
      </div>
