@@ -5,12 +5,12 @@
 	cursor: pointer
 }
 
-.btn-remove, .btn-add, .btn-back, .btn-more {
+.btn-remove, .btn-add, .btn-back, .btn-more, .btn-up, .btn-down {
     position: relative;
     top: 2px;
 }
 
-#search_results .btn-remove, #search_results .track-user, #suggestions .btn-remove{
+#search_results .btn-remove, #search_results .track-user, #suggestions .btn-remove {
     display: none;
 }
 
@@ -29,7 +29,7 @@
         display: block;
         max-width: 280px;
         max-height: 140px;
-	width: 100%;;
+	    width: 100%;
         height: auto;
 }
 
@@ -52,12 +52,11 @@
 .centered {
 	margin: auto
 }
+
 .track-duration,.track-user,.track-source {
 	color: #aaa;
 }
 
-.playlist-title {
-}
 
 iframe#YT {
     width: 100%;

@@ -60,6 +60,14 @@ h1
 .icon {
     height: 20px;
     display: block;
+    display: block;
+    margin: 6px;
+	cursor: pointer
+}
+
+.btn-remove, .btn-add, .btn-back, .btn-more, .btn-up, .btn-down {
+    position: relative;
+    top: 2px;
 }
 
 #search_results .btn-remove, #search_results .track-user, #suggestions .btn-remove{
@@ -122,11 +130,11 @@ code
 }
 
 .albumart {
-        display: block;
-        max-width: 280px;
-        max-height: 140px;
-	width: 100%;;
-        height: auto;
+    display: block;
+    max-width: 280px;
+    max-height: 140px;
+    width: 100%;
+    height: auto;
 }
 
 .list {
@@ -149,6 +157,18 @@ code
 	display: block;
 }
 
+.track-album {
+    display: block;
+}
+
+.track-url {
+    display: block;
+}
+
+.track-source {
+    display: block;
+}
+
 .btn-remove {
 	cursor:pointer
 }
@@ -160,13 +180,17 @@ iframe#YT {
     width: 100%;
 }
 
-.playlist-title
-{
+
+#playlist-playing, #playlist-queue {
+    list-style-type: none;
+    margin: 10px;
+    padding: 0;
 	text-align: center;
-    color: orange;
+	color: orange;
 	letter-spacing: 10px;
 	margin-top: 13px;
 }
+
 .track-title
 {
     color: yellow;
