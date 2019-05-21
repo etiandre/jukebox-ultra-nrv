@@ -16,6 +16,18 @@ def requires_auth(f):
     return decorated
 
 
+def get_mixer_name():
+    """
+
+    :return: Mixer name : either the one in config.py, or if it doesn't exist the first in the list of available mixers
+    """
+    if "AMIXER_CHANNEL" in app.config and app.config["AMIXER_CHANNEL"] in alsaaudio.mixers():
+        return app.config["AMIXER_CHANNEL"]
+    else:
+        # app.logger.info(alsaaudio.mixers())
+        return alsaaudio.mixers()[0]
+
+
 def get_volume():
     """
     Example of amixer output :
@@ -27,7 +39,7 @@ def get_volume():
   Front Left: Playback 40634 [62%] [on]
   Front Right: Playback 40634 [62%] [on]
     """
-    m = alsaaudio.Mixer()
+    m = alsaaudio.Mixer(get_mixer_name())
     return int(m.getvolume()[0])
 
 
@@ -39,6 +51,6 @@ def set_volume(volume):
     except ValueError:
         app.logger.warning("Error, volume {} incorrect".format(volume))
         return
-    m = alsaaudio.Mixer()
+    m = alsaaudio.Mixer(get_mixer_name())
     m.setvolume(int(volume))
     app.logger.info("Volume set to %s", get_volume())

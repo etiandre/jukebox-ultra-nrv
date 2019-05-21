@@ -5,7 +5,7 @@ LISTEN_ADDR="0.0.0.0"
 # Listen port
 LISTEN_PORT=8080
 # Channel used for volume control (see output of amixer)
-AMIXER_CHANNEL="'Master',0"
+AMIXER_CHANNEL="Master"
 # Flask secret encryption key. Do not leave blank
 SECRET_KEY=""
 # Path to your sqlite database. Will be created on first run
