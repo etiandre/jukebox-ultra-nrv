@@ -18,7 +18,7 @@ def search_engine(query, use_youtube_dl=True):
     results = []
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         json_info = ydl.extract_info(query, False)
-    print(json.dumps(json_info))
+    # print(json.dumps(json_info))
 
     # If we have a playlist
     if "_type" in json_info and json_info["_type"] == "playlist":

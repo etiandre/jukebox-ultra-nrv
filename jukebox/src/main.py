@@ -147,6 +147,10 @@ def move_track():
 @main.route("/refresh-track", methods=['POST'])
 @requires_auth
 def refresh_track():
+    """
+    For now the interface isn't refreshed
+    :return:
+    """
     try:
         url = request.form["url"]
     except KeyError:

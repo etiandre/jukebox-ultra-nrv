@@ -140,13 +140,18 @@ LIMIT 1;",
         """
         app.logger.info(url)
         track = cls.import_from_url(database, url)
+        if track is None:
+            return
         # check if source is loaded
         if 'jukebox.src.backends.search.'+track.source not in sys.modules:
             return
         for search in app.search_backends:
             if search.__name__ == 'jukebox.src.backends.search.'+track.source:
                 break
-        track_dict = search.search_engine(url, use_youtube_dl=True)[0]
+        if track.source == "youtube":
+            track_dict = search.search_engine(url, use_youtube_dl=True, search_multiple=False)[0]
+        else:
+            track_dict = search.search_engine(url, use_youtube_dl=True)[0]
         app.logger.info("Track dict : ", track_dict)
         track = Track(None, url, track_dict["title"], track_dict["artist"], track_dict["source"],
                       track_dict["albumart_url"], album=track_dict["album"], duration=track_dict["duration"])
