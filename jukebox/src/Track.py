@@ -138,7 +138,7 @@ LIMIT 1;",
         :param database: Database used
         :param url: URL of the track (str)
         """
-        app.logger.info(url)
+        # app.logger.info(url)
         track = cls.import_from_url(database, url)
         if track is None:
             return
@@ -152,7 +152,7 @@ LIMIT 1;",
             track_dict = search.search_engine(url, use_youtube_dl=True, search_multiple=False)[0]
         else:
             track_dict = search.search_engine(url, use_youtube_dl=True)[0]
-        app.logger.info("Track dict : ", track_dict)
+        # app.logger.info("Track dict : ", track_dict)
         track = Track(None, url, track_dict["title"], track_dict["artist"], track_dict["source"],
                       track_dict["albumart_url"], album=track_dict["album"], duration=track_dict["duration"])
 

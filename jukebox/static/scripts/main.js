@@ -167,7 +167,8 @@ function updates_playlist(data) {
                 playlistHTML.find("#playlist-playing").remove();
             }
             playlistHTML.prepend(generate_track_html_queue(track));
-
+            playlistHTML.find(".track:first .btn-down").hide();
+            playlistHTML.find(".track:first .btn-up").hide();
 
             // then we manage the Youtube iframe
             if (yt.ready && $("#YT").is(":visible") && track["source"] === "youtube") {
@@ -202,6 +203,7 @@ function updates_playlist(data) {
             let j = i-1;
             playlistHTML.find(".track:eq("+j+")").after(generate_track_html_queue(track));
 
+
             if (playlistHTML.find("#playlist-queue").length === 0) {
                 playlistHTML.find(".track:eq(0)").after("<li id='playlist-queue' class='playlist-title'>A venir...</li>");
             }
@@ -213,7 +215,7 @@ function updates_playlist(data) {
     //console.log("i: "+i);
 
     //console.log(playlistHTML.find(".track:eq("+i+")"));
-    let track_tile = playlistHTML.find(".track:eq("+i+")")
+    let track_tile = playlistHTML.find(".track:eq("+i+")");
     //track_tile.css({"color": "red", "border": "2px solid red"});//.nextAll(".track").remove();
     while (track_tile.next().length !== 0) {
         track_tile = track_tile.next();

@@ -22,7 +22,7 @@ def search_engine(query, use_youtube_dl=True):
                 "url": res["webpage_url"],
                 "albumart_url": res["thumbnails"][0]["url"],
                 "album": None,
-                "duration": res["duration"],
+                "duration": int(res["duration"]),
                 "id": res["id"]
                 })
     else:
@@ -33,7 +33,7 @@ def search_engine(query, use_youtube_dl=True):
             "url": metadata["webpage_url"],
             "albumart_url": metadata["thumbnail"],
             "album": None,
-            "duration": metadata["duration"],
+            "duration": int(metadata["duration"]),
             "id": metadata["id"]
             })
     return results
@@ -64,7 +64,7 @@ def search_multiples(query):
             "url": metadata["url"],
             "albumart_url": metadata["thumbnail"],
             "album": None,
-            "duration": metadata["duration"],
+            "duration": int(metadata["duration"]),
             "id": metadata["id"]
             })
     return results

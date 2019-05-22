@@ -117,8 +117,8 @@ def search_ytdl_unique(query):
         "duration": int(metadata["duration"]),
         "id": metadata["id"]
         })
-    app.logger.info("Results : ")
-    app.logger.info(results)
+    # app.logger.info("Results : ")
+    # app.logger.info(results)
     return results
 
 
