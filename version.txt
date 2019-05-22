@@ -1,1 +1,1 @@
-MkIII-0.8.0-pre
+MkIII-0.8.0
