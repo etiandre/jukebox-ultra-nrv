@@ -42,6 +42,10 @@ function generate_track_html(t) {
         $.post("/move-track", {"action": "down", "randomid": t["randomid"]});
     });
 
+    track_html.find(".btn-refresh").click(function() {
+        $.post("/refresh-track", {"url": t["url"]});
+    });
+
     return track_html
 }
 
@@ -96,6 +100,7 @@ track_template = `
         </div>
         <div class="col-1">
             <img class="icon btn-back" alt="Back" src="/static/images/icons/arrow-alt-circle-left-solid.svg">
+            <img class="icon btn-refresh" alt="Refresh" src="/static/images/icons/sync-solid.svg">
         </div>
     </div>
 </li>

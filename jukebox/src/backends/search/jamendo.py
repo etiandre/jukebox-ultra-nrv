@@ -6,7 +6,7 @@ import youtube_dl
 import json
 
 
-def search(query):
+def search_engine(query, use_youtube_dl=True):
     results = []
 
     # We use youtube-dl to get the song metadata

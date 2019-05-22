@@ -65,7 +65,7 @@ h1
 	cursor: pointer
 }
 
-.btn-remove, .btn-add, .btn-back, .btn-more, .btn-up, .btn-down {
+.btn-remove, .btn-add, .btn-back, .btn-more, .btn-up, .btn-down, .btn-refresh {
     position: relative;
     top: 2px;
 }

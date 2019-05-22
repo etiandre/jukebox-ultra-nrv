@@ -1,5 +1,6 @@
 import sqlite3
 import random
+import sys
 
 from jukebox.src.util import *
 
@@ -128,6 +129,35 @@ LIMIT 1;",
                   (track_form["url"], track_form["title"], track_form["artist"],
                    track_form["album"], track_form["duration"],
                    track_form["albumart_url"], track_form["source"]))
+        conn.commit()
+
+    @classmethod
+    def refresh_by_url(cls, database, url):
+        """
+
+        :param database: Database used
+        :param url: URL of the track (str)
+        """
+        app.logger.info(url)
+        track = cls.import_from_url(database, url)
+        # check if source is loaded
+        if 'jukebox.src.backends.search.'+track.source not in sys.modules:
+            return
+        for search in app.search_backends:
+            if search.__name__ == 'jukebox.src.backends.search.'+track.source:
+                break
+        track_dict = search.search_engine(url, use_youtube_dl=True)[0]
+        app.logger.info("Track dict : ", track_dict)
+        track = Track(None, url, track_dict["title"], track_dict["artist"], track_dict["source"],
+                      track_dict["albumart_url"], album=track_dict["album"], duration=track_dict["duration"])
+
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+        c.execute("""UPDATE track_info
+SET track = ?, artist = ?, albumart_url = ?, album = ?, duration = ?
+WHERE url = ?
+                  """,
+                  (track.track, track.artist, track.albumart_url, track.album, track.duration, url,))
         conn.commit()
 
     def insert_track_log(self, database, user):

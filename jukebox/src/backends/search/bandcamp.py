@@ -10,7 +10,8 @@ ydl_opts = {
         'skip_download': True,
         }
 
-def search(query):
+
+def search_engine(query, use_youtube_dl=True):
     """
     Search for a bandcamp url
     """

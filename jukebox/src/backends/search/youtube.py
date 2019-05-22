@@ -69,7 +69,9 @@ def search(query):
     return results
 
 
-def search_engine(query):
+def search_engine(query, use_youtube_dl=False):
+    if use_youtube_dl:
+        return search_fallback(query)
     return search(query)
 
 

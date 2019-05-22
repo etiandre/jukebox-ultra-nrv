@@ -2,7 +2,7 @@ import youtube_dl
 import json
 
 
-def search(query):
+def search_engine(query, use_youtube_dl=True):
     ydl_opts = {
         'skip_download': True,  # we do want only a json file
         }
@@ -39,7 +39,7 @@ def search(query):
     return results
 
 
-def search_engine(query):
+def search_multiples(query):
     ydl_opts = {
             'writeinfojson': True,
             'skip_download': True, # we do want only a json file
