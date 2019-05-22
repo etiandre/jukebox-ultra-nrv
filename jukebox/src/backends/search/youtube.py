@@ -70,7 +70,7 @@ def search(query):
 
 
 def search_engine(query, use_youtube_dl=False, search_multiple=True):
-    if use_youtube_dl:
+    if use_youtube_dl or "YOUTUBE_KEY" not in app.config or app.config["YOUTUBE_KEY"] is None:
         if search_multiple:
             return search_fallback(query)
         else:
