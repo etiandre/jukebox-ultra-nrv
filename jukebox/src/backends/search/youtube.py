@@ -114,7 +114,9 @@ def search_fallback(query):
         artist = metadata["artist"]
         if artist is None:
             artist = metadata["uploader"]
-        album = metadata["album"]
+        album = None
+        if "album" in metadata:
+            album = metadata["album"]
 
         results.append({
             "source": "youtube",
