@@ -26,6 +26,7 @@
 }
 
 .albumart {
+    object-fit: cover;
         display: block;
         max-width: 280px;
         max-height: 140px;

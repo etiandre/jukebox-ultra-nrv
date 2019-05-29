@@ -131,6 +131,7 @@ code
 
 .albumart {
     display: block;
+    object-fit: cover;
     max-width: 280px;
     max-height: 140px;
     width: 100%;
