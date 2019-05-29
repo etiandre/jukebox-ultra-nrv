@@ -150,6 +150,10 @@ iframe, .list-group, .container{
     display: inline-block;
 }
 
+#search_results .track-user {
+    visibility: hidden;
+}
+
 .icon{
     background-image: none;
     background-size: 20px;
