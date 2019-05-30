@@ -133,6 +133,7 @@ function sleep (time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
 function syncVideo(mpv_time) {
+    console.log(mpv_time);
     if (mpv_time === 0) {
         yt.pauseVideo();
     } else {
@@ -246,6 +247,9 @@ sync = function() {
         //$('#playlist').html("");
 
         //$("#playlist").html(playlistHTML)
+        if (yt !== 0) {
+            syncVideo(data.time);
+        }
     });
     window.setTimeout(arguments.callee, 1000);
 }();
