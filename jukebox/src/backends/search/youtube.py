@@ -3,16 +3,12 @@ from flask import current_app as app
 from flask import session
 import youtube_dl
 import json
-# Parse YouTube's length format
-# TODO: Completely buggy.
+import isodate
 
 
 def parse_iso8601(x):
-    t = [int(i) for i in re.findall("(\d+)", x)]
-    r = 0
-    for i in range(len(t)):
-        r += 60**(i) * t[-i-1]
-    return r
+    """Parse YouTube's length format, which is following iso8601 duration."""
+    return isodate.parse_duration(x).total_seconds()
 
 
 def search(query):
