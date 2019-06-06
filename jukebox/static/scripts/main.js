@@ -84,11 +84,11 @@ track_template = `
             <span class="track-user float-right">Added by {user}</span>
         </div>
         <div class="col-1">
-            <img class="icon btn-more" alt="More" src="/static/images/icons/ellipsis-h-solid.svg">
-            <img class="icon btn-add" alt="Play" src="/static/images/icons/plus-square-regular.svg">
-            <img class="icon btn-up" alt="Up" src="/static/images/icons/chevron-up-solid.svg">
-            <img class="icon btn-down" alt="Down" src="/static/images/icons/chevron-down-solid.svg">
-            <img class="icon btn-remove" alt="Enlever" src="/static/images/icons/x.svg">
+            <button class="icon btn-more" alt="More"></button>
+            <button class="icon btn-add" alt="Play"></button>
+            <button class="icon btn-up" alt="Up"></button>
+            <button class="icon btn-down" alt="Down"></button>
+            <button class="icon btn-remove" alt="Enlever"></button>
         </div>
      </div>
      <div class="row verso">
@@ -99,8 +99,8 @@ track_template = `
             <span class="track-source">From {source}</span>
         </div>
         <div class="col-1">
-            <img class="icon btn-back" alt="Back" src="/static/images/icons/arrow-alt-circle-left-solid.svg">
-            <img class="icon btn-refresh" alt="Refresh" src="/static/images/icons/sync-solid.svg">
+            <button class="icon btn-back" alt="Back"></button>
+            <button class="icon btn-refresh" alt="Refresh"></button>
         </div>
     </div>
 </li>

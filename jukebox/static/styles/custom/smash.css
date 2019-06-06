@@ -156,6 +156,9 @@ iframe, .list-group, .container{
 
 .icon{
     background-image: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
     background-size: 20px;
     padding-left: 20px;
     width: 20px;
