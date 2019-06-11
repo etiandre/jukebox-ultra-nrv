@@ -58,7 +58,7 @@ class Jukebox(Flask):
                 track = Track.import_from_url(app.config["DATABASE_PATH"], url)
             counter = 0
             # duration of track
-            while counter < 5 and track.duration is not None and end - start < min(track.duration, 1):
+            while counter < 5 and track.duration is not None and end - start < min(track.duration, 3): # 1 is not enough
                 # note for the future : what if track is passed with a timestamp ?
                 start = time.time()
                 with app.mpv_lock:
