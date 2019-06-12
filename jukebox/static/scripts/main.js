@@ -42,6 +42,10 @@ function generate_track_html(t) {
         $.post("/move-track", {"action": "down", "randomid": t["randomid"]});
     });
 
+    track_html.find(".btn-refresh").click(function() {
+        $.post("/refresh-track", {"url": t["url"]});
+    });
+
     return track_html
 }
 
@@ -80,11 +84,11 @@ track_template = `
             <span class="track-user float-right">Added by {user}</span>
         </div>
         <div class="col-1">
-            <img class="icon btn-more" alt="More" src="/static/images/icons/ellipsis-h-solid.svg">
-            <img class="icon btn-add" alt="Play" src="/static/images/icons/plus-square-regular.svg">
-            <img class="icon btn-up" alt="Up" src="/static/images/icons/chevron-up-solid.svg">
-            <img class="icon btn-down" alt="Down" src="/static/images/icons/chevron-down-solid.svg">
-            <img class="icon btn-remove" alt="Enlever" src="/static/images/icons/x.svg">
+            <button class="icon btn-more" alt="More"></button>
+            <button class="icon btn-add" alt="Play"></button>
+            <button class="icon btn-up" alt="Up"></button>
+            <button class="icon btn-down" alt="Down"></button>
+            <button class="icon btn-remove" alt="Enlever"></button>
         </div>
      </div>
      <div class="row verso">
@@ -95,7 +99,8 @@ track_template = `
             <span class="track-source">From {source}</span>
         </div>
         <div class="col-1">
-            <img class="icon btn-back" alt="Back" src="/static/images/icons/arrow-alt-circle-left-solid.svg">
+            <button class="icon btn-back" alt="Back"></button>
+            <button class="icon btn-refresh" alt="Refresh"></button>
         </div>
     </div>
 </li>
@@ -128,6 +133,7 @@ function sleep (time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
 function syncVideo(mpv_time) {
+    console.log(mpv_time);
     if (mpv_time === 0) {
         yt.pauseVideo();
     } else {
@@ -162,7 +168,8 @@ function updates_playlist(data) {
                 playlistHTML.find("#playlist-playing").remove();
             }
             playlistHTML.prepend(generate_track_html_queue(track));
-
+            playlistHTML.find(".track:first .btn-down").hide();
+            playlistHTML.find(".track:first .btn-up").hide();
 
             // then we manage the Youtube iframe
             if (yt.ready && $("#YT").is(":visible") && track["source"] === "youtube") {
@@ -197,6 +204,7 @@ function updates_playlist(data) {
             let j = i-1;
             playlistHTML.find(".track:eq("+j+")").after(generate_track_html_queue(track));
 
+
             if (playlistHTML.find("#playlist-queue").length === 0) {
                 playlistHTML.find(".track:eq(0)").after("<li id='playlist-queue' class='playlist-title'>A venir...</li>");
             }
@@ -208,7 +216,7 @@ function updates_playlist(data) {
     //console.log("i: "+i);
 
     //console.log(playlistHTML.find(".track:eq("+i+")"));
-    let track_tile = playlistHTML.find(".track:eq("+i+")")
+    let track_tile = playlistHTML.find(".track:eq("+i+")");
     //track_tile.css({"color": "red", "border": "2px solid red"});//.nextAll(".track").remove();
     while (track_tile.next().length !== 0) {
         track_tile = track_tile.next();
@@ -239,6 +247,9 @@ sync = function() {
         //$('#playlist').html("");
 
         //$("#playlist").html(playlistHTML)
+        if (yt !== 0) {
+            syncVideo(data.time);
+        }
     });
     window.setTimeout(arguments.callee, 1000);
 }();

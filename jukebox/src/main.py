@@ -5,7 +5,7 @@ from flask import current_app as app
 from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField
 from jukebox.src.util import *
-import subprocess, requests, importlib
+from jukebox.src.Track import Track
 from os import listdir
 from os.path import isfile, join
 
@@ -150,6 +150,22 @@ def statistics():
     pass
 
 
+@main.route("/refresh-track", methods=['POST'])
+@requires_auth
+def refresh_track():
+    """
+    For now the interface isn't refreshed
+    :return:
+    """
+    try:
+        url = request.form["url"]
+    except KeyError:
+        return "nok"
+    with app.database_lock:
+        Track.refresh_by_url(app.config["DATABASE_PATH"], url)
+    return "ok"
+
+
 @main.route("/search", methods=['POST'])
 @requires_auth
 def search():
@@ -165,7 +181,8 @@ def search():
     # similar for soundcloud
     # else we search only on youtube (in the future, maybe soundcloud too
     regex_bandcamp = re.compile('^(http://|https://)?\S*\.bandcamp.com')
-    regex_soundcloud = re.compile('^(http://|https://)?soundcloud.com')
+    regex_soundcloud = re.compile('^(http://|https://)?(www.)?soundcloud.com')
+    regex_twitch = re.compile('^(http://|https://)?(www.)?twitch.tv')
     regex_jamendo = re.compile('^(https?://)?(www.)?jamendo.com')
     regex_search_soundcloud = re.compile('(\!sc\s)|(.*\s\!sc\s)|(.*\s\!sc$)')
     regex_search_youtube = re.compile('(\!yt\s)|(.*\s\!yt\s)|(.*\s\!yt$)')
@@ -180,27 +197,34 @@ def search():
         for bandcamp in app.search_backends:
             if bandcamp.__name__ == 'jukebox.src.backends.search.bandcamp':
                 break
-        results += bandcamp.search(query)
+        results += bandcamp.search_engine(query)
     # Soundcloud
     elif re.match(regex_soundcloud, query) is not None \
     and 'jukebox.src.backends.search.soundcloud' in sys.modules:
         for soundcloud in app.search_backends:
             if soundcloud.__name__ == 'jukebox.src.backends.search.soundcloud':
                 break
-        results += soundcloud.search(query)
+        results += soundcloud.search_engine(query)
     elif re.match(regex_jamendo, query) is not None \
     and 'jukebox.src.backends.search.jamendo' in sys.modules:
         for jamendo in app.search_backends:
             if jamendo.__name__ == 'jukebox.src.backends.search.jamendo':
                 break
-        results += jamendo.search(query)
+        results += jamendo.search_engine(query)
     # Soundcloud search
     elif re.match(regex_search_soundcloud, query) is not None \
     and 'jukebox.src.backends.search.soundcloud' in sys.modules:
         for soundcloud in app.search_backends:
             if soundcloud.__name__ == 'jukebox.src.backends.search.soundcloud':
                 break
-        results += soundcloud.search_engine(re.sub("\!sc", "", query))
+        results += soundcloud.search_multiples(re.sub("\!sc", "", query))
+    # Twitch
+    if re.match(regex_twitch, query) is not None \
+    and 'jukebox.src.backends.search.twitch' in sys.modules:
+        for twitch in app.search_backends:
+            if twitch.__name__ == 'jukebox.src.backends.search.twitch':
+                break
+        results += twitch.search_engine(query)
 
     # Youtube search (explicit)
     elif re.match(regex_search_youtube, query) is not None \
@@ -208,7 +232,7 @@ def search():
         for youtube in app.search_backends:
             if youtube.__name__ == 'jukebox.src.backends.search.youtube':
                 break
-        results += youtube.search_engine(re.sub("\!yt", "", query))
+        results += youtube.search_engine(re.sub("\!yt", "", query), use_youtube_dl=True)
 
     # Generic extractor
     elif re.match(regex_generic, query) is not None \
@@ -216,7 +240,7 @@ def search():
         for generic in app.search_backends:
             if generic.__name__ == 'jukebox.src.backends.search.generic':
                 break
-        results += generic.search(re.sub("\!url", "", query))
+        results += generic.search_engine(re.sub("\!url", "", query))
 
     elif 'jukebox.src.backends.search.youtube' in sys.modules:
         for youtube in app.search_backends:

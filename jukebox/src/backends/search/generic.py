@@ -7,7 +7,7 @@ import json
 from urllib.parse import unquote
 
 
-def search(query):
+def search_engine(query, use_youtube_dl=True):
     results = []
     query = query.strip(" ")
     print(query[:6])

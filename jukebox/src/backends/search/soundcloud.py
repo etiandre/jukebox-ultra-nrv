@@ -2,7 +2,7 @@ import youtube_dl
 import json
 
 
-def search(query):
+def search_engine(query, use_youtube_dl=True):
     ydl_opts = {
         'skip_download': True,  # we do want only a json file
         }
@@ -22,7 +22,7 @@ def search(query):
                 "url": res["webpage_url"],
                 "albumart_url": res["thumbnails"][0]["url"],
                 "album": None,
-                "duration": res["duration"],
+                "duration": int(res["duration"]),
                 "id": res["id"]
                 })
     else:
@@ -33,13 +33,13 @@ def search(query):
             "url": metadata["webpage_url"],
             "albumart_url": metadata["thumbnail"],
             "album": None,
-            "duration": metadata["duration"],
+            "duration": int(metadata["duration"]),
             "id": metadata["id"]
             })
     return results
 
 
-def search_engine(query):
+def search_multiples(query):
     ydl_opts = {
             'writeinfojson': True,
             'skip_download': True, # we do want only a json file
@@ -64,7 +64,7 @@ def search_engine(query):
             "url": metadata["url"],
             "albumart_url": metadata["thumbnail"],
             "album": None,
-            "duration": metadata["duration"],
+            "duration": int(metadata["duration"]),
             "id": metadata["id"]
             })
     return results
