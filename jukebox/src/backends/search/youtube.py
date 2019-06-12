@@ -71,13 +71,14 @@ def search_engine(query, use_youtube_dl=False, search_multiple=True):
             return search_fallback(query)
         else:
             return search_ytdl_unique(query)
-    return search(query)
+    return search_fallback(query)
 
 
 def search_ytdl_unique(query):
     ydl_opts = {
         'skip_download': True,
     }
+
     results = []
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         metadata = ydl.extract_info(query, False)
@@ -120,27 +121,15 @@ def search_ytdl_unique(query):
 
 def search_fallback(query):
     ydl_opts = {
-        'writeinfojson': True,
-        'skip_download': True,  # we do want only a json file
-        'outtmpl': "tmp_music_%(playlist_index)s",  # the json is tmp_music.info.json
+        'skip_download': True
         }
 
     results = []
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        try:
-            ydl.download(["ytsearch5:" + query])
-            # TODO : for now, we just interrupt the search, it could
-            # be cool to have a yt-dl option to ignore it
-        except youtube_dl.utils.DownloadError:
-            pass
+        metadatas = ydl.extract_info("ytsearch5:" + query, False)
 
-    for i in range(5):
-
-        with open("tmp_music_" + str(i+1) + ".info.json", 'r') as f:
-            metadata = f.read()
-            metadata = json.loads(metadata)
-            # app.logger.info(metadata)
+    for metadata in metadatas["entries"]:
 
         """
         app.logger.info("Title: {}".format(metadata["title"]))

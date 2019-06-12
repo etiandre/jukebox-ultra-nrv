@@ -41,21 +41,14 @@ def search_engine(query, use_youtube_dl=True):
 
 def search_multiples(query):
     ydl_opts = {
-            'writeinfojson': True,
-            'skip_download': True, # we do want only a json file
-            'outtmpl': "tmp_music_%(playlist_index)s", # the json is tmp_music.info.json
+            'skip_download': True,
             }
     results = []
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download(["scsearch5:" + query])
+        metadatas = ydl.extract_info("scsearch5:" + query, False)
 
-    for i in range(5):
-
-        with open("tmp_music_" + str(i+1) + ".info.json", 'r') as f:
-            metadata = f.read()
-            metadata = json.loads(metadata)
-            print(type(metadata))
+    for metadata in metadatas["entries"]:
 
         results.append({
             "source": "soundcloud",
