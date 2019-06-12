@@ -57,6 +57,31 @@ h1
     background: red;
 }
 
+
+.statistics .statcol {
+    display: inline-block;
+    max-width: 48%;
+    vertical-align: top;
+    margin: 5px;
+}
+
+.statistics .statcol .statdisplay {
+    padding: 5px 5px 30px;
+}
+
+.statistics .statcol thead {
+    background-color: #e00b00;
+    border-bottom: 1px solid yellow;
+}
+
+.statistics .statcol th, .statistics .statcol td {
+    padding: 5px;
+}
+
+.statistics .statcol tr:nth-child(even) {
+    background-color: #e00b00;
+}
+
 .icon {
     height: 20px;
     display: block;

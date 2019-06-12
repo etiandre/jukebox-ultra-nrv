@@ -1,13 +1,16 @@
 import re
+import datetime
 import sys
 from flask import Blueprint, render_template, redirect, session, jsonify, request, flash
 from flask import current_app as app
 from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField
-from jukebox.src.util import *
-from jukebox.src.Track import Track
 from os import listdir
 from os.path import isfile, join
+
+from jukebox.src.util import *
+from jukebox.src.Track import Track
+from jukebox.src.statistics import create_html_users, create_html_tracks
 
 main = Blueprint('main', __name__)
 
@@ -143,11 +146,25 @@ def move_track():
     return "ok"
 
 
-@main.route("/statistics", methods=['POST'])
+@main.route("/statistics", methods=['GET'])
 @requires_auth
 def statistics():
+    return render_template('statistics.html', user=session["user"],
+                           jk_name=app.config["JK_NAME"],
+                           table_users_count_all=create_html_users(app.config["DATABASE_PATH"]),
+                           table_users_count_week=create_html_users(app.config["DATABASE_PATH"],
+                                                                    datetime.datetime.now() - datetime.timedelta(weeks=1)),
+                           table_users_count_day=create_html_users(app.config["DATABASE_PATH"],
+                                                                   datetime.datetime.now() - datetime.timedelta(days=1)),
+                           table_tracks_count_all=create_html_tracks(app.config["DATABASE_PATH"]),
+                           table_tracks_count_week=create_html_tracks(app.config["DATABASE_PATH"],
+                                                                    datetime.datetime.now() - datetime.timedelta(
+                                                                        weeks=1)),
+                           table_tracks_count_day=create_html_tracks(app.config["DATABASE_PATH"],
+                                                                   datetime.datetime.now() - datetime.timedelta(
+                                                                       days=1)),
 
-    pass
+                           stylesheet=get_style())
 
 
 @main.route("/refresh-track", methods=['POST'])

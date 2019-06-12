@@ -204,3 +204,24 @@ WHERE url = ?
             'randomid': random.randint(1, 999_999_999_999)  # to identify each track in the playlist
             # even if they have the same url
         }
+
+    @classmethod
+    def getTrackCounts(cls, database, nbr, date=0):
+        """
+        Returns at most the nbr users with most listening count
+
+        :param database:
+        :param nbr:
+        :param date:
+        :return: list of (User, int)
+        """
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+        c.execute(
+            """SELECT track, count(track) FROM  track_info, log
+WHERE log.trackid = track_info.id and log.time > ? group by trackid order by count(trackid) DESC""",
+            (date,))
+        r = c.fetchall()
+        if r is None:
+            return None
+        return r

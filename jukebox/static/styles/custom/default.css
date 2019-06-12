@@ -1,4 +1,27 @@
 
+.statistics .statcol {
+    display: inline-block;
+    max-width: 48%;
+    vertical-align: top;
+    margin: 5px;
+}
+
+.statistics .statcol .statdisplay {
+    padding: 5px 5px 30px;
+}
+
+.statistics .statcol thead {
+    background-color: lightblue;
+    border-bottom: 1px solid lightgrey;
+}
+
+.statistics .statcol th, .statistics .statcol td {
+    padding: 5px;
+}
+
+.statistics .statcol tr:nth-child(even) {
+    background-color: lightgrey;
+}
 
 .btn-remove, .btn-add, .btn-back, .btn-more, .btn-up, .btn-down, .btn-refresh {
     position: relative;
@@ -11,12 +34,11 @@
 
 #playlist-playing, #playlist-queue {
     list-style-type: none;
-    margin: 10px;
     padding: 0;
 	text-align: center;
 	color: grey;
 	letter-spacing: 10px;
-	margin-top: 13px;
+    margin: 13px 10px 10px;
 
 }
 
@@ -59,9 +81,7 @@ iframe#YT {
 }
 
 .icon{ /*Les icones de selection de chansons*/
-    background-image: none;
-    background-color: transparent;
-    background-repeat: no-repeat;
+    background: transparent none no-repeat;
     border: none;
     background-size: 20px;
     padding-left: 20px;

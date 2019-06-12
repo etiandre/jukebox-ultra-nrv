@@ -111,6 +111,35 @@ iframe, .list-group, .container{
     background-color: rgba(255,255,255,0.85);
 }
 
+.statistics .statcol {
+    display: inline-block;
+    max-width: 48%;
+    vertical-align: top;
+    margin: 5px;
+}
+
+.statistics .statcol .statdisplay {
+    padding: 5px 5px 30px;
+}
+
+.statistics .statcol thead {
+    background-color: rgba(255, 0, 0, 0.4);
+    border-bottom: 1px solid grey;
+}
+
+.statistics .statcol th, .statistics .statcol td {
+    padding: 5px;
+}
+
+.statistics .statcol tbody tr:nth-child(even) {
+    background-color: rgba(0, 255, 0, 0.4);
+}
+
+
+.statistics .statcol tbody tr:nth-child(odd) {
+    background-color: rgba(244, 161, 44, 0.4);
+}
+
 .list-group{
     margin-right: 5px;
     background-color: rgba(255,255,255,0.85);
