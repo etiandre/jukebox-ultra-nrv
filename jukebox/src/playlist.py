@@ -27,6 +27,7 @@ def add():
             track.insert_track_log(app.config["DATABASE_PATH"], session['user'])
             # we refresh the track in database
             track = Track.refresh_by_url(app.config["DATABASE_PATH"], track_dict["url"], obsolete=0)
+            track.user = session['user']
             app.logger.info(track)
 
     with app.playlist_lock:

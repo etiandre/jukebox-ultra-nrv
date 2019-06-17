@@ -151,20 +151,30 @@ def move_track():
 def statistics():
     return render_template('statistics.html', user=session["user"],
                            jk_name=app.config["JK_NAME"],
-                           table_users_count_all=create_html_users(app.config["DATABASE_PATH"]),
-                           table_users_count_week=create_html_users(app.config["DATABASE_PATH"],
-                                                                    datetime.datetime.now() - datetime.timedelta(weeks=1)),
-                           table_users_count_day=create_html_users(app.config["DATABASE_PATH"],
-                                                                   datetime.datetime.now() - datetime.timedelta(days=1)),
-                           table_tracks_count_all=create_html_tracks(app.config["DATABASE_PATH"]),
-                           table_tracks_count_week=create_html_tracks(app.config["DATABASE_PATH"],
-                                                                    datetime.datetime.now() - datetime.timedelta(
-                                                                        weeks=1)),
-                           table_tracks_count_day=create_html_tracks(app.config["DATABASE_PATH"],
-                                                                   datetime.datetime.now() - datetime.timedelta(
-                                                                       days=1)),
+                           table_users_count_all=create_html_users(app.config["DATABASE_PATH"], nbr=-1),
+                           table_users_count_week=create_html_users(app.config["DATABASE_PATH"], nbr=10,
+                                                                    date=datetime.datetime.now()
+                                                                        - datetime.timedelta(weeks=1)),
+                           table_users_count_day=create_html_users(app.config["DATABASE_PATH"], nbr=10,
+                                                                   date=datetime.datetime.now()
+                                                                        - datetime.timedelta(days=1)),
+                           table_tracks_count_all=create_html_tracks(app.config["DATABASE_PATH"], nbr=10),
+                           table_tracks_count_week=create_html_tracks(app.config["DATABASE_PATH"], nbr=10,
+                                                                      date=datetime.datetime.now()
+                                                                           - datetime.timedelta(weeks=1)),
+                           table_tracks_count_day=create_html_tracks(app.config["DATABASE_PATH"], nbr=10,
+                                                                     date=datetime.datetime.now()
+                                                                          - datetime.timedelta(days=1)),
 
                            stylesheet=get_style())
+
+
+@main.route("/status", methods=['GET'])
+def status():
+    res = {
+        "status": "UP"
+    }
+    return jsonify(res)
 
 
 @main.route("/refresh-track", methods=['POST'])

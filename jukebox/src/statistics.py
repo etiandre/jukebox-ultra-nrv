@@ -29,9 +29,9 @@ class StatsTracksItem(object):
         self.description = count
 
 
-def create_html_users(database, date=0):
+def create_html_users(database, date=0, nbr=10):
     items = []
-    usercounts = User.getUserCounts(database, 10, date=date)
+    usercounts = User.getUserCounts(database, nbr, date=date)
     for couple in usercounts:
         # we get user, count
         user = couple[0]
@@ -41,9 +41,9 @@ def create_html_users(database, date=0):
     return StatsUsersTable(items).__html__()
 
 
-def create_html_tracks(database, date=0):
+def create_html_tracks(database, date=0, nbr=10):
     items = []
-    trackcounts = Track.getTrackCounts(database, 10, date=date)
+    trackcounts = Track.getTrackCounts(database, nbr, date=date)
     for couple in trackcounts:
         # we get user, count
         track = couple[0]

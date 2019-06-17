@@ -277,4 +277,7 @@ WHERE log.trackid = track_info.id and log.time > ? group by trackid order by cou
         r = c.fetchall()
         if r is None:
             return None
-        return r
+        if nbr < 0:
+            return r
+        else:
+            return r[:nbr]

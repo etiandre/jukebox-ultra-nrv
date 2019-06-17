@@ -75,4 +75,7 @@ WHERE log.userid = users.id and log.time > ? group by user order by count(user) 
         r = c.fetchall()
         if r is None:
             return None
-        return r
+        if nbr < 0:
+            return r
+        else:
+            return r[:nbr]
