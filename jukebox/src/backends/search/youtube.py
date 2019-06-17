@@ -71,7 +71,7 @@ def search_engine(query, use_youtube_dl=False, search_multiple=True):
             return search_fallback(query)
         else:
             return search_ytdl_unique(query)
-    return search_fallback(query)
+    return search(query)
 
 
 def search_ytdl_unique(query):

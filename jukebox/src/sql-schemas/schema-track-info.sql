@@ -7,5 +7,6 @@ CREATE TABLE IF NOT EXISTS "track_info" (
     "duration"  INT,
     "albumart_url" TEXT,
     "source"    TEXT,
-    "blacklisted" BOOLEAN DEFAULT 0
+    "blacklisted" BOOLEAN DEFAULT 0,
+    "obsolete" BOOLEAN DEFAULT 0
 );

@@ -2,21 +2,23 @@ import sqlite3
 import random
 import sys
 
+from youtube_dl import DownloadError
+
 from jukebox.src.util import *
 
 
 class Track:
     def __init__(self, ident, url, track, artist, source, albumart_url, album=None, duration=None, blacklisted=False,
-                 user=None):
+                 obsolete=0, user=None):
         """
 
-        :param id:
-        :param url:
-        :param track:
-        :param artist:
-        :param source:
-        :param albumart_url:
-        :param album:
+        :param ident: int
+        :param url: str
+        :param track: str
+        :param artist: str
+        :param source: str
+        :param albumart_url: str
+        :param album: str
         :param duration:
         :param blacklisted:
         :param user: may be None, else it means we get it from a log and it is a str
@@ -27,13 +29,22 @@ class Track:
         self.artist = artist
         self.source = source
         self.albumart_url = albumart_url
-        self.album = album
+        self.album = "" if album is None else album
         self.duration = duration
         self.blacklisted = blacklisted
+        self.obsolete = obsolete
         self.user = user
 
     def __str__(self):
-        return self.ident + ": " + self.url
+        if self.ident is None:
+            ret = "None: "
+        else:
+            ret = str(self.ident) + ": "
+        if self.url is None:
+            ret = ret + "None"
+        else:
+            ret = ret + self.url
+        return ret
 
     @classmethod
     def does_track_exist(cls, database, url):
@@ -41,7 +52,7 @@ class Track:
 
         :param database:
         :param url:
-        :return:
+        :return: Boolean, True if track exists.
         """
         conn = sqlite3.connect(database)
         c = conn.cursor()
@@ -52,7 +63,24 @@ class Track:
                   """,
                   (url,))
         r = c.fetchall()
-        return not not r
+        return len(r) > 0
+        # the following block is used to manage cases http and https
+        """
+        if len(r) > 0:
+            return True
+        else:  # basically, we want to consider that http://url = https://url
+            if url[:5] == "http:":
+                url = url[:4] + 's' + url[4:]
+            else:
+                url = url[:4] + url[5:]
+            c.execute(""""""select id
+                         from track_info
+                         where url = ?;"""
+        """,
+                      (url,))
+            r = c.fetchall()
+            return len(r) > 0
+            """
 
     @classmethod
     def import_from_id(cls, database, ident):
@@ -70,7 +98,7 @@ class Track:
             return None
         assert r[0] == ident
         return Track(ident=r[0], url=r[1], track=r[2], artist=r[3], album=r[4], duration=r[5], albumart_url=r[6],
-                     source=r[7], blacklisted=r[8])
+                     source=r[7], blacklisted=r[8], obsolete=r[9])
 
     @classmethod
     def import_from_url(cls, database, url):
@@ -85,7 +113,7 @@ class Track:
         if r is None:
             return None
         return Track(ident=r[0], url=r[1], track=r[2], artist=r[3], album=r[4], duration=r[5],
-                     albumart_url=r[6], source=r[7], blacklisted=r[8])
+                     albumart_url=r[6], source=r[7], blacklisted=r[8], obsolete=r[9])
 
     @classmethod
     def get_random_track(cls, database):
@@ -101,7 +129,7 @@ class Track:
         if r is None:  # no track in database
             return None
         track = Track(ident=r[0], url=r[1], track=r[2], artist=r[3], album=r[4], duration=r[5], albumart_url=r[6],
-                      source=r[7], blacklisted=r[8])
+                      source=r[7], blacklisted=r[8], obsolete=r[9])
         c.execute("SELECT user from users, log where users.id = log.userid and log.trackid = ? ORDER BY RANDOM() \
 LIMIT 1;",
                   (track.ident,))
@@ -115,7 +143,7 @@ LIMIT 1;",
         """
 
         :param database:
-        :param track:
+        :param track_form:
         :return:
         """
         conn = sqlite3.connect(database)
@@ -132,11 +160,12 @@ LIMIT 1;",
         conn.commit()
 
     @classmethod
-    def refresh_by_url(cls, database, url):
+    def refresh_by_url(cls, database, url, obsolete=0):
         """
 
         :param database: Database used
         :param url: URL of the track (str)
+        :param obsolete: Boolean telling if track is obsolete or not.
         """
         # app.logger.info(url)
         track = cls.import_from_url(database, url)
@@ -149,20 +178,43 @@ LIMIT 1;",
             if search.__name__ == 'jukebox.src.backends.search.'+track.source:
                 break
         if track.source == "youtube":
-            track_dict = search.search_engine(url, use_youtube_dl=True, search_multiple=False)[0]
+            try:
+                track_dict = search.search_engine(url, use_youtube_dl=True, search_multiple=False)[0]
+            except DownloadError as e:  # We mark the track as obsolete
+                app.logger.info(e.exc_info[1])
+                if e.args[0] == "ERROR: This video is unavailable.":
+                    track.obsolete = 1
+                    track.set_obsolete_value(database, track.obsolete)
+                    app.logger.warning("Marking track {} as obsolete".format(url))
+                return
         else:
             track_dict = search.search_engine(url, use_youtube_dl=True)[0]
         # app.logger.info("Track dict : ", track_dict)
         track = Track(None, url, track_dict["title"], track_dict["artist"], track_dict["source"],
                       track_dict["albumart_url"], album=track_dict["album"], duration=track_dict["duration"])
-
         conn = sqlite3.connect(database)
         c = conn.cursor()
         c.execute("""UPDATE track_info
-SET track = ?, artist = ?, albumart_url = ?, album = ?, duration = ?
-WHERE url = ?
-                  """,
-                  (track.track, track.artist, track.albumart_url, track.album, track.duration, url,))
+SET track = ?, artist = ?, albumart_url = ?, album = ?, duration = ?, obsolete = ?
+WHERE url = ?;""", (track.track, track.artist, track.albumart_url, track.album, track.duration, obsolete, url))
+        conn.commit()
+        track = cls.import_from_url(database, url)
+        return track
+
+    def set_obsolete_value(self, database, bool=1):
+        """
+
+        :param database: Path to the SQLite for the Jukebox
+        :param bool: Value of the obsolete column of the track.
+        """
+        self.obsolete = bool
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+        c.execute("""UPDATE track_info
+        SET obsolete = ?
+        WHERE id = ?
+                          """,
+                  (self.obsolete, self.ident))
         conn.commit()
 
     def insert_track_log(self, database, user):
@@ -200,6 +252,7 @@ WHERE url = ?
             'album': self.album,
             'duration': self.duration,
             'blacklisted': self.blacklisted,
+            'obsolete': self.obsolete,
             'user': self.user,
             'randomid': random.randint(1, 999_999_999_999)  # to identify each track in the playlist
             # even if they have the same url

@@ -1,6 +1,9 @@
 # Jukebox Ultra NRV mkIII
 
-## Prequisites
+## Prerequisites
+
+This application assumes it runs on Linux using Alsa.
+
 `python3, python-flask, python-requests,  mpv, youtube-dl, alsa-utils,
 python3-pip` have to be installed.
 Also from pip, get `pyalsaaudio`, `youtube_dl`, `passlib`, `flask-WTF` and `flask-table`.
