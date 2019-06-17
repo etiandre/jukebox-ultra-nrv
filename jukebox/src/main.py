@@ -158,7 +158,7 @@ def statistics():
                            table_users_count_day=create_html_users(app.config["DATABASE_PATH"], nbr=10,
                                                                    date=datetime.datetime.now()
                                                                         - datetime.timedelta(days=1)),
-                           table_tracks_count_all=create_html_tracks(app.config["DATABASE_PATH"], nbr=10),
+                           table_tracks_count_all=create_html_tracks(app.config["DATABASE_PATH"], nbr=20),
                            table_tracks_count_week=create_html_tracks(app.config["DATABASE_PATH"], nbr=10,
                                                                       date=datetime.datetime.now()
                                                                            - datetime.timedelta(weeks=1)),
