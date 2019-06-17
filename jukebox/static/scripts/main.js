@@ -1,12 +1,20 @@
-/*
+/**
 Script managing the interface.
 It uses JQuery
+
+It is used to load the Youtube iframe, refresh the playlist and suggestion column.
  */
 
+/**
+ *
+ * @param html: html of the page
+ * @param d: dictionary of key values which will replace { key } in html
+ * @returns a html, with values replacing keys
+ */
 function template(html, d) {
     let r = html;
     for (let i in d) {
-        if (i=="title") { // track title appears both on verso and recto
+        if (i=="title") { // track title appears both on verso and recto, so we replace in the if and after
             r=r.replace("{"+i+"}", d[i]);
         }
         r=r.replace("{"+i+"}", d[i]);
@@ -16,22 +24,26 @@ function template(html, d) {
 }
 
 
+/**
+ * Called on click of the buttons which switch the recto/verso of song tiles.
+ * These buttons are .btn-more and .btn-back.
+ */
 function toggle_recto_verso() {
-    /*
-    Called by a .btn-more or .btn-back
-     */
-    // console.log("prout");
     let track_li = $(this).closest("li");
-    //let id = track_li.attr('id');
-    // console.log(id);
     track_li.find(".verso").toggle();
     track_li.find(".recto").toggle();
 }
 
 
+/**
+ * Generate the HTML for a track tile
+ *
+ * @param t: dictionary representing a serialized Track
+ * @returns {jQuery|HTMLElement} : html for the tile
+ */
 function generate_track_html(t) {
     let track_html = $(template(track_template, t));
-    track_html.data("track", t);
+    track_html.data("track", t); // we add the serialized object as data to the tile
     track_html.find(".verso").hide();
     track_html.find(".btn-more").click(toggle_recto_verso);
     track_html.find(".btn-back").click(toggle_recto_verso);
@@ -45,14 +57,20 @@ function generate_track_html(t) {
     track_html.find(".btn-refresh").click(function() {
         $.post("/refresh-track", {"url": t["url"]});
     });
-
     return track_html
 }
 
+/**
+ * Generate the HTML for a track tile in the suggestion column.
+ * It deactivate the buttons to move the track, and the one to remove it.
+ *
+ * @param t : dict, serialized Track
+ * @returns {jQuery|HTMLElement} : html for the tile
+ */
 function generate_track_html_suggest(t) {
     let track_html = generate_track_html(t);
     track_html.find(".btn-add").click(function() {
-        $.post("/add", t); //$(this).parents("li").data("track"));
+        $.post("/add", t);
     });
     track_html.find(".btn-remove").remove();
     track_html.find(".btn-up").remove();
@@ -61,15 +79,23 @@ function generate_track_html_suggest(t) {
 }
 
 
+/**
+ * Generate the HTML for a track tile in the queue.
+ * It deactivate the button to remove the track.
+ *
+ * @param t : dict, serialized Track
+ * @returns {jQuery|HTMLElement} : html for the tile
+ */
 function generate_track_html_queue(t) {
     let track_html = generate_track_html(t);
     track_html.find(".btn-remove").click(function() {
         console.log("Removing track with randomid: ", t["randomid"]);
-        $.post("/remove", t);//$(this).parents("li").data("track"));
+        $.post("/remove", t);
     });
     track_html.find(".btn-add").remove();
     return track_html;
 }
+
 
 track_template = `
 <li class="list-group-item track" id="{randomid}">
@@ -104,15 +130,15 @@ track_template = `
         </div>
     </div>
 </li>
-`
+`;
 
 // We load the Youtube iframe
-var tag = document.createElement('script');
+const tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
+const firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-var yt = 0;
+let yt = 0;
 function onYouTubeIframeAPIReady() {
     yt = new YT.Player('YT', {
         height: '360',
@@ -128,10 +154,11 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-
-function sleep (time) {
-    return new Promise((resolve) => setTimeout(resolve, time));
-}
+/**
+ * Synchronizes the video from Youtube iframe with the sound from mpv.
+ *
+ * @param mpv_time : float : timestamp of mpv
+ */
 function syncVideo(mpv_time) {
     console.log(mpv_time);
     if (mpv_time === 0) {
@@ -140,7 +167,7 @@ function syncVideo(mpv_time) {
         let ytTime = yt.getCurrentTime();
         yt.playVideo();
         let delta = ytTime - mpv_time;
-        if (Math.abs(delta) > 1) {
+        if (Math.abs(delta) > 0.1) {
             console.log("catching up");
             yt.seekTo(mpv_time);
         }
@@ -148,6 +175,13 @@ function syncVideo(mpv_time) {
 }
 
 
+/**
+ * Updates the playlist
+ * Also calls the function updating the Youtube iframe.
+ *
+ * Careful when editing, this function works fine, but may be a bit messy.
+ * @param data: dict given by /sync
+ */
 function updates_playlist(data) {
     // we first get the current playlistHTML
     let playlist = data.playlist;
@@ -158,6 +192,11 @@ function updates_playlist(data) {
         return;
     }
 
+    /* so we browse the playlist dict
+    If the track in the html corresponds to the current one in the dict, it's fine.
+    Else we remove the track in HTML and put the one in the dict.
+    We don't "move" the html tiles, we just delete them wherever they are wrong.
+    */
     for (let i=0; i<playlist.length; i++) {
         let track = playlist[i];
         if (i === 0 && (playlistHTML.find(".track") === 0 || playlistHTML.find(".track:first").attr("id") != track.randomid)) {
@@ -182,7 +221,6 @@ function updates_playlist(data) {
                     t = 0;
                 }
                 if (yt.url !== videoId) {
-                    //console.log("Loading now !");
                     console.log("Loading video with id : ", videoId, " at time ", t);
                     yt.cueVideoById(new String(videoId), t);
                     yt.url = videoId;
@@ -192,7 +230,7 @@ function updates_playlist(data) {
             }
             if (playlistHTML.find("#playlist-playing").length === 0) { // it doesn't display
                 console.log("Adding Lecture en cours");
-                playlistHTML.find(".track:first").before("<li id='playlist-playing' class='playlist-title'>Lecture en cours</li>");
+                playlistHTML.find(".track:first").before("<li id='playlist-playing' class='playlist-title'>Now playing</li>");
             }
         }
         // we do not use !== as the elements are not the same types
@@ -206,47 +244,28 @@ function updates_playlist(data) {
 
 
             if (playlistHTML.find("#playlist-queue").length === 0) {
-                playlistHTML.find(".track:eq(0)").after("<li id='playlist-queue' class='playlist-title'>A venir...</li>");
+                playlistHTML.find(".track:eq(0)").after("<li id='playlist-queue' class='playlist-title'>Upcoming...</li>");
             }
         }
     }
 
     // we must remove elements in playlistHTML which are too much
     let i = playlist.length -1;
-    //console.log("i: "+i);
-
-    //console.log(playlistHTML.find(".track:eq("+i+")"));
     let track_tile = playlistHTML.find(".track:eq("+i+")");
-    //track_tile.css({"color": "red", "border": "2px solid red"});//.nextAll(".track").remove();
     while (track_tile.next().length !== 0) {
         track_tile = track_tile.next();
-        track_tile.remove();//css({"color": "green", "border": "2px solid green"});
+        track_tile.remove();
     }
-    /*
-    for (let j = i+1; j<playlistHTML.children().length; j++) {
-        playlistHTML.find(".track:eq("+j+")").css({"color": "green", "border": "2px solid green"});
-    }*/
-
-    /*
-    // we removing any surnumary track
-    console.log(playlistHTML.children().length); //not good
-    for (let i = playlist.length+offset; i<playlistHTML.children(".track")+offset; i++) {
-        console.log("Too much tracks, removing "+i);
-        playlistHTML.children(":eq(" + i + ")").remove();
-    }
-    */
 }
 
+/**
+ * This is what happens when we GET /sync
+ */
 sync = function() {
-    let time = Date.now() / 1000
+    let time = Date.now() / 1000;
     $.get("/sync", function (data) {
         $('#volume-slider').val(data.volume);
         updates_playlist(data);
-        // TODO : here we reset the playlist, we should not do that
-        //let playlistHTML = $("<div></div>");
-        //$('#playlist').html("");
-
-        //$("#playlist").html(playlistHTML)
         if (yt !== 0) {
             syncVideo(data.time);
         }
@@ -254,21 +273,27 @@ sync = function() {
     window.setTimeout(arguments.callee, 1000);
 }();
 
-var delay = (function(){
-    var timer = 0;
+/**
+ *
+ */
+let delay = (function(){
+    let timer = 0;
     return function(callback, ms){
         clearTimeout (timer);
         timer = setTimeout(callback, ms);
     };
 })();
 
+/**
+ * When pressing enter in the search bar, make a search.
+ */
 $('#query').keyup(function(e) {
-    var code = e.which;
+    let code = e.which;
     // We make a search **only** if the enter key has been pressed
     if (code != 13) {
         return;
     }
-    query = $('#query').val().trim()
+    let query = $('#query').val().trim();
     if (query == "") {
         $("#search_results").html("");
         $("#search_results").hide();
@@ -282,10 +307,8 @@ $('#query').keyup(function(e) {
                 let track = data[i];
                 console.log("Track :");
                 console.log(track);
-                //track["randomid"] = Math.floor((Math.random() * 999999999999) + 1);
                 $('#search_results').append(generate_track_html_suggest(track));
                 $('#search_results li:last .btn-add').click(function() {
-                    //$.post("/add", track); // we already send an add with the generate_track_html_suggest
                     $('#query').val("");
                     $('#search_results').hide();
                 });
@@ -299,11 +322,15 @@ $('#query').keyup(function(e) {
         }
     },250);
 });
+
 $('#query').focus(function () {
     if ($('#query').val() != "")
         $('#search_results').show();
 });
 
+/**
+ * Get the suggested tracks
+ */
 function suggest() {
     $.get("/suggest", function (data) {
         $('#suggestions').html("");
@@ -316,9 +343,10 @@ function suggest() {
 
 $("#volume-slider").change(function() {
     $.post("/volume", {"volume": $(this).val()})
-})
+});
 
 $("#refresh-suggestions").click(suggest);
+
 $("#toggle-YT").click(function() {
     $("#YT").toggle();
     if (!$("#YT").is(":visible")) {
@@ -328,16 +356,8 @@ $("#toggle-YT").click(function() {
     }
 });
 
+// we hide the search results by default
 $('#search_results').hide();
-
-
-/*
-$(document).ready(function hide_recto() {
-    $(".verso").hide();
-});
-*/
-
-
 
 
 $(document).ready(function() {
