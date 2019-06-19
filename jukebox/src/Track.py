@@ -272,7 +272,7 @@ WHERE url = ?;""", (track.track, track.artist, track.albumart_url, track.album, 
         c = conn.cursor()
         c.execute(
             """SELECT track, count(track) FROM  track_info, log
-WHERE log.trackid = track_info.id and log.time > ? group by trackid order by count(trackid) DESC""",
+WHERE log.trackid = track_info.id and log.time > ? group by trackid order by count(trackid) DESC, log.id DESC""",
             (date,))
         r = c.fetchall()
         if r is None:
