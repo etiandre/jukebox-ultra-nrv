@@ -58,6 +58,17 @@ Check if youtube-dl is working and up to date
 If not, update it : `sudo youtube-dl -U`
 
 
+## Outdated tracks
+
+Tracks may be marked as obsolete.
+These won't be displayed in the suggestions column.
+Tracks become outdated if the source is youtube, and youtube-dl returns an "Error: Track not found.".
+This means that the track doesn't exist on Youtube (it may have been removed, or is unavailable for any reason).
+An obsolete track may become non-obsolete again if you refresh its metadata and Youtube doesn't return the previous
+error.
+To do this, you can simply search the track in the search engine.
+
+
 ## Development
 
 For the logs, please use `app.logger.info`, `app.logger.warning` or `app.logger.error`.

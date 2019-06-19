@@ -261,7 +261,9 @@ WHERE url = ?;""", (track.track, track.artist, track.albumart_url, track.album, 
     @classmethod
     def getTrackCounts(cls, database, nbr, date=0):
         """
-        Returns at most the nbr users with most listening count
+        Returns at most the nbr users with most listening count.
+        Tracks are sorted first by count (number of times the track has been added since `date`, and second by most
+        recently added.
 
         :param database:
         :param nbr:
@@ -272,7 +274,7 @@ WHERE url = ?;""", (track.track, track.artist, track.albumart_url, track.album, 
         c = conn.cursor()
         c.execute(
             """SELECT track, count(track) FROM  track_info, log
-WHERE log.trackid = track_info.id and log.time > ? group by trackid order by count(trackid) DESC""",
+WHERE log.trackid = track_info.id and log.time > ? group by trackid order by count(trackid) DESC, log.id DESC""",
             (date,))
         r = c.fetchall()
         if r is None:
