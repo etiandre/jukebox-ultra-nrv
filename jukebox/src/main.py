@@ -26,13 +26,20 @@ def get_style():
     return stylesheet
 
 
+def get_nav_links():
+    if "NAV_LINKS" in app.config:
+        return app.config["NAV_LINKS"]
+    else:
+        return []
+
+
 @main.route("/app")
 @requires_auth
 def app_view():
     # app.logger.info("App access from %s", session["user"])
     return render_template("accueil.html",
                            user=session["user"], jk_name=app.config["JK_NAME"],
-                           stylesheet=get_style(), navlinks=app.config["NAV_LINKS"])
+                           stylesheet=get_style(), navlinks=get_nav_links())
 
 
 @main.route("/")
@@ -49,7 +56,7 @@ def help():
         modules.append(i)
     return render_template("help.html", modules=modules,
                            jk_name=app.config["JK_NAME"],
-                           stylesheet=get_style(), navlinks=app.config["NAV_LINKS"],
+                           stylesheet=get_style(), navlinks=get_nav_links(),
                            version=app.version)
 
 
@@ -80,11 +87,11 @@ def settings():
         # app.logger.info("Style : " + style)
         return render_template('settings.html', user=session["user"],
                                jk_name=app.config["JK_NAME"], form=form,
-                               stylesheet=get_style(), navlinks=app.config["NAV_LINKS"])
+                               stylesheet=get_style(), navlinks=get_nav_links())
     elif request.method == 'GET':
         return render_template('settings.html', user=session["user"],
                                jk_name=app.config["JK_NAME"], form=form,
-                               stylesheet=get_style(), navlinks=app.config["NAV_LINKS"])
+                               stylesheet=get_style(), navlinks=get_nav_links())
 
 
 @main.route("/sync")
@@ -166,7 +173,7 @@ def statistics():
                                                                      date=datetime.datetime.now()
                                                                           - datetime.timedelta(days=1)),
 
-                           stylesheet=get_style(), navlinks=app.config["NAV_LINKS"])
+                           stylesheet=get_style(), navlinks=get_nav_links())
 
 
 @main.route("/status", methods=['GET'])
