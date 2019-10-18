@@ -32,7 +32,7 @@ def app_view():
     # app.logger.info("App access from %s", session["user"])
     return render_template("accueil.html",
                            user=session["user"], jk_name=app.config["JK_NAME"],
-                           stylesheet=get_style())
+                           stylesheet=get_style(), navlinks=app.config["NAV_LINKS"])
 
 
 @main.route("/")
@@ -49,7 +49,7 @@ def help():
         modules.append(i)
     return render_template("help.html", modules=modules,
                            jk_name=app.config["JK_NAME"],
-                           stylesheet=get_style(),
+                           stylesheet=get_style(), navlinks=app.config["NAV_LINKS"],
                            version=app.version)
 
 
@@ -80,11 +80,11 @@ def settings():
         # app.logger.info("Style : " + style)
         return render_template('settings.html', user=session["user"],
                                jk_name=app.config["JK_NAME"], form=form,
-                               stylesheet=get_style())
+                               stylesheet=get_style(), navlinks=app.config["NAV_LINKS"])
     elif request.method == 'GET':
         return render_template('settings.html', user=session["user"],
                                jk_name=app.config["JK_NAME"], form=form,
-                               stylesheet=get_style())
+                               stylesheet=get_style(), navlinks=app.config["NAV_LINKS"])
 
 
 @main.route("/sync")
@@ -166,7 +166,7 @@ def statistics():
                                                                      date=datetime.datetime.now()
                                                                           - datetime.timedelta(days=1)),
 
-                           stylesheet=get_style())
+                           stylesheet=get_style(), navlinks=app.config["NAV_LINKS"])
 
 
 @main.route("/status", methods=['GET'])
