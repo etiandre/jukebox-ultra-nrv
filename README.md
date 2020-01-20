@@ -13,12 +13,12 @@ Also from pip, get `pyalsaaudio`, `youtube_dl`, `passlib`, `flask-WTF` and `flas
  - Clone the repo
  - Move config.py.example to config.py and edit it 😎
  - To add a favicon, place it in the `jukebox/static` folder
- - Install requirements using `pip install -r requirements.py`
+ - Install requirements using `pip install -r requirements.txt`
  
  ```bash
  $ git clone https://github.com/matthias4217/jukebox-ultra-nrv.git
  $ cd jukebox-ultra-nrv
- $ pip -r requirements.txt
+ $ pip install -r requirements.txt
  $ cp config.py.example config.py
  $ <edit config.py>
  $ <optionally add a favicon.ico>
