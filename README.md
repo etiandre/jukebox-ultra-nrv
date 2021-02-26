@@ -4,9 +4,7 @@
 
 This application assumes it runs on Linux using Alsa.
 
-`python3, python-flask, python-requests,  mpv, youtube-dl, alsa-utils,
-python3-pip` have to be installed.
-Also from pip, get `pyalsaaudio`, `youtube_dl`, `passlib`, `flask-WTF` and `flask-table`.
+`python3`, `python3-pip`, `libmpv-dev`, `alsa-utils`, `libpulse0`, `xdg-utils`
 
 ## Installation
 
@@ -37,6 +35,17 @@ or with a systemd service jukebox (currently very buggy)
 $ systemctl start jukebox.service
 ```
 
+## Docker
+
+This application can be used with docker.
+It is for now a bit of an experiment : using sound with Docker is a bit tricky.
+Thus you need to ensure the file `/etc/modprobe.d/default.conf` exists and is set to `options snd_hda_intel index=1`.
+The `Dockerfile` and `docker-compose.yml` should do the rest.
+
+One problem still is that if another application uses sound, the Jukebox will fail to play music.
+
+In case of any sound problem, please open an issue.
+
 ## Security
 
 The current use of this application is only among a "friendly" and local network.
@@ -51,11 +60,8 @@ Check if the service is properly running :
  
 Check the logs :
  `$ sudo journalctl -u jukebox.service`
- 
-Check if youtube-dl is working and up to date
- `youtube-dl https://www.youtube.com/watch?v=6xKWiCMKKJg`
 
-If not, update it : `sudo youtube-dl -U`
+Check the installed youtube-dl version, and update it if necessary.
 
 
 ## Outdated tracks

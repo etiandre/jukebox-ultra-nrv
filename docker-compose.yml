@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  jukebox-ultra-nrv:
+    image: jukebox-ultra-nrv
+    ports:
+      - "8080:8080"
+    configs:
+      - source: config.py
+        target: /usr/src/app/config.py
+    environment:
+      DISPLAY: unix$DISPLAY
+    volumes:
+      - type: bind
+        source: ./jukebox.db
+        target: /usr/src/app/jukebox.db
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+    devices:
+      - "/dev/snd:/dev/snd"

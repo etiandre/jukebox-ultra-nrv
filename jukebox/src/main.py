@@ -99,14 +99,15 @@ def sync():
     """
     Renvoie la playlist en cours
     """
-    volume = get_volume()
+    volume = 0
+    time_pos = 0
     # segfault was here
     with app.mpv_lock:
-        if hasattr(app, 'mpv') and app.mpv is not None and hasattr(app.mpv, 'time_pos') \
-                and app.mpv.time_pos is not None:
-            time_pos = app.mpv.time_pos  # when track is finished, continues augmenting time_pos
-        else:
-            time_pos = 0
+        if hasattr(app, 'mpv') and app.mpv is not None:
+            volume = app.mpv.volume
+            if hasattr(app.mpv, 'time_pos') and app.mpv.time_pos is not None:
+                time_pos = app.mpv.time_pos  # when track is finished, continues augmenting time_pos
+    
     res = {
         "playlist": app.playlist,
         "volume": volume,

@@ -60,7 +60,10 @@ def remove():
 @requires_auth
 def volume():
     if request.method == 'POST':
-        set_volume(request.form["volume"])
+        if hasattr(app, 'mpv') and app.mpv is not None:
+            app.logger.info("request volume: " + str(request.form["volume"]))
+            app.mpv.volume = request.form["volume"]
+        # set_volume(request.form["volume"])
         return "ok"
 
 
