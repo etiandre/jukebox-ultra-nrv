@@ -1,0 +1,16 @@
+{% extends "page_template.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Settings</h2>
+    <form action = "/settings" method = post>
+        <fieldset>
+            <div>
+                {{ form.style.label }}<br>
+                {{ form.style }}<br>
+                {{ form.submit }}
+            </div>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}

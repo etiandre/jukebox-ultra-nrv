@@ -1,0 +1,8 @@
+Flask >= 1.0.2
+Flask-WTF
+python-mpv >= 0.3.9
+youtube-dl >= 2019.4.30
+passlib
+flask-table
+isodate
+requests

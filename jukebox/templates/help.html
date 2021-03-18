@@ -1,0 +1,31 @@
+{% extends "page_template.html" %}
+
+{% block content %}
+        <div class="container">
+            <p>
+            Le code source est disponible <a href="https://github.com/matthias4217/jukebox-ultra-nrv">ici</a>.
+                La version utilisée est {{ version }}.
+            </p>
+            <p>
+            Les modules chargés sont
+            <ul>
+                {% for m in modules %}
+                <li>
+                    {{ m }}
+                </li>
+                {% endfor %}
+            </ul>
+            <p>
+            Pour utiliser la recherche, Youtube, entrez simplement
+            les termes de votre recherche, puis appuyez sur la
+            touche "Entré".
+            Pour rechercher des chansons sur Youtube ou Soundcloud,
+            vous pouvez utiliser les bangs <code>!yt</code>, ou
+            <code>!sc</code>.
+            Pour lire des titres en provenance de Bandcamp, 
+            Soundcloud, Jamendo ou Youtube, vous pouvez aller
+            chercher le lien de la chanson de votre choix
+            directement sur ces sites.
+            </p>
+        </div>
+{% endblock %}

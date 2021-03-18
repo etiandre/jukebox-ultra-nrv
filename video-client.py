@@ -1,10 +1,12 @@
-import jukebox.src.lib.mpv as mpv
+import mpv
 import jukebox.src.lib.idle as idle
 import requests
 import sys
 import threading
 import time
 import subprocess
+
+
 class MyMPV(mpv.MPV):
     def __init__(self, argv):
         super().__init__(argv, window_id=None, debug=False)

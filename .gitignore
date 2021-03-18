@@ -1,6 +1,11 @@
 .idea
 __pycache__
 *.pyc
+venv/
 config.py
 *.sqlite3
+*.sqlite3.old
+*.db
 *.socket
+tmp_music*
+favicon.ico

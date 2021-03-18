@@ -1,0 +1,19 @@
+# /etc/systemd/system/jukebox.service
+
+# must be edited first by the user
+
+[Unit]
+Description=Jukebox service
+
+[Service]
+# Location of the jukebox-ultra-nrv, absolute (no ~/ for example)
+WorkingDirectory=</path/to/dir>
+ExecStart=python3 run.py
+Restart=always
+# User running python (your session name)
+User=<username>
+# Group the user belong to
+Group=<groupname>
+
+[Install]
+WantedBy=default.target
