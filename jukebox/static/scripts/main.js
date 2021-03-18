@@ -5,6 +5,8 @@ It uses JQuery
 It is used to load the Youtube iframe, refresh the playlist and suggestion column.
  */
 
+ MAX_TIME_DESYNC = 2;
+
 /**
  *
  * @param html: html of the page
@@ -167,8 +169,8 @@ function syncVideo(mpv_time) {
         let ytTime = yt.getCurrentTime();
         yt.playVideo();
         let delta = ytTime - mpv_time;
-        if (Math.abs(delta) > 0.1) {
-            console.log("catching up");
+        if (Math.abs(delta) > MAX_TIME_DESYNC) {
+            console.log("catching up, delta time is : " + delta);
             yt.seekTo(mpv_time);
         }
     }
