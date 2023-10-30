@@ -1,5 +1,8 @@
 # Jukebox Ultra NRV mkIII
 
+
+⚠ 🔴 **This code is no longer maintained. It has been forked [here](https://gitlab.com/club-jeux-int/jukebox-ultra-nrv), where the most up-to-date version can be found.** 🔴 ⚠
+
 ## Prerequisites
 
 This application assumes it runs on Linux using Alsa.
